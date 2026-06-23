@@ -1,0 +1,53 @@
+name: Auto YouTube Shorts Bot
+
+on:
+  schedule:
+    # Runs at 00:15 UTC
+    - cron: '15 0 * * *'
+    # Runs at 15:00 and 21:00 UTC
+    - cron: '0 15,21 * * *'
+  workflow_dispatch:
+    # Allows manual triggering
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg xvfb
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Generate Script using Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/generate_script.py
+      - name: Generate Discord Video (Text-2-Beluga)
+        run: |
+          cd scripts
+          # Run via xvfb-run to provide a virtual display for PIL/PyQt if needed (though auto_main avoids PyQt)
+          xvfb-run python auto_main.py
+          cd ..
+      - name: Convert to Vertical Short
+        run: |
+          python scripts/make_vertical.py
+      - name: Upload to YouTube Shorts
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          python scripts/upload_youtube.py

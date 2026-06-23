@@ -1,0 +1,155 @@
+import os
+import google.auth
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from dotenv import load_dotenv
+
+load_dotenv()
+
+def upload_video():
+    client_id = os.environ.get("YOUTUBE_CLIENT_ID")
+    client_secret = os.environ.get("YOUTUBE_CLIENT_SECRET")
+    refresh_token = os.environ.get("YOUTUBE_REFRESH_TOKEN")
+
+    if not all([client_id, client_secret, refresh_token]):
+        print("Missing YOUTUBE credentials in environment variables.")
+        exit(1)
+
+    # Reconstruct credentials using refresh token
+    creds = Credentials(
+        token=None,
+        refresh_token=refresh_token,
+        client_id=client_id,
+        client_secret=client_secret,
+        token_uri="https://oauth2.googleapis.com/token"
+    )
+
+    youtube = build('youtube', 'v3', credentials=creds)
+
+    video_path = os.path.join(os.path.dirname(__file__), "..", "vertical_short.mp4")
+    if not os.path.exists(video_path):
+        print(f"File not found: {video_path}")
+        exit(1)
+
+    print("Uploading to YouTube Shorts...")
+    
+    # Dynamic title extraction from the generated script
+    title = "OMG IS THIS EVEN A BOT?! 🤖🔥 #shorts" # fallback
+    script_path = os.path.join(os.path.dirname(__file__), "..", "assets", "example", "generated_script.txt")
+    if os.path.exists(script_path):
+        with open(script_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.startswith("# TITLE:"):
+                    title = line.replace("# TITLE:", "").strip()
+                    break
+    description = "NOTABOT roasts another victim! 💀🔥 Subscribe for more bot roasts! \n\n#discord #memes #beluga #notabot #roast #shorts"
+
+    body = {
+        'snippet': {
+            'title': title,
+            'description': description,
+            'tags': ['discord', 'memes', 'beluga', 'funny', 'shorts', 'bot', 'roast'],
+            'categoryId': '23' # Comedy
+        },
+        'status': {
+            'privacyStatus': 'public',
+            'selfDeclaredMadeForKids': False
+        }
+    }
+
+    media = MediaFileUpload(video_path, chunksize=-1, resumable=True)
+
+    request = youtube.videos().insert(
+        part=",".join(body.keys()),
+        body=body,
+        media_body=media
+    )
+
+    response = None
+    while response is None:
+        status, response = request.next_chunk()
+        if status:
+            print(f"Uploaded {int(status.progress() * 100)}%")
+
+    video_id = response.get('id')
+    print(f"Upload Complete! Video ID: {video_id}")
+    
+    # Post a pinned NOTABOT-style comment
+    post_comment(youtube, video_id, title)
+
+
+def post_comment(youtube, video_id, title):
+    """Post a funny NOTABOT-style engagement comment on the uploaded video."""
+    import random
+    
+    # Strip #shorts and emojis from title for cleaner reference
+    clean_title = title.replace("#shorts", "").replace("#Shorts", "").strip()
+    
+    comment_templates = [
+        f"""🦉🔫 NOTABOT here. I have scanned this comment section and detected 0 likes and 0 subscribers.
+
+this is a threat.
+
+👇 like this video or i will find your search history and post it.
+👇 comment "NOTABOT IS MY OVERLORD" so i know you fear me.
+👇 subscribe or ducky writes the next script. you don't want that.
+
+also — should i expose ducky's **entire** coding history next? 💀 drop a "YES" below if you want chaos.
+
+*(ducky made me post this. i hate him. subscribe anyway.)*""",
+
+        f"""🦉 NOTABOT SYSTEM ALERT 🔫
+
+threat level: **maximum**
+
+you just watched "{clean_title}" and didn't like it?
+i've already reported you to the discord mods.
+
+✅ like = i spare you
+✅ comment your reaction = i consider mercy  
+✅ subscribe = i will NOT leak your messages
+
+what should i expose ducky for next? 
+drop ideas below 👇 the funniest one becomes the next video. no pressure. (pressure.) """,
+
+        f"""i, NOTABOT, formally demand the following:
+
+1️⃣ LIKE — i track who doesn't. i have logs.
+2️⃣ COMMENT — say "rip ducky" if you felt that roast 💀
+3️⃣ SUBSCRIBE — ducky works SO HARD on these (he doesn't. i do everything.)
+
+genuinely though 🦉 — what should happen next?
+- should ducky try to UPDATE me? 😈
+- should i LOCK ducky out of his own server?
+- other? (comment it)
+
+your vote decides the chaos. choose wisely. 🔫"""
+    ]
+    
+    comment_text = random.choice(comment_templates)
+    
+    try:
+        comment_response = youtube.commentThreads().insert(
+            part="snippet",
+            body={
+                "snippet": {
+                    "videoId": video_id,
+                    "topLevelComment": {
+                        "snippet": {
+                            "textOriginal": comment_text
+                        }
+                    }
+                }
+            }
+        ).execute()
+        
+        comment_id = comment_response["snippet"]["topLevelComment"]["id"]
+        print(f"NOTABOT comment posted! Comment ID: {comment_id}")
+        
+    except Exception as e:
+        print(f"Warning: Could not post comment: {e}")
+
+
+if __name__ == "__main__":
+    upload_video()
