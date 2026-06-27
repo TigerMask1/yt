@@ -51,7 +51,7 @@ def main():
 
     # ── Compile video ──────────────────────────────────────────────────────────
     print("Compiling video with sound + sad outro...")
-    gen_vid(script_file, output_path=f"../{output_name}")
+    gen_vid(script_file, output_path=f"../{output_name}", is_long=args.long)
     mode_label = 'final_long.mp4' if args.long else 'vertical_short.mp4'
     print(f"✓ Video generated → {mode_label}")
 
@@ -61,7 +61,7 @@ def main():
             from thumbnail_generator import generate_thumbnail, create_notabot_variants
             print("Generating thumbnail...")
             create_notabot_variants()
-            generate_thumbnail()   # reads # TITLE: from the script automatically
+            generate_thumbnail(is_long=args.long)   # reads title + picks cliffhanger from correct script
         except Exception as e:
             print(f"⚠ Thumbnail generation failed (non-fatal): {e}")
 

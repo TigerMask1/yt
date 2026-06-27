@@ -154,7 +154,8 @@ def generate_chat(messages, name_time, profpic_file, color):
             with Pilmoji(template) as pilmoji:
                 pilmoji.text((current_x, y_pos), message, MESSAGE_FONT_COLOR, font=message_font,
                              emoji_position_offset=(0, 8), emoji_scale_factor=2)
-            y_offset += message_font.getbbox(message)[3]
+            # Use a fixed line height for emoji-only rows (getbbox lies about emoji height)
+            y_offset += MESSAGE_DY
             continue
 
         # Tokenize for bold (**), italic (__), and mentions (@...)
@@ -211,7 +212,9 @@ def generate_chat(messages, name_time, profpic_file, color):
                                 font_used = message_font
                             pilmoji.text((current_x, y_pos), part, MESSAGE_FONT_COLOR, font=font_used,
                                          emoji_position_offset=(0, 8), emoji_scale_factor=1.2)
-                            current_x += font_used.getbbox(part)[2] - font_used.getbbox(part)[0]
+                            # Use pilmoji.getsize for accurate width (PIL getbbox gives 0 for emojis)
+                            part_w, _ = pilmoji.getsize(part, font=font_used)
+                            current_x += part_w
     return template
 
 

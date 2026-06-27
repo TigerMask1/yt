@@ -20,11 +20,14 @@ def get_animation_func(anim_type, duration):
         return lambda t: math.sin(t * 10) * 2 # Slight shake/tilt
     return None
 
-def gen_vid(filename, output_path="../vertical_short.mp4"):
+def gen_vid(filename, output_path="../vertical_short.mp4", is_long=False):
     input_folder = '../chat/'
-    
-    # 1080x1920 is standard vertical shorts resolution
-    VIDEO_W, VIDEO_H = 1080, 1920
+
+    # Long form → landscape 1920x1080 | Shorts → vertical 1080x1920
+    if is_long:
+        VIDEO_W, VIDEO_H = 1920, 1080
+    else:
+        VIDEO_W, VIDEO_H = 1080, 1920
     
     clips = []
     audio_clips = []
@@ -155,42 +158,36 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
         current_time += duration
 
     # ------------------
-    # Comment Bait Overlays
+    # Comment Bait Overlays (Shorts only — these are designed for vertical layout)
     # ------------------
-    # Like popup at 25%
-    overlay_time = current_time * 0.25
-    like_path = "../assets/like.png"
-    if os.path.exists(like_path):
-        like_clip = ImageClip(like_path).set_start(overlay_time).set_duration(2.0)
-        # Position at the top black bar
-        like_clip = like_clip.resize(width=300).set_position(('center', 150))
-        clips.append(like_clip)
-        
-    # Subscribe popup at 60%
-    sub_time = current_time * 0.60
-    sub_path = "../assets/subscribe.png"
-    if os.path.exists(sub_path):
-        sub_clip = ImageClip(sub_path).set_start(sub_time).set_duration(2.0)
-        # Position at the bottom black bar
-        sub_clip = sub_clip.resize(width=400).set_position(('center', VIDEO_H - 300))
-        clips.append(sub_clip)
-        
-    # Subliminal bait flash at 80%
-    bait_time = current_time * 0.80
-    import random
-    import glob
-    
-    # Look for bait_*.png in ../assets/
-    bait_files = glob.glob("../assets/bait_*.png")
-    if bait_files:
-        bait_path = random.choice(bait_files)
-    else:
-        bait_path = "../assets/bait_notabot.png"
-        
-    if os.path.exists(bait_path):
-        bait_clip = ImageClip(bait_path).set_start(bait_time).set_duration(0.25)
-        bait_clip = bait_clip.resize(width=400).set_position(('center', 200))
-        clips.append(bait_clip)
+    if not is_long:
+        import random
+        import glob
+
+        # Like popup at 25%
+        overlay_time = current_time * 0.25
+        like_path = "../assets/like.png"
+        if os.path.exists(like_path):
+            like_clip = ImageClip(like_path).set_start(overlay_time).set_duration(2.0)
+            like_clip = like_clip.resize(width=300).set_position(('center', 150))
+            clips.append(like_clip)
+
+        # Subscribe popup at 60%
+        sub_time = current_time * 0.60
+        sub_path = "../assets/subscribe.png"
+        if os.path.exists(sub_path):
+            sub_clip = ImageClip(sub_path).set_start(sub_time).set_duration(2.0)
+            sub_clip = sub_clip.resize(width=400).set_position(('center', VIDEO_H - 300))
+            clips.append(sub_clip)
+
+        # Subliminal bait flash at 80%
+        bait_time = current_time * 0.80
+        bait_files = glob.glob("../assets/bait_*.png")
+        bait_path  = random.choice(bait_files) if bait_files else "../assets/bait_notabot.png"
+        if os.path.exists(bait_path):
+            bait_clip = ImageClip(bait_path).set_start(bait_time).set_duration(0.25)
+            bait_clip = bait_clip.resize(width=400).set_position(('center', 200))
+            clips.append(bait_clip)
 
     if not clips:
         print("Error: No valid clips generated.")

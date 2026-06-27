@@ -38,7 +38,9 @@ FONT_DIR     = os.path.join(ASSETS_DIR, 'fonts', 'whitney')
 NOTABOT_PATH = os.path.join(ASSETS_DIR, 'profile_pictures', 'perm', 'notabot.png')
 THUMB_DIR    = os.path.join(ASSETS_DIR, 'thumbnails')
 VARIANTS_DIR = os.path.join(ASSETS_DIR, 'notabot_variants')
-SCRIPT_PATH  = os.path.join(ASSETS_DIR, 'example', 'generated_script.txt')
+SCRIPT_PATH      = os.path.join(ASSETS_DIR, 'example', 'generated_script.txt')
+LONG_SCRIPT_PATH = os.path.join(ASSETS_DIR, 'example', 'generated_long_script.txt')
+THUMB_CHAT_PATH  = os.path.join(ASSETS_DIR, 'thumbnails', 'thumb_chat_frame.png')
 
 THUMB_W, THUMB_H = 1280, 720
 
@@ -115,10 +117,13 @@ def _font(size, weight='bold'):
 
 
 # ── Read title from script ────────────────────────────────────────────────────
-def _read_title():
-    if not os.path.isfile(SCRIPT_PATH):
+def _read_title(is_long=False):
+    path = LONG_SCRIPT_PATH if is_long else SCRIPT_PATH
+    if not os.path.isfile(path):
+        path = SCRIPT_PATH  # fallback
+    if not os.path.isfile(path):
         return "He said WHAT in the server 💀"
-    with open(SCRIPT_PATH, encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         for line in f:
             if line.strip().startswith('# TITLE:'):
                 raw = line.strip().split(':', 1)[1].strip()
@@ -171,8 +176,164 @@ def _draw_avatar(img, cx, cy, r, is_bot=False):
     lh = bbox[3]-bbox[1]
     draw.text((cx - lw//2, cy - lh//2 - 2), letter, font=font_av, fill=(255,255,255))
 
+# ── Gemini-powered clickbait bubble ──────────────────────────────────────────
+def _generate_clickbait_bubble(is_long=False):
+    """
+    1. Asks Gemini to write ONE viral clickbait Discord message + which words to blur.
+    2. Renders it as a REAL Discord chat frame (identical to video frames).
+    3. Measures pixel positions of blur_words using Whitney font metrics.
+    4. Applies heavy pixelated blur to just those words on the rendered frame.
+    Returns (PIL Image, message_text) or (None, None).
+    """
+    path = LONG_SCRIPT_PATH if is_long else SCRIPT_PATH
+    if not os.path.isfile(path):
+        path = SCRIPT_PATH
+    if not os.path.isfile(path):
+        return None, None
 
-# ── Render the Discord chat panel ─────────────────────────────────────────────
+    with open(path, encoding='utf-8') as f:
+        script_text = f.read()
+
+    # ── Step 1: Ask Gemini for message + which words to blur ─────────────────
+    clickbait_msg = None
+    blur_words    = []
+
+    try:
+        import google.generativeai as genai
+        from dotenv import load_dotenv
+        load_dotenv()
+        api_key = os.environ.get('GEMINI_API_KEY')
+        if not api_key:
+            raise ValueError('GEMINI_API_KEY not set')
+
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-2.5-flash')
+
+        prompt = f"""You are creating content for a YouTube thumbnail for a Discord bot video.
+
+Write ONE short Discord message (max 8 words, lowercase, casual, real Discord vibe) that is:
+- Extremely clickbait and cliffhanger-worthy based on this script
+- Makes viewers NEED to click to find out what happened
+- Feels like a genuine shocked/dramatic reaction from a server member
+
+Also pick 1-3 words from that message that should be BLURRED/CENSORED in the thumbnail.
+These blurred words should be the most shocking or revealing part — the thing that makes people curious.
+
+Script (first 1500 chars):
+{script_text[:1500]}
+
+Respond ONLY with valid JSON in this exact format, nothing else:
+{{"message": "your message here", "blur_words": ["word1", "word2"]}}"""
+
+        resp = model.generate_content(prompt)
+        raw  = resp.text.strip().strip('```json').strip('```').strip()
+
+        import json as _json
+        parsed        = _json.loads(raw)
+        clickbait_msg = parsed.get('message', '').strip().strip('"').strip("'")
+        blur_words    = [w.lower().strip() for w in parsed.get('blur_words', [])]
+        print(f'[thumbnail] Gemini msg: "{clickbait_msg}" | blur: {blur_words}')
+
+    except Exception as e:
+        print(f'[thumbnail] Gemini failed, using fallback: {e}')
+        clickbait_msg = random.choice([
+            "bro i cannot show u the rest of this",
+            "wait they actually said WHAT in the server",
+            "this message got the whole server deleted",
+            "they banned him after THIS message",
+        ])
+        # Blur the most dramatic word
+        words      = clickbait_msg.split()
+        blur_words = [words[-2]] if len(words) >= 2 else [words[-1]]
+
+    if not clickbait_msg:
+        return None, None
+
+    # ── Step 2: Render as a REAL Discord chat frame ───────────────────────────
+    try:
+        import sys, json, datetime
+        if SCRIPT_DIR not in sys.path:
+            sys.path.insert(0, SCRIPT_DIR)
+        from generate_chat import generate_chat, MESSAGE_X, MESSAGE_Y_INIT
+
+        with open(os.path.join(ASSETS_DIR, 'profile_pictures', 'characters.json'), encoding='utf8') as cf:
+            chars = json.load(cf)
+
+        # Pick first non-bot character
+        sender = next((k for k in chars if k.upper() != 'NOTABOT'), list(chars.keys())[0])
+        profpic    = os.path.join(ASSETS_DIR, 'profile_pictures', chars[sender]['profile_pic'])
+        role_color = chars[sender]['role_color']
+        color      = tuple(role_color) if isinstance(role_color, list) else role_color
+        name_time  = [sender, '3:41']
+
+        frame = generate_chat(
+            messages=[clickbait_msg],
+            name_time=name_time,
+            profpic_file=profpic,
+            color=color,
+        )
+        frame = frame.convert('RGBA')
+
+    except Exception as e:
+        print(f'[thumbnail] Could not render chat frame: {e}')
+        return None, clickbait_msg
+
+    # ── Step 3: Measure word positions using Whitney font metrics ─────────────
+    # generate_chat renders message at x=MESSAGE_X, y=MESSAGE_Y_INIT
+    # using message_font (whitney medium, size 50)
+    try:
+        from PIL import ImageFont as _IFont
+        font_path   = os.path.join(ASSETS_DIR, 'fonts', 'whitney', 'medium.ttf')
+        msg_font    = _IFont.truetype(font_path, 50)
+        msg_x_start = MESSAGE_X   # 190
+        msg_y_start = MESSAGE_Y_INIT  # 115
+
+        draw_tmp = ImageDraw.Draw(Image.new('RGBA', (10, 10)))
+        x_cursor = msg_x_start
+
+        words_in_msg = clickbait_msg.split()
+        for i, word in enumerate(words_in_msg):
+            # measure this word + space
+            word_with_space = word + (' ' if i < len(words_in_msg) - 1 else '')
+            bbox = draw_tmp.textbbox((0, 0), word_with_space, font=msg_font)
+            word_w = bbox[2] - bbox[0]
+            word_h = bbox[3] - bbox[1]
+
+            # Check if this word should be blurred (case-insensitive, strip punctuation)
+            clean = word.lower().strip('?!.,')
+            if any(clean == bw or clean in bw or bw in clean for bw in blur_words):
+                # Blur region: x_cursor to x_cursor+word_w, at msg_y_start
+                pad = 6
+                bx0 = max(0, x_cursor - pad)
+                by0 = max(0, msg_y_start - pad)
+                bx1 = min(frame.width,  x_cursor + word_w + pad)
+                by1 = min(frame.height, msg_y_start + word_h + pad * 2)
+
+                region  = frame.crop((bx0, by0, bx1, by1))
+                # Heavy Gaussian blur
+                blurred = region.filter(ImageFilter.GaussianBlur(radius=14))
+                # Pixelate: shrink then enlarge for blocky look
+                rw, rh  = bx1 - bx0, by1 - by0
+                tiny    = blurred.resize((max(1, rw // 6), max(1, rh // 6)), Image.LANCZOS)
+                blocky  = tiny.resize((rw, rh), Image.NEAREST)
+                frame.paste(blocky, (bx0, by0))
+
+            x_cursor += word_w
+
+    except Exception as e:
+        print(f'[thumbnail] Word blur failed (non-fatal): {e}')
+        # Frame is still usable without blur
+
+    # ── Save and return ───────────────────────────────────────────────────────
+    os.makedirs(os.path.dirname(THUMB_CHAT_PATH), exist_ok=True)
+    frame.save(THUMB_CHAT_PATH)
+    print(f'[thumbnail] Clickbait frame saved -> {THUMB_CHAT_PATH}')
+    return frame, clickbait_msg
+
+
+
+
+
 def _render_discord_panel(chat_lines, panel_w, panel_h):
     """Returns a PIL Image of a fake Discord chat."""
     img  = Image.new('RGB', (panel_w, panel_h), DISCORD_BG)
@@ -239,15 +400,6 @@ def _render_discord_panel(chat_lines, panel_w, panel_h):
         blocky = tiny.resize((bx1-bx0, by1-by0), Image.NEAREST)
         img.paste(blocky, (bx0, by0))
 
-        # "🔒 tap to reveal" label
-        draw2 = ImageDraw.Draw(img)
-        font_hint = _font(14, 'medium')
-        hint = "[ tap to reveal ]"
-        hb   = draw2.textbbox((0,0), hint, font=font_hint)
-        hx   = bx0 + ((bx1-bx0) - (hb[2]-hb[0])) // 2
-        hy   = by0 + ((by1-by0) - (hb[3]-hb[1])) // 2
-        draw2.text((hx, hy), hint, font=font_hint, fill=(255, 255, 255))
-
     # Panel border
     draw.rectangle([0, 0, panel_w-1, panel_h-1], outline=(20, 20, 22), width=2)
 
@@ -275,9 +427,9 @@ def _draw_badge(draw, font_badge):
 
 
 # ── Main generator ────────────────────────────────────────────────────────────
-def generate_thumbnail(title_text=None):
+def generate_thumbnail(title_text=None, is_long=False):
     if not title_text:
-        title_text = _read_title()
+        title_text = _read_title(is_long=is_long)
 
     os.makedirs(THUMB_DIR, exist_ok=True)
 
@@ -286,54 +438,68 @@ def generate_thumbnail(title_text=None):
     draw = ImageDraw.Draw(img)
 
     # ── Fonts ─────────────────────────────────────────────────────────────────
-    font_main  = _font(88,  'bold')
+    font_main  = _font(72,  'bold')
     font_sub   = _font(34,  'medium')
     font_badge = _font(26,  'bold')
     font_label = _font(24,  'medium')
 
-    # ── Discord chat panel (right side) ───────────────────────────────────────
-    PANEL_W = 560
-    PANEL_H = 600
-    PANEL_X = THUMB_W - PANEL_W - 30
-    PANEL_Y = (THUMB_H - PANEL_H) // 2
+    # ── Clickbait Discord bubble (big, tilted, word-blurred) ─────────────────
+    bubble_img, _cb_msg = _generate_clickbait_bubble(is_long=is_long)
 
-    chat_lines = random.choice(CHAT_SCENARIOS)
-    panel_img  = _render_discord_panel(chat_lines, PANEL_W, PANEL_H)
+    if bubble_img is None:
+        # Last-resort fallback: render one of the fake scenarios
+        chat_lines = random.choice(CHAT_SCENARIOS)
+        bubble_img = _render_discord_panel(chat_lines, 700, 280)
 
-    # Soft shadow behind the panel
-    shadow = Image.new('RGBA', (THUMB_W, THUMB_H), (0, 0, 0, 0))
-    sd     = ImageDraw.Draw(shadow)
-    for i in range(30, 0, -1):
-        alpha = int(160 * (1 - i/30) ** 2)
-        sd.rounded_rectangle(
-            [PANEL_X - i, PANEL_Y - i, PANEL_X + PANEL_W + i, PANEL_Y + PANEL_H + i],
-            radius=14, fill=(0, 0, 0, alpha)
+    # ── Scale bubble to be BIG — about 67% of thumb width ────────────────────
+    BUBBLE_TARGET_W = 860
+    bw, bh = bubble_img.size
+    scale  = BUBBLE_TARGET_W / bw
+    new_bh = int(bh * scale)
+    bubble_img = bubble_img.convert('RGBA').resize((BUBBLE_TARGET_W, new_bh), Image.LANCZOS)
+
+    # ── Rotate the bubble slightly ────────────────────────────────────────────
+    # (Word blur was already applied inside _generate_clickbait_bubble)
+    TILT_DEG = -6   # negative = tilts left (top goes left)
+    rotated  = bubble_img.rotate(TILT_DEG, expand=True, resample=Image.BICUBIC)
+
+
+
+    # ── Drop shadow for the tilted bubble ────────────────────────────────────
+    rw, rh = rotated.size
+    shadow_layer = Image.new('RGBA', (THUMB_W, THUMB_H), (0, 0, 0, 0))
+    shadow_draw  = ImageDraw.Draw(shadow_layer)
+    # Position: centered horizontally, anchored to bottom of thumbnail
+    paste_x = (THUMB_W - rw) // 2
+    paste_y = THUMB_H - rh - 10   # 10px from bottom
+
+    # Draw a dark blurred rectangle as shadow
+    for si in range(20, 0, -1):
+        alpha = int(140 * (1 - si / 20) ** 1.5)
+        shadow_draw.rounded_rectangle(
+            [paste_x - si + 4, paste_y - si + 4, paste_x + rw + si + 4, paste_y + rh + si + 4],
+            radius=16, fill=(0, 0, 0, alpha)
         )
-    shadow = shadow.filter(ImageFilter.GaussianBlur(8))
-    img    = Image.alpha_composite(img.convert('RGBA'), shadow).convert('RGB')
+    shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(10))
+    img = Image.alpha_composite(img.convert('RGBA'), shadow_layer).convert('RGB')
 
-    # Paste panel
-    panel_r = panel_img.convert('RGBA')
-    # Rounded corners mask
-    mask = Image.new('L', (PANEL_W, PANEL_H), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, PANEL_W-1, PANEL_H-1], radius=12, fill=255)
-    img.paste(panel_img, (PANEL_X, PANEL_Y), mask)
+    # ── Paste the tilted bubble onto the thumbnail ────────────────────────────
+    img_rgba = img.convert('RGBA')
+    img_rgba.paste(rotated, (paste_x, paste_y), rotated)
+    img  = img_rgba.convert('RGB')
     draw = ImageDraw.Draw(img)
 
-    # Thin border around panel
-    draw.rounded_rectangle(
-        [PANEL_X, PANEL_Y, PANEL_X + PANEL_W, PANEL_Y + PANEL_H],
-        radius=12, outline=(60, 60, 70), width=2
-    )
 
-    # ── Title text (left side) ────────────────────────────────────────────────
-    TEXT_MAX_W = 620
+
+    # ── Title text (top portion — bubble owns the bottom) ────────────────────
+    TEXT_MAX_W = 900   # wider now — full width available
     TEXT_LEFT  = 44
 
     lines   = _wrap(title_text, font_main, TEXT_MAX_W)
-    LINE_H  = 105
+    LINE_H  = 100
     total_h = len(lines) * LINE_H
-    start_y = max(70, (THUMB_H - total_h) // 2 - 10)
+    # Keep title in top 50% of thumb so it sits above the bubble
+    start_y = max(30, (int(THUMB_H * 0.45) - total_h) // 2)
 
     # Pick random words in last line to blur for mystery
     blur_word_set = set()
@@ -383,11 +549,6 @@ def generate_thumbnail(title_text=None):
                     _stroke(draw, (xpos, y), word, font_main, color, sw=10)
                 xpos += draw.textbbox((0,0), word+' ', font=font_main)[2]
 
-    # ── Teaser below title ────────────────────────────────────────────────────
-    teaser   = random.choice(TEASERS)
-    teaser_y = start_y + len(lines) * LINE_H + 6
-    _stroke(draw, (TEXT_LEFT, teaser_y), teaser, font_sub,
-            fill=(200, 200, 200), stroke=(0,0,0), sw=5)
 
     # ── Drama badge top-left ──────────────────────────────────────────────────
     _draw_badge(draw, font_badge)
