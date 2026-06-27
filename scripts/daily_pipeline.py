@@ -131,10 +131,23 @@ def make_long_video():
     print("[daily] ✓ Long video pipeline complete.")
 
 
+def upload_all():
+    """Upload everything generated today to YouTube."""
+    print(f"\n{'═'*60}")
+    print(f"  UPLOAD PIPELINE — uploading to YouTube")
+    print(f"{'═'*60}")
+    ok = _run_py('upload_youtube.py', ['--all'])
+    if ok:
+        print("[daily] Upload complete.")
+    else:
+        print("[daily] Upload step failed — check credentials or quota.")
+
+
 def main():
     parser = argparse.ArgumentParser(description='Daily NOTABOT content pipeline.')
     parser.add_argument('--shorts-only', action='store_true', help='Only generate the 5 shorts')
     parser.add_argument('--long-only',   action='store_true', help='Only generate the long video')
+    parser.add_argument('--no-upload',   action='store_true', help='Skip YouTube upload step')
     args = parser.parse_args()
 
     start_time = datetime.datetime.now()
@@ -150,6 +163,9 @@ def main():
 
     if not args.shorts_only:
         make_long_video()
+
+    if not args.no_upload:
+        upload_all()
 
     elapsed = datetime.datetime.now() - start_time
     print(f"\n{'═'*60}")

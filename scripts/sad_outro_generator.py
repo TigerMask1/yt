@@ -31,12 +31,14 @@ from moviepy.editor import VideoClip, AudioFileClip, CompositeAudioClip
 # Constants
 # ---------------------------------------------------------------------------
 WIDTH, HEIGHT = 1080, 1920
-DURATION = 4.0          # slightly longer so music has time to breathe
-FPS = 24
+DISCORD_INVITE = "discord.gg/U7QD2yGFbR"
+
+DURATION = 6.0          # 6s total: 3s sad msg + 3s discord CTA
 
 FADE_IN_END    = 0.6
-FADE_OUT_START = 3.2
+FADE_OUT_START = 5.2
 
+# ── Sad messages (shown first 3 seconds) ──────────────────────────────────────
 MESSAGES = [
     "everyone says discord content\ndoesn't work in 2026...\nhelp me",
     "nobody watches these\nbut i keep making them...\nwhy",
@@ -45,7 +47,17 @@ MESSAGES = [
     "i make these every day\nand still can't afford\na better pc 😭",
 ]
 
+# ── Discord CTA lines (shown second 3 seconds) in NOTABOT voice ───────────────
+DISCORD_CTAS = [
+    f"also... add NOTABOT to ur server\nand ruin someone's day\n{DISCORD_INVITE}",
+    f"NOTABOT is real. it's live.\nadd it to ur server:\n{DISCORD_INVITE}",
+    f"want the bot that made this?\njoin the server:\n{DISCORD_INVITE}\n(ducky will cry. worth it.)",
+    f"tired of boring servers?\nlet NOTABOT fix that:\n{DISCORD_INVITE}",
+    f"if u liked this chaos\nthe server has MORE:\n{DISCORD_INVITE}",
+]
+
 FONT_SIZE = 52
+FPS       = 24
 
 # Background music candidates (from assets/sounds/mp3/) — pick softest/most emotional
 MUSIC_CANDIDATES = [
@@ -104,53 +116,86 @@ def _wrap(text, font, max_width):
 # ---------------------------------------------------------------------------
 # Frame factory
 # ---------------------------------------------------------------------------
-def _make_frame_factory(message: str):
-    font    = _find_font(FONT_SIZE)
-    wrapped = _wrap(message, font, 940)
-
-    probe = Image.new('RGBA', (WIDTH, HEIGHT), (0, 0, 0, 0))
-    draw  = ImageDraw.Draw(probe)
-    bbox  = draw.multiline_textbbox((0, 0), wrapped, font=font, align='center')
-    text_w = bbox[2] - bbox[0]
-    text_h = bbox[3] - bbox[1]
-    text_x = (WIDTH  - text_w) // 2
-    text_y = (HEIGHT - text_h) // 2
-
-    # Small "subscribe" nudge below the main text
+def _make_frame_factory(message: str, cta_text: str):
+    """Two-card outro: sad message for first half, Discord CTA for second half."""
+    font       = _find_font(FONT_SIZE)
     font_small = _find_font(30)
-    sub_text   = "-- NOTABOT  |  one sub won't hurt... right?"
-    sub_bbox   = draw.textbbox((0, 0), sub_text, font=font_small)
-    sub_x      = (WIDTH - (sub_bbox[2] - sub_bbox[0])) // 2
-    sub_y      = text_y + text_h + 50
+    font_url   = _find_font(36)
+
+    HALF = DURATION / 2.0   # 3.0s each card
+    XFADE = 0.4             # crossfade duration between cards
+
+    # ── Pre-compute card 1: sad message ───────────────────────────────────────
+    wrapped1 = _wrap(message, font, 900)
+    probe    = Image.new('RGBA', (WIDTH, HEIGHT), (0,0,0,0))
+    draw     = ImageDraw.Draw(probe)
+    bbox1    = draw.multiline_textbbox((0, 0), wrapped1, font=font, align='center')
+    tx1 = (WIDTH  - (bbox1[2]-bbox1[0])) // 2
+    ty1 = (HEIGHT - (bbox1[3]-bbox1[1])) // 2
+    sub_text = "-- NOTABOT  |  one sub won't hurt... right?"
+    sub_bbox = draw.textbbox((0,0), sub_text, font=font_small)
+    sx1 = (WIDTH - (sub_bbox[2]-sub_bbox[0])) // 2
+    sy1 = ty1 + (bbox1[3]-bbox1[1]) + 50
+
+    # ── Pre-compute card 2: Discord CTA ───────────────────────────────────────
+    # Split cta_text: last line is the URL (render in different color)
+    cta_lines = cta_text.strip().split('\n')
+    url_line  = cta_lines[-1] if len(cta_lines) > 1 else ''
+    body_lines = '\n'.join(cta_lines[:-1]) if len(cta_lines) > 1 else cta_text
+    wrapped2  = _wrap(body_lines, font, 900)
+    bbox2     = draw.multiline_textbbox((0, 0), wrapped2, font=font, align='center')
+    tx2 = (WIDTH  - (bbox2[2]-bbox2[0])) // 2
+    ty2 = (HEIGHT - (bbox2[3]-bbox2[1])) // 2 - 60
+    url_bbox  = draw.textbbox((0,0), url_line, font=font_url)
+    ux2 = (WIDTH  - (url_bbox[2]-url_bbox[0])) // 2
+    uy2 = ty2 + (bbox2[3]-bbox2[1]) + 30
+
+    def _render_card1(alpha: float) -> Image.Image:
+        a      = int(max(0,min(1,alpha)) * 255)
+        bg     = Image.new('RGBA', (WIDTH, HEIGHT), (0,0,0,255))
+        layer  = Image.new('RGBA', (WIDTH, HEIGHT), (0,0,0,0))
+        d      = ImageDraw.Draw(layer)
+        d.multiline_text((tx1, ty1), wrapped1, font=font,
+                         fill=(255,255,255,a), align='center')
+        d.text((sx1, sy1), sub_text, font=font_small, fill=(140,140,140,int(a*0.6)))
+        return Image.alpha_composite(bg, layer)
+
+    def _render_card2(alpha: float) -> Image.Image:
+        a     = int(max(0,min(1,alpha)) * 255)
+        bg    = Image.new('RGBA', (WIDTH, HEIGHT), (0,0,0,255))
+        layer = Image.new('RGBA', (WIDTH, HEIGHT), (0,0,0,0))
+        d     = ImageDraw.Draw(layer)
+        # Body text in white
+        d.multiline_text((tx2, ty2), wrapped2, font=font,
+                         fill=(255,255,255,a), align='center')
+        # URL line in Discord blurple
+        d.text((ux2, uy2), url_line, font=font_url, fill=(88,101,242,a))
+        # Faint "🤖 NOTABOT" watermark
+        d.text((40, HEIGHT-80), "🤖 NOTABOT", font=font_small, fill=(60,60,60,a))
+        return Image.alpha_composite(bg, layer)
 
     def make_frame(t: float) -> np.ndarray:
-        if t <= FADE_IN_END:
-            alpha = t / FADE_IN_END
-        elif t >= FADE_OUT_START:
-            alpha = (DURATION - t) / (DURATION - FADE_OUT_START)
+        if t < HALF - XFADE:
+            # Pure card 1
+            if t <= FADE_IN_END:
+                a = t / FADE_IN_END
+            else:
+                a = 1.0
+            img = _render_card1(a)
+        elif t < HALF + XFADE:
+            # Crossfade
+            prog = (t - (HALF - XFADE)) / (2 * XFADE)  # 0→1
+            img1 = _render_card1(1.0 - prog)
+            img2 = _render_card2(prog)
+            img  = Image.alpha_composite(img1, img2)
         else:
-            alpha = 1.0
-        alpha      = max(0.0, min(1.0, alpha))
-        text_alpha = int(alpha * 255)
-        sub_alpha  = int(alpha * 160)   # slightly dimmer for the sub line
-
-        bg         = Image.new('RGB', (WIDTH, HEIGHT), (0, 0, 0))
-        text_layer = Image.new('RGBA', (WIDTH, HEIGHT), (0, 0, 0, 0))
-        tdraw      = ImageDraw.Draw(text_layer)
-
-        # Main sad text
-        tdraw.multiline_text(
-            (text_x, text_y), wrapped,
-            font=font, fill=(255, 255, 255, text_alpha), align='center',
-        )
-        # "subscribe" nudge line
-        tdraw.text(
-            (sub_x, sub_y), sub_text,
-            font=font_small, fill=(140, 140, 140, sub_alpha),
-        )
-
-        composite = Image.alpha_composite(bg.convert('RGBA'), text_layer).convert('RGB')
-        return np.array(composite)
+            # Pure card 2
+            if t >= FADE_OUT_START:
+                a = (DURATION - t) / (DURATION - FADE_OUT_START)
+            else:
+                a = 1.0
+            img = _render_card2(a)
+        return np.array(img.convert('RGB'))
 
     return make_frame
 
@@ -159,10 +204,12 @@ def _make_frame_factory(message: str):
 # Main
 # ---------------------------------------------------------------------------
 def main():
-    message = random.choice(MESSAGES)
-    print(f'[sad_outro] Using: "{message.splitlines()[0]}..."')
+    message  = random.choice(MESSAGES)
+    cta_text = random.choice(DISCORD_CTAS)
+    print(f'[sad_outro] Sad msg: "{message.splitlines()[0]}..."')
+    print(f'[sad_outro] CTA: "{cta_text.splitlines()[0]}..."')
 
-    make_frame = _make_frame_factory(message)
+    make_frame = _make_frame_factory(message, cta_text)
     clip = VideoClip(make_frame, duration=DURATION)
 
     # ── Background music ──────────────────────────────────────────────────────

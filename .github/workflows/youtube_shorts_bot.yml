@@ -1,13 +1,28 @@
-name: Auto YouTube Shorts Bot
+name: NOTABOT YouTube Bot
 
 on:
   schedule:
-    # Runs at 00:15 UTC
-    - cron: '15 0 * * *'
-    # Runs at 15:00 and 21:00 UTC
-    - cron: '0 15,21 * * *'
+    # --- SHORTS ---
+    # Short #1 → 5:30 PM IST  (12:00 UTC)
+    - cron: '0 12 * * *'
+    # Short #2 → 8:30 PM IST  (15:00 UTC)
+    - cron: '0 15 * * *'
+    # Short #3 → 2:30 AM IST  (21:00 UTC)
+    - cron: '0 21 * * *'
+    # Short #4 → 5:30 AM IST  (00:00 UTC)
+    - cron: '0 0 * * *'
+    # Short #5 → 8:30 AM IST  (03:00 UTC)
+    - cron: '0 3 * * *'
+    # --- LONG VIDEO ---
+    # Long Video → 11:30 PM IST  (18:00 UTC) — Prime Time
+    - cron: '0 18 * * *'
+
   workflow_dispatch:
-    # Allows manual triggering
+    inputs:
+      mode:
+        description: 'Run mode: short or long'
+        required: false
+        default: 'short'
 
 jobs:
   build-and-upload:
@@ -20,34 +35,92 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.10'
 
       - name: Install System Dependencies
         run: |
-          sudo apt-get update
+          sudo apt-get update -q
           sudo apt-get install -y ffmpeg xvfb
+
       - name: Install Python Dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Generate Script using Gemini
+          pip install yt-dlp -U
+
+      # ── Determine run mode (short vs long) ──────────────────────────────────
+      # Long video runs at 13:00 UTC. Shorts run at all other times.
+      - name: Set Run Mode
+        id: mode
+        run: |
+          SCHEDULE="${{ github.event.schedule }}"
+          MANUAL="${{ github.event.inputs.mode }}"
+          if [ "$SCHEDULE" = "0 18 * * *" ] || [ "$MANUAL" = "long" ]; then
+            echo "MODE=long" >> $GITHUB_OUTPUT
+            echo "Running in LONG VIDEO mode"
+          else
+            echo "MODE=short" >> $GITHUB_OUTPUT
+            echo "Running in SHORT mode"
+          fi
+
+      # ── Download meme clips (only if not cached) ────────────────────────────
+      - name: Download Meme Clips
+        run: |
+          python scripts/download_meme_clips.py
+        continue-on-error: true  # Don't fail the whole workflow if a clip is unavailable
+
+      # ── Ensure sad outro exists ─────────────────────────────────────────────
+      - name: Generate Sad Outro (if missing)
+        run: |
+          if [ ! -f assets/outros/sad_outro.mp4 ]; then
+            python scripts/sad_outro_generator.py
+          else
+            echo "Sad outro already exists, skipping."
+          fi
+
+      # ── Generate Script ─────────────────────────────────────────────────────
+      - name: Generate Script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          python scripts/generate_script.py
-      - name: Generate Discord Video (Text-2-Beluga)
+          if [ "${{ steps.mode.outputs.MODE }}" = "long" ]; then
+            python scripts/generate_script.py --long
+          else
+            python scripts/generate_script.py
+          fi
+
+      # ── Generate Thumbnail (long video only) ────────────────────────────────
+      - name: Generate Thumbnail
+        if: steps.mode.outputs.MODE == 'long'
+        run: |
+          python scripts/thumbnail_generator.py
+
+      # ── Render Video ─────────────────────────────────────────────────────────
+      - name: Render Video
         run: |
           cd scripts
-          # Run via xvfb-run to provide a virtual display for PIL/PyQt if needed (though auto_main avoids PyQt)
-          xvfb-run python auto_main.py
+          if [ "${{ steps.mode.outputs.MODE }}" = "long" ]; then
+            xvfb-run python auto_main.py --long
+          else
+            xvfb-run python auto_main.py --no-thumbnail
+          fi
           cd ..
+
+      # ── Convert to vertical (shorts only) ───────────────────────────────────
       - name: Convert to Vertical Short
+        if: steps.mode.outputs.MODE == 'short'
         run: |
           python scripts/make_vertical.py
-      - name: Upload to YouTube Shorts
+
+      # ── Upload to YouTube ───────────────────────────────────────────────────
+      - name: Upload to YouTube
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: |
-          python scripts/upload_youtube.py
+          if [ "${{ steps.mode.outputs.MODE }}" = "long" ]; then
+            python scripts/upload_youtube.py --long
+          else
+            python scripts/upload_youtube.py
+          fi
