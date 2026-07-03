@@ -112,6 +112,7 @@ did someone say biohazard?$^2.0#!message
 can I eat it?$^1.5#!message
 
 Generate the script now using the exact format above. Do not include any other text, markdown formatting, or explanations.
+the content should have variety not just same topic again and again. be creative and make it fun so people can watch it.
 """
 
 print("Generating script with Gemini...")
