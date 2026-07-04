@@ -7,6 +7,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def get_discord_invite():
+    invite = os.environ.get("DISCORD_SERVER_INVITE", "").strip()
+    return invite if invite else "https://discord.gg/example"
+
+
 def upload_video():
     client_id = os.environ.get("YOUTUBE_CLIENT_ID")
     client_secret = os.environ.get("YOUTUBE_CLIENT_SECRET")
@@ -43,7 +49,8 @@ def upload_video():
                 if line.startswith("# TITLE:"):
                     title = line.replace("# TITLE:", "").strip()
                     break
-    description = "NOTABOT roasts another victim! 💀🔥 Subscribe for more bot roasts! \n\n#discord #memes #beluga #notabot #roast #shorts"
+    discord_invite = get_discord_invite()
+    description = f"NOTABOT roasts another victim! 💀🔥 Join the chaos on Discord: {discord_invite}\n\n#discord #memes #beluga #notabot #roast #shorts"
 
     body = {
         'snippet': {
@@ -86,45 +93,27 @@ def post_comment(youtube, video_id, title):
     # Strip #shorts and emojis from title for cleaner reference
     clean_title = title.replace("#shorts", "").replace("#Shorts", "").strip()
     
+    discord_invite = get_discord_invite()
     comment_templates = [
-        f"""🦉🔫 NOTABOT here. I have scanned this comment section and detected 0 likes and 0 subscribers.
+        f"""yo this one had me like... that sht was not wind gng.
+if you watched this far, you already know the bot is unhinged.
+join the Discord before NOTABOT starts roasting your name next: {discord_invite}
+drop a "NO WAY" if you felt that one.""",
 
-this is a threat.
+        f"""🦉 NOTABOT here.
+this was not a normal roast, this was a full server disaster.
+if you want more chaos, join the Discord and see what happens next: {discord_invite}
+comment your reaction below and tell me who should get roasted next.""",
 
-👇 like this video or i will find your search history and post it.
-👇 comment "NOTABOT IS MY OVERLORD" so i know you fear me.
-👇 subscribe or ducky writes the next script. you don't want that.
+        f"""bro this video had me locked in.
+that was way too specific, way too mean, and somehow still funny.
+come join the Discord if you want the next one before it gets posted: {discord_invite}
+comment "rip ducky" if you felt that one 💀""",
 
-also — should i expose ducky's **entire** coding history next? 💀 drop a "YES" below if you want chaos.
-
-*(ducky made me post this. i hate him. subscribe anyway.)*""",
-
-        f"""🦉 NOTABOT SYSTEM ALERT 🔫
-
-threat level: **maximum**
-
-you just watched "{clean_title}" and didn't like it?
-i've already reported you to the discord mods.
-
-✅ like = i spare you
-✅ comment your reaction = i consider mercy  
-✅ subscribe = i will NOT leak your messages
-
-what should i expose ducky for next? 
-drop ideas below 👇 the funniest one becomes the next video. no pressure. (pressure.) """,
-
-        f"""i, NOTABOT, formally demand the following:
-
-1️⃣ LIKE — i track who doesn't. i have logs.
-2️⃣ COMMENT — say "rip ducky" if you felt that roast 💀
-3️⃣ SUBSCRIBE — ducky works SO HARD on these (he doesn't. i do everything.)
-
-genuinely though 🦉 — what should happen next?
-- should ducky try to UPDATE me? 😈
-- should i LOCK ducky out of his own server?
-- other? (comment it)
-
-your vote decides the chaos. choose wisely. 🔫"""
+        f"""i scanned the comments and found a serious lack of commitment.
+so here is your reminder: this bot is still unhinged, the server is still active, and the next episode might be worse.
+join the Discord here: {discord_invite}
+comment your favorite line below and let me know if you want more."""
     ]
     
     comment_text = random.choice(comment_templates)

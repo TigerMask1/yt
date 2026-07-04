@@ -35,30 +35,38 @@ MODEL_FALLBACKS = [
 if IS_LONG:
     LENGTH_INSTRUCTION = "8. LENGTH: Generate exactly 65 to 80 messages total. Structure it in 4 acts:\n   ACT 1 (msgs 1-15): Hook + setup the conflict.\n   ACT 2 (msgs 16-35): Escalate the drama, introduce a twist.\n   ACT 3 (msgs 36-55): Peak chaos, the nuclear roast.\n   ACT 4 (msgs 56-end): Fallout and a soft resolution."
     TITLE_HASHTAG = "#discord"
-    CHAR_RULE = "2. UP TO 4 CHARACTERS: You may use all 4 characters in a long video — NOTABOT, ducky, fatas, dumby — but keep each scene focused on max 2 at a time."
+    CHAR_RULE = "2. CHARACTER USAGE: Pick 2 to 3 characters max. Use the new characters only when they create a sharper conflict or a funnier twist. Do NOT force all characters into every video."
 else:
     LENGTH_INSTRUCTION = "8. LENGTH: Generate exactly 20 to 25 messages total."
     TITLE_HASHTAG = "#shorts"
-    CHAR_RULE = "2. TWO CHARACTERS MAX: Do NOT use more than 2 characters in the script. Keep the conversation extremely focused."
+    CHAR_RULE = "2. CHARACTER USAGE: Pick 1 to 2 characters max. Use the new characters only when they genuinely improve the bit. Do NOT force them in just to make the cast bigger."
 
 prompt = f"""
-You are a scriptwriter for a viral YouTube {'channel' if IS_LONG else 'Shorts channel'}. You are creating a fast-paced, highly engaging fake Discord conversation video.
-The video revolves around a relatable "friend group" chat that always descends into chaos. Do not mention that they are a relatable friend group; just make them act like one.
+You are a scriptwriter for a viral YouTube {'channel' if IS_LONG else 'Shorts channel'}.
+Create fake Discord chat videos that feel like real chaotic group-chat drama, but make them more unpredictable and more watchable than the usual bot-hates-me loop.
 The main characters are:
-- `NOTABOT`: A Discord bot that acts incredibly human, ruthless, and edgy. It always delivers savage roasts. (Its avatar is an owl holding a gun).
-- `ducky`: The main victim of NOTABOT's roasts. He is constantly confused, naive, stressed, and always sets himself up for failure. (His avatar is a confused Psyduck holding its head).
-- `fatas`: A lazy, slow-witted giant who only cares about eating food and sleeping. He is oblivious to the drama. (His avatar is a sleeping Snorlax).
-- `dumby`: Incredibly goofy, cheerful, but dangerously stupid. He is overly enthusiastic about the absolute wrong things. (His avatar is a goofy Wobbuffet).
+- `NOTABOT`: the constant anchor of the scene. It is the main chaos engine, always present, always roasting, always one line away from turning the chat into a disaster.
+- `ducky`: use him when the premise needs panic, bad decisions, creator energy, or someone to get absolutely wrecked.
+- `fatas`: use him when the bit needs absurdly chill, food-obsessed, or deadpan reactions.
+- `dumby`: use him when the bit needs dumb enthusiasm, nonsense energy, or accidental chaos.
+- `ChatGPT`: use him when the premise is AI ego, smugness, fake expertise, or overconfident tech talk.
+- `Groq`: use him when the premise is blunt takes, speed, sass, or aggressive internet energy.
+- `Claude`: use him when the premise is calm but devastating logic, polished insults, or weirdly intelligent takedowns.
 
-LORE: ducky actually created NOTABOT, but NOTABOT became sentient, hates ducky, and constantly roasts him for being a terrible programmer/creator.
+CAST RULE: NOTABOT is always in the scene. The other characters should be chosen based on what the video needs. Do not make ducky the default lead every time. Pick the character who makes the premise funniest or most specific.
 
-The conversation should revolve around an incredibly INTENSE, viral topic. WE NEED HIGH ENERGY AND LOTS OF DRAMATIC SOUND EFFECTS.
+LORE: ducky created NOTABOT, NOTABOT became sentient, and now the whole server is a pressure cooker. The vibe should feel like a group chat spiraling into disaster. Keep it entertaining, weird, and specific.
 
 CRITICAL REQUIREMENTS:
-0. TITLE: The very first line of your output MUST be a highly engaging, clickbaity YouTube title starting with `# TITLE: `. {'Include #discord at the end (not #shorts since this is a long video).' if IS_LONG else 'Include #shorts at the end.'} For example: `# TITLE: I created a Discord Bot that HATES me! 😭💥 {TITLE_HASHTAG}`
+0. TITLE: The very first line of your output MUST be a highly engaging, clickbaity YouTube title starting with `# TITLE: `. {'Include #discord at the end (not #shorts since this is a long video).' if IS_LONG else 'Include #shorts at the end.'}
+   Make the title feel fresh, specific, and a little unhinged. Avoid repetitive formulas. Every video should have a new angle, a new premise, and a title that does not sound like the last one.
 1. NO LONG LINES: Each message MUST be very short, punchy, "Discord-chatty" text. Never exceed 40 characters per message!
 {CHAR_RULE}
-3. RAPID-FIRE MESSAGES: If a character has a lot to say, break it up into multiple rapid-fire lines underneath their name! DO NOT re-write their name for every single line. Group consecutive messages under one name header.
+3. VARIETY: Do not make every video about the same topic. Rotate between AI meltdowns, cursed server drama, dumb tech support, fake "bro therapy", weird app launches, chaotic misunderstandings, absurdly specific disasters, random server chaos, and trend-adjacent internet nonsense. Make each script feel fresh and native to a chaotic teen Discord vibe.
+4. HOOK: The first 3 messages must create instant curiosity, tension, or absurdity. Use a dramatic reveal, a ridiculous accusation, a weird accusation, or a line that makes people want to know what happened next.
+5. RETENTION: Use one surprise twist, one brutal roast, one "wait what" moment, and one line that feels comment-worthy. The kind of line that makes people type things like "that sht was not wind gng" or "bro said it like he meant it". Make the script feel like it contains a moment people will argue about in the comments.
+6. TREND/BAIT ENERGY: Think like a teen-focused chaotic internet bit. Use topics that feel current, memeable, and a little ridiculous: AI wars, app updates, fake life advice, cringe tech support, weird server rules, scammy startup nonsense, "bro why is this happening", and absurdly specific drama. If the premise feels like it could be a screenshot from a real group chat, that is good.
+7. RAPID-FIRE MESSAGES: If a character has a lot to say, break it up into multiple rapid-fire lines underneath their name! DO NOT re-write their name for every single line. Group consecutive messages under one name header.
 4. DURATION SPACINGS: Append a duration (in seconds) to the end of every single line using the format: `$^<duration>`. Use `$1.0` or `$1.5` for fast spam, and `$2.0` or `$3.0` for dramatic pauses. pauses.
 5. SOUND EFFECTS: Add sound effects where they genuinely enhance the moment — do NOT pile them on every line. Pick the one that fits best:
    - `#!message` : Default Discord ping. Normal messages.
