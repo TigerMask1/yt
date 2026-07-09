@@ -51,6 +51,18 @@
         "profile_pic": "perm/claude.png",
         "role_color": "#7cf0c2"
     },
+    "Claude BOT": {
+        "profile_pic": "perm/claude.png",
+        "role_color": "#7cf0c2"
+    },
+    "ChatGPT BOT": {
+        "profile_pic": "perm/chatgpt.png",
+        "role_color": "#70a9ff"
+    },
+    "Groq BOT": {
+        "profile_pic": "perm/groq.png",
+        "role_color": "#ff8a5b"
+    },
     "PLEASE DONT OPEN THAT FOLDER$^1.5#!message#!zoom_in_sudden": {
         "profile_pic": "perm/billy.jpeg",
         "role_color": "#0d3b69"

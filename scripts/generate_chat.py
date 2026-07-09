@@ -95,9 +95,17 @@ def generate_chat(messages, name_time, profpic_file, color):
     # Open and process profile picture
     prof_pic = Image.open(profpic_file)
     prof_pic.thumbnail((sys.maxsize, PROFPIC_WIDTH), Image.Resampling.LANCZOS)
+    profpic_w, profpic_h = prof_pic.size
     mask = Image.new("L", prof_pic.size, 0)
-    ImageDraw.Draw(mask).ellipse([(0, 0), (PROFPIC_WIDTH, PROFPIC_WIDTH)], fill=255)
-    
+    ImageDraw.Draw(mask).ellipse([(0, 0), (profpic_w, profpic_h)], fill=255)
+
+    # Draw a subtle bot/human ring around the avatar for better visual polish
+    border_w, border_h = profpic_w + 12, profpic_h + 12
+    border = Image.new("RGBA", (border_w, border_h), (0, 0, 0, 0))
+    border_draw = ImageDraw.Draw(border)
+    border_color = (88, 101, 242, 255) if name_text == "NOTABOT" or name_text.endswith(" BOT") else (74, 75, 114, 255)
+    border_draw.ellipse([(0, 0), (border_w, border_h)], fill=border_color)
+
     # Adjust vertical size for emoji-only messages
     y_increment = 0
     for msg in messages:
@@ -107,19 +115,21 @@ def generate_chat(messages, name_time, profpic_file, color):
 
     total_height = WORLD_HEIGHTS_MESSAGE[len(messages) - 1] + y_increment
     template = Image.new(mode='RGBA', size=(WORLD_WIDTH, total_height), color=WORLD_COLOR)
-    template.paste(prof_pic, PROFPIC_POSITION, mask)
     draw_template = ImageDraw.Draw(template)
+    template.paste(border, (PROFPIC_POSITION[0] - 6, PROFPIC_POSITION[1] - 6), border)
+    template.paste(prof_pic, PROFPIC_POSITION, mask)
     
     draw_template.text(NAME_POSITION, name_text, color, font=name_font)
     
-    # If it's NOTABOT, draw the APP badge
-    if name_text == "NOTABOT":
+    # If it's a bot name, draw the BOT badge or APP badge for NOTABOT
+    if name_text == "NOTABOT" or name_text.endswith(" BOT"):
         name_width = name_font.getbbox(name_text)[2]
         badge_x = NAME_POSITION[0] + name_width + 15
         
-        # Draw blue rounded rectangle for the APP badge
+        # Draw blue rounded rectangle for the APP/BOT badge
         badge_font = ImageFont.truetype(os.path.join(f'../assets/fonts/{font}', 'bold.ttf'), 35)
-        badge_text = "APP"
+        badge_text = "APP" if name_text == "NOTABOT" else "BOT"
+        badge_color = (88, 101, 242) if name_text == "NOTABOT" else (235, 157, 70)
         badge_bbox = badge_font.getbbox(badge_text)
         badge_width = badge_bbox[2] - badge_bbox[0]
         badge_height = badge_bbox[3] - badge_bbox[1]
@@ -132,7 +142,7 @@ def generate_chat(messages, name_time, profpic_file, color):
             NAME_POSITION[1] + 10 + badge_height + padding_y * 2
         ]
         
-        draw_template.rounded_rectangle(badge_box, fill=(88, 101, 242), radius=8) # Discord blurple
+        draw_template.rounded_rectangle(badge_box, fill=badge_color, radius=8)
         draw_template.text((badge_x + padding_x, NAME_POSITION[1] + 8), badge_text, (255, 255, 255), font=badge_font)
         
         # Shift the time position further right
@@ -151,15 +161,26 @@ def generate_chat(messages, name_time, profpic_file, color):
         current_x = x
 
         if is_emoji_message(message):
+            emoji_bbox = message_font.getbbox(message)
+            bubble_box = [current_x - 16, y_pos - 12, current_x + emoji_bbox[2] + 26, y_pos + emoji_bbox[3] + 18]
+            draw_template.rounded_rectangle(bubble_box, fill=(68, 72, 84, 230), radius=24)
             with Pilmoji(template) as pilmoji:
                 pilmoji.text((current_x, y_pos), message, MESSAGE_FONT_COLOR, font=message_font,
                              emoji_position_offset=(0, 8), emoji_scale_factor=2)
-            y_offset += message_font.getbbox(message)[3]
+            y_offset += emoji_bbox[3] - emoji_bbox[1] + 6
             continue
 
         # Tokenize for bold (**), italic (__), and mentions (@...)
         tokens = re.split(r'(\*\*|__)', message)
         bold = italic = False
+        # Draw message bubble behind text
+        raw_text = re.sub(r'(\*\*|__)', '', message)
+        bubble_bbox = message_font.getbbox(raw_text)
+        bubble_width = bubble_bbox[2] - bubble_bbox[0]
+        bubble_height = bubble_bbox[3] - bubble_bbox[1]
+        bubble_box = [current_x - 16, y_pos - 12, current_x + bubble_width + 28, y_pos + bubble_height + 18]
+        draw_template.rounded_rectangle(bubble_box, fill=(68, 72, 84, 230), radius=24)
+
         with Pilmoji(template) as pilmoji:
             for token in tokens:
                 if token == '**':
@@ -289,6 +310,15 @@ def get_filename():
 def save_images(lines, init_time, dt=30):
     os.makedirs('../chat', exist_ok=True)
 
+    def parse_duration(line):
+        if '$^' not in line:
+            return float(dt)
+        duration_part = line.split('$^', 1)[1].split('#!')[0].strip()
+        try:
+            return float(duration_part)
+        except Exception:
+            return float(dt)
+
     name_up_next = True
     current_time = init_time
     current_name = None
@@ -310,11 +340,12 @@ def save_images(lines, init_time, dt=30):
             continue
 
         if line.startswith("WELCOME "):
+            duration = parse_duration(line)
             joined_messages[line] = [random.choice(JOINED_TEXTS), random.randint(50, 80), current_time]
             hour = current_time.hour % 12 or 12
             image = generate_joined_message_stack(joined_messages, hour)
             image.save(f'../chat/{msg_number:03d}.png')
-            current_time += datetime.timedelta(seconds=dt)
+            current_time += datetime.timedelta(seconds=duration)
             msg_number += 1
             continue
         else:
@@ -335,7 +366,7 @@ def save_images(lines, init_time, dt=30):
             color=characters_dict[current_name]["role_color"]
         )
         image.save(f'../chat/{msg_number:03d}.png')
-        current_time += datetime.timedelta(seconds=dt)
+        current_time += datetime.timedelta(seconds=parse_duration(line))
         msg_number += 1
 
 

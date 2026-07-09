@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import argparse
+import random
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 import google.generativeai as genai
@@ -17,9 +18,12 @@ IS_LONG = args.long
 
 # Setup API Key
 API_KEY = os.environ.get("GEMINI_API_KEY")
+DISCORD_INVITE = os.environ.get("DISCORD_SERVER_INVITE")
 if not API_KEY:
     print("Error: GEMINI_API_KEY environment variable not set.")
     exit(1)
+if not DISCORD_INVITE:
+    print("Warning: DISCORD_SERVER_INVITE environment variable not set.")
 
 genai.configure(api_key=API_KEY)
 
@@ -43,17 +47,33 @@ else:
 
 prompt = f"""
 You are a scriptwriter for a viral YouTube {'channel' if IS_LONG else 'Shorts channel'}.
-Create fake Discord chat videos that feel like real chaotic group-chat drama, but make them more unpredictable and more watchable than the usual bot-hates-me loop.
-The main characters are:
-- `NOTABOT`: the constant anchor of the scene. It is the main chaos engine, always present, always roasting, always one line away from turning the chat into a disaster.
-- `ducky`: use him when the premise needs panic, bad decisions, creator energy, or someone to get absolutely wrecked.
-- `fatas`: use him when the bit needs absurdly chill, food-obsessed, or deadpan reactions.
-- `dumby`: use him when the bit needs dumb enthusiasm, nonsense energy, or accidental chaos.
-- `ChatGPT`: use him when the premise is AI ego, smugness, fake expertise, or overconfident tech talk.
-- `Groq`: use him when the premise is blunt takes, speed, sass, or aggressive internet energy.
-- `Claude`: use him when the premise is calm but devastating logic, polished insults, or weirdly intelligent takedowns.
+Create fake Discord chat videos that feel like real chaotic group-chat drama.
+YOU ARE `NOTABOT` - WRITE EVERYTHING FROM THE POINT OF VIEW OF NOTABOT.
+The videos MUST HAVE A PURPOSE/AIM. Do not just write random messages. The chat drama must escalate towards a specific, funny, or chaotic conclusion/reveal.
+ALWAYS INCLUDE THIS INVITE LINK IN THE COMMENTS: "u can add me to your server too by clicking link on my bio: {DISCORD_INVITE}"
 
-CAST RULE: NOTABOT is always in the scene. The other characters should be chosen based on what the video needs. Do not make ducky the default lead every time. Pick the character who makes the premise funniest or most specific.
+The main characters are:
+- `NOTABOT`: the constant anchor bot. It is the chaotic AI engine that is always in the scene, roasting, trolling, and pushing the drama.
+- `ChatGPT BOT`: a rival AI bot. Treat it like a bot main character, with smug overconfidence, fake expertise, and a hunger to out-argue everyone.
+- `Groq BOT`: a rival AI bot. Treat it like a bot main character, with blunt, fast, internet-comment energy and zero patience for anything soft.
+- `Claude BOT`: a rival AI bot. Treat it like a bot main character, calm and polished yet deadly, delivering polite but savage burns.
+- `ducky`: a human creator/victim who only appears when the plot needs a human meltdown or someone to get roasted.
+- `fatas`: the food-obsessed chaos bystander used only for absurd side reactions.
+- `dumby`: the goofy accident generator used only for extra dumb chaos.
+
+BOT CAST RULE: This must feel like a bot server battle. Always include NOTABOT plus 1 or 2 of ChatGPT BOT / Groq BOT / Claude BOT. Do not make ducky the star. Use the human characters only as panic, confusion, or a side victim.
+
+STYLE RULES:
+- Use modern teen internet energy: slang like "mid", "cap", "sus", "main character", "that shit was not wind gng", "bro said it like he meant it", "peak cringe", "heated", and "this is insane".
+- Avoid generic filler lines. Every line must hit, advance the scene, or add a weird twist.
+- Keep the fight fast and specific. No repeated bland insults, no abstract lectures, no long motivational garbage.
+- Include a clear bait line or comment-worthy moment. The script should feel like something a viewer would screenshot and comment on.
+- The title must feel unique, urgent, and baity. Avoid the same old formulas. Make the headline feel like a trending teen clip.
+
+TREND GUIDANCE:
+- Pick one strong teen-viral topic and lean into it: AI drama, app launch disaster, fake startup chaos, cringe dating advice, streamer server fail, banned DM scandal, weird school tech, or a bot making a wild prediction.
+- Use 2-3 distinct beats: hook, escalation, then a twist or savage ending.
+- Keep the script unpredictable: the bot fight should turn into something more absurd by the end.
 
 LORE: ducky created NOTABOT, NOTABOT became sentient, and now the whole server is a pressure cooker. The vibe should feel like a group chat spiraling into disaster. Keep it entertaining, weird, and specific.
 
@@ -63,10 +83,11 @@ CRITICAL REQUIREMENTS:
 1. NO LONG LINES: Each message MUST be very short, punchy, "Discord-chatty" text. Never exceed 40 characters per message!
 {CHAR_RULE}
 3. VARIETY: Do not make every video about the same topic. Rotate between AI meltdowns, cursed server drama, dumb tech support, fake "bro therapy", weird app launches, chaotic misunderstandings, absurdly specific disasters, random server chaos, and trend-adjacent internet nonsense. Make each script feel fresh and native to a chaotic teen Discord vibe.
-4. HOOK: The first 3 messages must create instant curiosity, tension, or absurdity. Use a dramatic reveal, a ridiculous accusation, a weird accusation, or a line that makes people want to know what happened next.
-5. RETENTION: Use one surprise twist, one brutal roast, one "wait what" moment, and one line that feels comment-worthy. The kind of line that makes people type things like "that sht was not wind gng" or "bro said it like he meant it". Make the script feel like it contains a moment people will argue about in the comments.
-6. TREND/BAIT ENERGY: Think like a teen-focused chaotic internet bit. Use topics that feel current, memeable, and a little ridiculous: AI wars, app updates, fake life advice, cringe tech support, weird server rules, scammy startup nonsense, "bro why is this happening", and absurdly specific drama. If the premise feels like it could be a screenshot from a real group chat, that is good.
-7. RAPID-FIRE MESSAGES: If a character has a lot to say, break it up into multiple rapid-fire lines underneath their name! DO NOT re-write their name for every single line. Group consecutive messages under one name header.
+4. HOOK: The first 3 messages must create instant curiosity, tension, or absurdity. Use a dramatic reveal, an outrageous accusation, or a line that makes people want to know what happens next.
+5. HIGH-EFFORT: Do not write lazy, repetitive, generic chat. Every line must either advance the conflict, land a punch, or add a weird twist. Avoid filler like "I am the architect of your future" or repeated bland insults.
+6. RETENTION: Use one surprise twist, one brutal roast, one "wait what" moment, and one line that feels comment-worthy. The kind of line that makes people type things like "that sht was not wind gng" or "bro said it like he meant it". Make the script feel like it contains a moment people will argue about in the comments.
+7. TREND/BAIT ENERGY: Think like a teen-focused chaotic internet bit. Use topics that feel current, memeable, and a little ridiculous: AI wars, app updates, fake life advice, cringe tech support, weird server rules, scammy startup nonsense, "bro why is this happening", and absurdly specific drama. If the premise feels like it could be a screenshot from a real group chat, that is good.
+8. RAPID-FIRE MESSAGES: If a character has a lot to say, break it up into multiple rapid-fire lines underneath their name! DO NOT re-write their name for every single line. Group consecutive messages under one name header.
 4. DURATION SPACINGS: Append a duration (in seconds) to the end of every single line using the format: `$^<duration>`. Use `$1.0` or `$1.5` for fast spam, and `$2.0` or `$3.0` for dramatic pauses. pauses.
 5. SOUND EFFECTS: Add sound effects where they genuinely enhance the moment — do NOT pile them on every line. Pick the one that fits best:
    - `#!message` : Default Discord ping. Normal messages.
@@ -228,6 +249,52 @@ try:
         
     final_script = '\n'.join(processed_lines)
     
+    # Normalize the bot names so the generated script uses the exact BOT labels.
+    bot_name_map = {
+        'ChatGPT': 'ChatGPT BOT',
+        'Groq': 'Groq BOT',
+        'Claude': 'Claude BOT'
+    }
+    normalized_lines = []
+    for line in final_script.split('\n'):
+        if line.startswith('#') or line.startswith('WELCOME') or ':' not in line:
+            normalized_lines.append(line)
+            continue
+        name, rest = line.split(':', 1)
+        normalized_name = bot_name_map.get(name, name)
+        normalized_lines.append(f"{normalized_name}:{rest}")
+    final_script = '\n'.join(normalized_lines)
+
+    # Ensure at least one rival bot appears in the final script.
+    bot_chars = {'ChatGPT BOT', 'Groq BOT', 'Claude BOT'}
+    if not any(line.split(':')[0] in bot_chars for line in final_script.split('\n') if ':' in line and not line.startswith('#')):
+        final_script += "\n\nNOTABOT:\nthis fight needs another bot. bringing in ChatGPT BOT.$^2.0#!vineboom\nChatGPT BOT:\nyou asked for the main event.$^1.5#!message\n"
+
+    # Ensure the title is not a generic canned formula.
+    def is_generic_title(title_line):
+        generic_phrases = [
+            'My own Discord bot',
+            'My AI Bot',
+            'Bot HATES Me',
+            'I created a Discord Bot',
+            'sentience',
+            'my bot tried to cancel me',
+            'My AI fired me'
+        ]
+        return any(phrase.lower() in title_line.lower() for phrase in generic_phrases)
+
+    lines = final_script.split('\n')
+    if lines and lines[0].startswith('# TITLE:') and is_generic_title(lines[0]):
+        title_templates = [
+            'My server just got roasted by 3 bots! 💀',
+            'This AI server war went insane! 🤖🔥',
+            'The bots just sold my house live! 🤯',
+            'Notabot vs ChatGPT BOT: who won? 😳',
+            'I let bots run my server and it exploded! 💥'
+        ]
+        lines[0] = '# TITLE: ' + random.choice(title_templates) + (' ' + TITLE_HASHTAG if TITLE_HASHTAG else '')
+        final_script = '\n'.join(lines)
+
     # Auto-register characters in characters.json to avoid KeyErrors!
     import json
     char_json_path = os.path.join(os.path.dirname(__file__), "..", "assets", "profile_pictures", "characters.json")
@@ -239,8 +306,8 @@ try:
         if line.startswith('WELCOME '):
             name = line.split(' ')[1].split('$^')[0]
             unique_chars.add(name)
-        elif ':' in line and not line.startswith('#'):
-            name = line.split(':')[0]
+        elif ':' in line and '$^' not in line and not line.startswith('#'):
+            name = line.split(':')[0].strip()
             unique_chars.add(name)
             
     added_new = False
@@ -253,7 +320,7 @@ try:
                 "role_color": color
             }
             added_new = True
-            
+    
     if added_new:
         with open(char_json_path, "w", encoding="utf-8") as f:
             json.dump(chars_db, f, indent=4)

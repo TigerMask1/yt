@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from generate_chat import save_images
 from compile_images import gen_vid
+from script_validator import validate_script_lines
 
 def main():
     parser = argparse.ArgumentParser(description='Generate a Discord video (short or long).')
@@ -44,6 +45,13 @@ def main():
     print(f"Reading script: {script_file}")
     with open(script_file, encoding='utf8') as f:
         lines = f.read().splitlines()
+
+    errors = validate_script_lines(lines)
+    if errors:
+        print("Script validation failed. Fix the script and try again.")
+        for err in errors:
+            print(f"  - {err}")
+        sys.exit(1)
 
     current_time = datetime.datetime.now()
     print(f"Generating chat images{'  (long mode)' if args.long else ''}...")

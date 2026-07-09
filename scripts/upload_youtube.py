@@ -33,17 +33,27 @@ def upload_video():
 
     youtube = build('youtube', 'v3', credentials=creds)
 
-    video_path = os.path.join(os.path.dirname(__file__), "..", "vertical_short.mp4")
-    if not os.path.exists(video_path):
-        print(f"File not found: {video_path}")
+    video_candidates = [
+        os.path.join(os.path.dirname(__file__), "..", "vertical_short.mp4"),
+        os.path.join(os.path.dirname(__file__), "..", "final_long.mp4")
+    ]
+    existing_videos = [path for path in video_candidates if os.path.exists(path)]
+    if not existing_videos:
+        print("No generated video file found. Generate a short or long video first.")
         exit(1)
+    video_path = max(existing_videos, key=os.path.getmtime)
 
-    print("Uploading to YouTube Shorts...")
+    print(f"Uploading to YouTube video: {os.path.basename(video_path)}...")
     
     # Dynamic title extraction from the generated script
-    title = "OMG IS THIS EVEN A BOT?! 🤖🔥 #shorts" # fallback
-    script_path = os.path.join(os.path.dirname(__file__), "..", "assets", "example", "generated_script.txt")
-    if os.path.exists(script_path):
+    title = "OMG IS THIS EVEN A BOT?! 🤖🔥"  # fallback
+    script_files = [
+        os.path.join(os.path.dirname(__file__), "..", "assets", "example", "generated_script.txt"),
+        os.path.join(os.path.dirname(__file__), "..", "assets", "example", "generated_long_script.txt")
+    ]
+    existing_scripts = [path for path in script_files if os.path.exists(path)]
+    if existing_scripts:
+        script_path = max(existing_scripts, key=os.path.getmtime)
         with open(script_path, "r", encoding="utf-8") as f:
             for line in f:
                 if line.startswith("# TITLE:"):

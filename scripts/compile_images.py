@@ -31,6 +31,15 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
     current_time = 0.0
     image_idx = 1
     
+    def make_chat_clip(img_path, start_time, duration):
+        clip = ImageClip(img_path).set_start(start_time).set_duration(duration)
+        clip = clip.resize(width=VIDEO_W)
+        clip = clip.on_color(size=(VIDEO_W, VIDEO_H), color=(8, 10, 15), col_opacity=1)
+        fade_len = min(0.2, duration * 0.25)
+        if fade_len > 0:
+            clip = clip.fx(vfx.fadein, fade_len).fx(vfx.fadeout, fade_len)
+        return clip.set_position(('center', 'center'))
+
     with open(filename, encoding="utf8") as f:
         lines = f.read().splitlines()
         
@@ -50,15 +59,12 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             clip_path = f"../assets/clips/{clip_name}.mp4"
             if os.path.exists(clip_path):
                 vid_clip = VideoFileClip(clip_path)
-                # Play fully (full time clip)
                 vid_duration = vid_clip.duration
                 vid_clip = vid_clip.subclip(0, vid_duration).set_start(current_time)
-                # Resize to fit width
-                vid_clip = vid_clip.resize(width=VIDEO_W).set_position('center')
-                # Extract audio from clip so it isn't overwritten by the final composite audio
+                vid_clip = vid_clip.resize(width=VIDEO_W)
+                vid_clip = vid_clip.on_color(size=(VIDEO_W, VIDEO_H), color=(0, 0, 0), col_opacity=1).set_position('center')
                 if vid_clip.audio is not None:
                     audio_clips.append(vid_clip.audio.set_start(current_time))
-                
                 clips.append(vid_clip)
                 current_time += vid_duration
             else:
@@ -75,18 +81,7 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             
             img_path = f"{input_folder}{image_idx:03d}.png"
             if os.path.exists(img_path):
-                clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
-                
-                # Crop width to remove excess right grey space (chat is usually on the left)
-                clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
-                
-                # Scale up to width 1080
-                clip = clip.resize(width=VIDEO_W)
-                
-                # Position vertically (centered)
-                clip = clip.set_position(('center', 'center'))
-                
-                clips.append(clip)
+                clips.append(make_chat_clip(img_path, current_time, duration))
             image_idx += 1
             
             if "#!" in line:
@@ -115,14 +110,8 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
         
         img_path = f"{input_folder}{image_idx:03d}.png"
         if os.path.exists(img_path):
-            clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
-            
-            # Smart Crop: Crop out the empty right space
-            clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
-            
-            # Scale up to fill the 1080 width
-            clip = clip.resize(width=VIDEO_W)
-            
+            clip = make_chat_clip(img_path, current_time, duration)
+
             # Animations
             anim_func = None
             anim_type = None
@@ -134,9 +123,7 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
                     
             if anim_func and anim_type and anim_type.startswith("zoom"):
                 clip = clip.resize(anim_func)
-                
-            clip = clip.set_position(('center', 'center'))
-            
+
             clips.append(clip)
         image_idx += 1
         

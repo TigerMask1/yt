@@ -128,6 +128,50 @@ def _read_title():
     return "He said WHAT in the server 💀"
 
 
+def _get_latest_script_path():
+    candidates = [
+        SCRIPT_PATH,
+        os.path.join(ASSETS_DIR, 'example', 'generated_long_script.txt')
+    ]
+    existing = [path for path in candidates if os.path.isfile(path)]
+    return max(existing, key=os.path.getmtime) if existing else None
+
+
+def _strip_script_text(line):
+    if '$^' in line:
+        return line.split('$^', 1)[0].strip()
+    return line.strip()
+
+
+def _extract_thumbnail_chat_lines(script_path, max_lines=5):
+    if not os.path.isfile(script_path):
+        return None
+    chat_lines = []
+    with open(script_path, encoding='utf-8') as f:
+        for line in f:
+            raw = line.strip()
+            if not raw or raw.startswith('#') or raw.startswith('WELCOME'):
+                continue
+            if ':' not in raw:
+                continue
+            name, message = raw.split(':', 1)
+            text = _strip_script_text(message)
+            if not text:
+                continue
+            is_bot = name == 'NOTABOT' or name.endswith(' BOT')
+            chat_lines.append((name, is_bot, text, False))
+            if len(chat_lines) >= max_lines:
+                break
+
+    if not chat_lines:
+        return None
+
+    blur_index = min(len(chat_lines) - 1, 2)
+    blurred_text = ''.join('█' if ch != ' ' else ' ' for ch in chat_lines[blur_index][2])
+    chat_lines[blur_index] = (chat_lines[blur_index][0], chat_lines[blur_index][1], blurred_text, True)
+    return chat_lines
+
+
 # ── Word wrap ─────────────────────────────────────────────────────────────────
 def _wrap(text, font, max_w):
     dummy = Image.new('RGB', (1, 1))
@@ -297,7 +341,10 @@ def generate_thumbnail(title_text=None):
     PANEL_X = THUMB_W - PANEL_W - 30
     PANEL_Y = (THUMB_H - PANEL_H) // 2
 
-    chat_lines = random.choice(CHAT_SCENARIOS)
+    script_path = _get_latest_script_path()
+    chat_lines = _extract_thumbnail_chat_lines(script_path)
+    if chat_lines is None:
+        chat_lines = random.choice(CHAT_SCENARIOS)
     panel_img  = _render_discord_panel(chat_lines, PANEL_W, PANEL_H)
 
     # Soft shadow behind the panel

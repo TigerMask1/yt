@@ -30,6 +30,7 @@ jobs:
       - name: Generate Script using Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DISCORD_SERVER_INVITE: ${{ secrets.DISCORD_SERVER_INVITE }}
         run: |
           python scripts/generate_script.py
 
