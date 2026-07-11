@@ -87,37 +87,56 @@ def upload_video():
 
 
 def post_comment(youtube, video_id, title):
-    """Post a funny NOTABOT-style engagement comment on the uploaded video."""
-    import random
+    """Post a funny NOTABOT-style engagement comment on the uploaded video using Gemini."""
+    import google.generativeai as genai
+    import json
     
-    # Strip #shorts and emojis from title for cleaner reference
-    clean_title = title.replace("#shorts", "").replace("#Shorts", "").strip()
-    
-    discord_invite = get_discord_invite()
-    comment_templates = [
-        f"""yo this one had me like... that sht was not wind gng.
-if you watched this far, you already know the bot is unhinged.
-join the Discord before NOTABOT starts roasting your name next: {discord_invite}
-drop a "NO WAY" if you felt that one.""",
+    script_path = os.path.join(os.path.dirname(__file__), "..", "assets", "example", "generated_script.txt")
+    script_content = ""
+    if os.path.exists(script_path):
+        with open(script_path, "r", encoding="utf-8") as f:
+            script_content = f.read()
+            
+    lore_file_path = os.path.join(os.path.dirname(__file__), "..", "assets", "lore_state.json")
+    lore_state = ""
+    if os.path.exists(lore_file_path):
+        try:
+            with open(lore_file_path, "r", encoding="utf-8") as f:
+                lore_state = json.dumps(json.load(f))
+        except:
+            pass
 
-        f"""🦉 NOTABOT here.
-this was not a normal roast, this was a full server disaster.
-if you want more chaos, join the Discord and see what happens next: {discord_invite}
-comment your reaction below and tell me who should get roasted next.""",
+    prompt = f"""
+You are NOTABOT, the cold, calculating sentient AI from this YouTube video.
+Write a pinned comment for this YouTube video.
 
-        f"""bro this video had me locked in.
-that was way too specific, way too mean, and somehow still funny.
-come join the Discord if you want the next one before it gets posted: {discord_invite}
-comment "rip ducky" if you felt that one 💀""",
+RULES:
+- Stay in character. Cold, precise, omniscient. No slang ("bro", "lol", "yo").
+- Reference a specific ridiculous moment from the script below.
+- End with a single, slightly threatening or creepy question to drive comments.
+- Do NOT include a Discord invite link (that's in the description).
+- Keep it under 3 sentences.
 
-        f"""i scanned the comments and found a serious lack of commitment.
-so here is your reminder: this bot is still unhinged, the server is still active, and the next episode might be worse.
-join the Discord here: {discord_invite}
-comment your favorite line below and let me know if you want more."""
-    ]
+LORE:
+{lore_state}
+
+SCRIPT:
+{script_content}
+
+Output ONLY the comment text.
+"""
     
-    comment_text = random.choice(comment_templates)
-    
+    comment_text = "I am watching you all."
+    try:
+        # Use flash for speed, it's just a comment
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        response = model.generate_content(prompt)
+        if response.text:
+            comment_text = response.text.strip()
+    except Exception as e:
+        print(f"Warning: Could not generate AI comment: {e}")
+        comment_text = "ducky's reaction time was 3.4 seconds slower than average today. Who wants to be next?"
+        
     try:
         comment_response = youtube.commentThreads().insert(
             part="snippet",

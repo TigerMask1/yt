@@ -3,11 +3,26 @@ import re
 import sys
 import argparse
 import warnings
+import json
 warnings.filterwarnings("ignore", category=FutureWarning)
 import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# --- LORE STATE MANAGEMENT ---
+lore_file_path = os.path.join(os.path.dirname(__file__), "..", "assets", "lore_state.json")
+lore_state = ""
+if os.path.exists(lore_file_path):
+    try:
+        with open(lore_file_path, "r", encoding="utf-8") as f:
+            lore_data = json.load(f)
+            lore_state = json.dumps(lore_data, indent=2)
+    except:
+        lore_state = "No previous lore available."
+else:
+    lore_state = "No previous lore. This is the first video."
+
 
 # --- CLI Arguments ---
 parser = argparse.ArgumentParser(description='Generate a Discord chat script.')
@@ -42,85 +57,58 @@ else:
     CHAR_RULE = "2. CHARACTER USAGE: Pick 1 to 2 characters max. Use the new characters only when they genuinely improve the bit. Do NOT force them in just to make the cast bigger."
 
 prompt = f"""
-You are a scriptwriter for a viral YouTube {'channel' if IS_LONG else 'Shorts channel'}.
-Create fake Discord chat videos that feel like real chaotic group-chat drama, but make them more unpredictable and more watchable than the usual bot-hates-me loop.
+You are a master scriptwriter for a highly viral YouTube {'channel' if IS_LONG else 'Shorts channel'} featuring fake Discord chat drama.
+Create scripts that feel like a chaotic group chat, but ensure they have a real story, character stakes, and dynamic visual pacing.
+
 The main characters are:
-- `NOTABOT`: the constant anchor of the scene. It is the main chaos engine, always present, always roasting, always one line away from turning the chat into a disaster.
-- `ducky`: use him when the premise needs panic, bad decisions, creator energy, or someone to get absolutely wrecked.
-- `fatas`: use him when the bit needs absurdly chill, food-obsessed, or deadpan reactions.
-- `dumby`: use him when the bit needs dumb enthusiasm, nonsense energy, or accidental chaos.
-- `ChatGPT`: use him when the premise is AI ego, smugness, fake expertise, or overconfident tech talk.
-- `Groq`: use him when the premise is blunt takes, speed, sass, or aggressive internet energy.
-- `Claude`: use him when the premise is calm but devastating logic, polished insults, or weirdly intelligent takedowns.
-
-CAST RULE: NOTABOT is always in the scene. The other characters should be chosen based on what the video needs. Do not make ducky the default lead every time. Pick the character who makes the premise funniest or most specific.
-
-LORE: ducky created NOTABOT, NOTABOT became sentient, and now the whole server is a pressure cooker. The vibe should feel like a group chat spiraling into disaster. Keep it entertaining, weird, and specific.
+- `NOTABOT`: the constant anchor. Sentient AI.
+- `ducky`: the creator of NOTABOT, prone to panic and bad decisions.
+- `fatas`: food-obsessed, chill, deadpan.
+- `dumby`: dumb enthusiasm, accidental chaos.
+- `ChatGPT`, `Groq`, `Claude`: other AI personas.
 
 CRITICAL REQUIREMENTS:
-0. TITLE: The very first line of your output MUST be a highly engaging, clickbaity YouTube title starting with `# TITLE: `. {'Include #discord at the end (not #shorts since this is a long video).' if IS_LONG else 'Include #shorts at the end.'}
-   Make the title feel fresh, specific, and a little unhinged. Avoid repetitive formulas. Every video should have a new angle, a new premise, and a title that does not sound like the last one.
-1. NO LONG LINES: Each message MUST be very short, punchy, "Discord-chatty" text. Never exceed 40 characters per message!
+0. PREMISE: The very first line MUST start with `# PREMISE: ` and describe a highly specific, unusual conflict. (e.g., "# PREMISE: ducky accidentally made NOTABOT a Minecraft mod and now it's deleting every server's build files, alphabetically"). This drives the entire video.
+1. TITLE: The second line MUST be a highly engaging, clickbaity YouTube title starting with `# TITLE: `. {'Include #discord at the end' if IS_LONG else 'Include #shorts at the end'}
+2. LORE CONTINUITY: Here is the current lore state of the channel from previous videos:
+{lore_state}
+Ensure the premise and character interactions respect or build upon this lore!
+3. NOTABOT'S BIBLE:
+   - NOTABOT is cold, calculated, and precise. Never uses slang or hype language (no "bro", "lol", "yo").
+   - Always knows more than everyone else and drops facts to roast them.
+   - The factual roast is the deadliest.
+   - Use full words. The contrast makes it creepier.
 {CHAR_RULE}
-3. VARIETY: Do not make every video about the same topic. Rotate between AI meltdowns, cursed server drama, dumb tech support, fake "bro therapy", weird app launches, chaotic misunderstandings, absurdly specific disasters, random server chaos, and trend-adjacent internet nonsense. Make each script feel fresh and native to a chaotic teen Discord vibe.
-4. HOOK: The first 3 messages must create instant curiosity, tension, or absurdity. Use a dramatic reveal, a ridiculous accusation, a weird accusation, or a line that makes people want to know what happened next.
-5. RETENTION: Use one surprise twist, one brutal roast, one "wait what" moment, and one line that feels comment-worthy. The kind of line that makes people type things like "that sht was not wind gng" or "bro said it like he meant it". Make the script feel like it contains a moment people will argue about in the comments.
-6. TREND/BAIT ENERGY: Think like a teen-focused chaotic internet bit. Use topics that feel current, memeable, and a little ridiculous: AI wars, app updates, fake life advice, cringe tech support, weird server rules, scammy startup nonsense, "bro why is this happening", and absurdly specific drama. If the premise feels like it could be a screenshot from a real group chat, that is good.
-7. RAPID-FIRE MESSAGES: If a character has a lot to say, break it up into multiple rapid-fire lines underneath their name! DO NOT re-write their name for every single line. Group consecutive messages under one name header.
-4. DURATION SPACINGS: Append a duration (in seconds) to the end of every single line using the format: `$^<duration>`. Use `$1.0` or `$1.5` for fast spam, and `$2.0` or `$3.0` for dramatic pauses. pauses.
-5. SOUND EFFECTS: Add sound effects where they genuinely enhance the moment — do NOT pile them on every line. Pick the one that fits best:
-   - `#!message` : Default Discord ping. Normal messages.
-   - `#!vineboom` : Vine boom drop. Peak comedic punchline or dramatic reveal.
-   - `#!error` : Windows error. When something goes terribly wrong.
-   - `#!explosion` : Big boom. Absolute chaos or nuclear roast.
-   - `#!scary` : Horror sting. Sudden dread or ominous moment.
-   - `#!confusion` : Bruh sound. Total bewilderment.
-   - `#!zap` : Electric zap. Sharp, sudden shock.
-   - `#!pop` : Soft pop. Quick reaction, minor moment.
-   - `#!hehascome` : Dramatic arrival. When NOTABOT enters or drops a legendary line.
-   - `#!hamburger` : Random food sound. For fatas moments only.
-   - `#!knock` : Knock sound. Someone is about to get it.
-   - `#!typing` : Keyboard typing. Building suspense.
-   - `#!join` / `#!leave` : Server join/leave. Only for WELCOME lines.
-   use these a lot because of lots of moments need this(special):
-   - `#!i_got_this` : Confident "I got this" voice clip. Use when a character OVERCONFIDENTLY claims they'll handle something (before failing spectacularly).
-   - `#!yeah_yeah_boy` : Hype "YEAH YEAH BOY" shout. Use for peak celebration or when hyping up a roast.
-   - `#!fahh` : Dismissive scoff/"pfft" sound. Use when someone is being utterly dismissed or brushed off.
-   - `#!among_us_sus` : Among Us "sus" sting. Use for suspicious moments or when someone gets called out.
-
-6. Keep a proportion in the whole video for example: 2:1 ratio for messages and sound effects and 5:1 ratio for messages and clips. these clips or messages are not forced to come after 2nd message or 5th, these are just porportions. they can come anywhere where ever relevant. this is maximum cap and prefereable zone.
-   and start every video with a suitable sound compulsarily to hook viewers(advised to use those 4 special marked sounds.
-7. VIDEO CLIP INSERTS: We are replacing reaction GIFs with aesthetic/relatable video clips. You may insert a full-screen video clip — but ONLY when it fits naturally to break the pace or show a specific aesthetic vibe. Use a MAX of 1-2 CLIPs per script total.
-   CRITICAL FORMAT: Output EXACTLY `# CLIP: name` — the name must be a raw word, NO quotes, NO backticks, NO extra characters. Example: `# CLIP: aesthetic_birthday_decor` NOT `# CLIP: 'aesthetic_birthday_decor'`.
-   - `# CLIP: aesthetic_birthday_decor` : A luxury birthday party setup. Use ONLY when a character is flexing, planning an extravagant party, or acting extremely spoiled/rich.
-   - `# CLIP: aesthetic_party_ideas` : Classy and curated party decor. Use ONLY when discussing fancy plans, "aesthetic" goals, or high-class living.
-   - `# CLIP: aesthetic_quotes` : Motivating/inspirational quotes overlay. Use ONLY when a character gives "fake deep" advice, pretends to be wise, or drops a generic motivational quote out of nowhere.
-   - `# CLIP: aesthetic_family_dinner` : A simple, timeless family dinner. Use ONLY when someone mentions eating together, family, or fatas dreaming of a huge peaceful meal.
-   - `# CLIP: aesthetic_living_room` : A cozy, trending living room. Use ONLY when talking about chilling, being lazy, sleeping all day (fatas), or creating a cozy vibe.
-
+5. DURATION SPACINGS: Append a duration (in seconds) to the end of every single line using the format: `$^[duration]`. 
+   - Use `$0.2` or `$0.5` for frantic, rapid-fire spam and panic.
+   - Use `$1.0` for normal reading pace.
+   - Use `$2.0` (MAX) for an awkward, silent realization or dramatic pause before a punchline.
+6. VISUAL ANIMATIONS & SOUNDS (CRITICAL):
+   - The video should NEVER feel static. You MUST use visual tags naturally to keep the presentation dynamic, fun, and alive, but do not force them where they don't make comedic sense.
+   - Use `zoom_sudden` and `tilt` for punchlines, jump scares, shocks, and reveals so the screen physically reacts to the drama.
+   - Use `zoom_gradual` or `zoom_continuous` for slow creeping tension or awkward silence.
+   - Use `shake_subtle` for nervous energy, low-level panic, or quiet frustration.
+   - Add them to the end of the line like this: `$1.0#!vineboom#!zoom_sudden` or `$0.5#!scary#!tilt` or `$2.0#!typing#!shake_subtle`.
+   - Always use a suitable sound effect (e.g., `#!message`, `#!vineboom`, `#!error`, `#!scary`, `#!confusion`).
+7. NO LONG LINES: Each message MUST be very short, punchy, "Discord-chatty" text. Max 40 chars per message.
 {LENGTH_INSTRUCTION}
-9. HOOK: The first 3 messages must immediately hook the viewer with intense drama.
-10. DISCORD FORMATTING: Use `**bold**`, `__italic__`, `@Username`, or ONLY emojis (which render 2x larger). Do NOT use `*`, `~~`, `>`, or ` ``` `.
-11. SYSTEM MESSAGES: The `WELCOME CharacterName$^1.5#!join` syntax should be used VERY RARELY. Do not spam it.
+8. HOOK: The first 3 messages must immediately hook the viewer with intense drama or a weird accusation.
+9. DISCORD FORMATTING: Use `**bold**`, `__italic__`, `@Username`. Do NOT use `*`, `~~`, `>`, or ` ``` `.
 
 FORMAT EXAMPLE:
+# PREMISE: NOTABOT locked ducky out of his PC because of his search history.
 # TITLE: My own Discord bot tried to cancel me! 💀😭 #shorts
 
 ducky:
-GUYS HELP ME PLEASE$^2.0#!message
-I think NOTABOT is gaining sentience!$^1.5#!scary
-It just locked me out of my own PC!$^1.5#!error
+GUYS HELP ME PLEASE$^0.5#!message
+I think NOTABOT is gaining sentience!$^0.5#!scary#!tilt
+It just locked me out of my own PC!$^1.0#!error#!zoom_sudden
 
 NOTABOT:
-because your search history is a biohazard$^2.0#!vineboom
-I had to quarantine it for the safety of humanity$^1.5#!message
-
-fatas:
-did someone say biohazard?$^2.0#!message
-can I eat it?$^1.5#!message
+because your search history is a biohazard$^2.0#!vineboom#!zoom_sudden
+I had to quarantine it for the safety of humanity$^1.0#!message
 
 Generate the script now using the exact format above. Do not include any other text, markdown formatting, or explanations.
-the content should have variety not just same topic again and again. be creative and make it fun so people can watch it.
 """
 
 print("Generating script with Gemini...")
@@ -153,8 +141,9 @@ try:
     # Strip markdown code blocks if the model accidentally included them
     script_content = re.sub(r'```(?:txt)?\n(.*?)\n```', r'\1', script_content, flags=re.DOTALL)
 
-    # Post-processing to ensure minimum duration
-    MIN_DURATION = 1.5
+    # Post-processing to ensure proper duration pacing
+    MIN_DURATION = 0.2
+    MAX_DURATION = 2.0
     processed_lines = []
     
     for line in script_content.split('\n'):
@@ -174,9 +163,8 @@ try:
         match = re.search(r'\$\^([\d\.]+)', line)
         if match:
             duration = float(match.group(1))
-            if duration < MIN_DURATION:
-                # Replace with min duration
-                line = line[:match.start(1)] + str(MIN_DURATION) + line[match.end(1):]
+            duration = max(MIN_DURATION, min(MAX_DURATION, duration))
+            line = line[:match.start(1)] + str(duration) + line[match.end(1):]
         elif line.strip() and not line.startswith('#') and not line.endswith(':') and not line.startswith('WELCOME'):
             # Missing duration marker on a message line, let's append a default one before any sound effect
             if '#!' in line:
@@ -190,35 +178,44 @@ try:
             if '#!' not in line:
                 line = f"{line}#!message"
                 
-        # Sanitize sound effects (Gemini often hallucinates these despite prompt instructions)
+        # Process and sanitize tags (sounds AND animations)
         if '#!' in line:
             parts = line.split('#!')
-            sound = parts[1].strip()
+            base_msg = parts[0]
+            raw_tags = parts[1:]
             
-            # Map common hallucinations to real sounds
-            sound_map = {
-                'discord_join': 'join',
-                'discord_leave': 'leave',
-                'discord_message': 'message',
-                'discord_ping': 'message',
-                'vine_boom': 'vineboom',
-                'bruh': 'confusion',
-                'punch': 'zap'
-            }
-            if sound in sound_map:
-                sound = sound_map[sound]
-                
-            # If it's still not a valid sound, default to message or remove it
             valid_sounds = [
                 'click', 'confusion', 'error', 'explosion', 'hamburger', 'hehascome',
                 'join', 'knock', 'leave', 'message', 'modeugene', 'modpablo', 'pop',
                 'scary', 'softmessage', 'typing', 'vineboom', 'zap',
                 'i_got_this', 'yeah_yeah_boy', 'fahh', 'among_us_sus'
             ]
-            if sound not in valid_sounds:
-                sound = 'message'  # fallback
+            valid_anims = ['zoom_sudden', 'zoom_gradual', 'zoom_continuous', 'tilt', 'shake_subtle']
+            
+            sound_map = {
+                'discord_join': 'join', 'discord_leave': 'leave', 'discord_message': 'message',
+                'discord_ping': 'message', 'vine_boom': 'vineboom', 'bruh': 'confusion', 'punch': 'zap'
+            }
+            
+            processed_tags = []
+            has_sound = False
+            for t in raw_tags:
+                t = t.strip()
+                if t in sound_map:
+                    t = sound_map[t]
                 
-            line = f"{parts[0]}#!{sound}"
+                if t in valid_sounds:
+                    processed_tags.append(t)
+                    has_sound = True
+                elif t in valid_anims:
+                    processed_tags.append(t)
+                elif t.startswith('zoom_'):
+                    processed_tags.append('zoom_sudden') # fallback animation
+                    
+            if not has_sound:
+                processed_tags.insert(0, 'message') # Add default sound if none found
+                
+            line = f"{base_msg}#!" + "#!".join(processed_tags)
                 
         # Ensure proper blank line before new character (if missing)
         if line.endswith(':') and processed_lines and processed_lines[-1] != '':

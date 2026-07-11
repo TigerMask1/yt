@@ -1,24 +1,81 @@
 import os
 import math
+from PIL import ImageFont, ImageDraw
 
 # Pillow 10+ removed Image.ANTIALIAS — patch it back so moviepy's resize works.
 from PIL import Image as _PIL_Image
 if not hasattr(_PIL_Image, 'ANTIALIAS'):
     _PIL_Image.ANTIALIAS = _PIL_Image.LANCZOS
 
-from moviepy.editor import ImageClip, VideoFileClip, AudioFileClip, CompositeAudioClip, CompositeVideoClip, concatenate_videoclips, vfx
+from moviepy.editor import ImageClip, VideoFileClip, AudioFileClip, CompositeAudioClip, CompositeVideoClip, concatenate_videoclips
 
+def ease_in_out_sine(t, b, c, d):
+    return -c / 2 * (math.cos(math.pi * t / d) - 1) + b
+
+def ease_out_cubic(t, b, c, d):
+    t /= d
+    t -= 1
+    return c * (t * t * t + 1) + b
 
 def get_animation_func(anim_type, duration):
     if anim_type == "zoom_gradual":
-        return lambda t: 1 + 0.1 * (t / duration)
+        return lambda t: ease_in_out_sine(t, 1.0, 0.15, duration)
     elif anim_type == "zoom_sudden":
-        return lambda t: 1.2 if t > 0.1 else 1.0
+        # Snappy zoom using ease out
+        return lambda t: ease_out_cubic(min(t, 0.3), 1.0, 0.2, 0.3)
     elif anim_type == "zoom_continuous":
         return lambda t: 1 + 0.2 * (t / duration)
     elif anim_type == "tilt":
-        return lambda t: math.sin(t * 10) * 2 # Slight shake/tilt
+        return lambda t: math.sin(t * 15) * 3 # Faster, sharper shake
+    elif anim_type == "shake_subtle":
+        return lambda t: math.sin(t * 8) * 1.5 # Slow, nervous wobble
     return None
+
+def create_title_image(text, width=900):
+    """Generates an image of the title text using Pillow to avoid ImageMagick dependency."""
+    img_path = "../chat/title_hook.png"
+    # Create a transparent image
+    img = _PIL_Image.new('RGBA', (width, 300), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    
+    font_path = "../assets/fonts/whitney/bold.ttf"
+    if not os.path.exists(font_path):
+        return None
+        
+    font = ImageFont.truetype(font_path, 65)
+    
+    # Simple text wrapping
+    words = text.split()
+    lines = []
+    current_line = []
+    for word in words:
+        current_line.append(word)
+        bbox = draw.textbbox((0,0), " ".join(current_line), font=font)
+        if bbox[2] - bbox[0] > width:
+            current_line.pop()
+            lines.append(" ".join(current_line))
+            current_line = [word]
+    if current_line:
+        lines.append(" ".join(current_line))
+        
+    y = 0
+    for line in lines:
+        bbox = draw.textbbox((0,0), line, font=font)
+        text_w = bbox[2] - bbox[0]
+        text_h = bbox[3] - bbox[1]
+        x = (width - text_w) / 2
+        # Outline
+        stroke = 4
+        draw.text((x-stroke, y), line, font=font, fill='black')
+        draw.text((x+stroke, y), line, font=font, fill='black')
+        draw.text((x, y-stroke), line, font=font, fill='black')
+        draw.text((x, y+stroke), line, font=font, fill='black')
+        # Text
+        draw.text((x, y), line, font=font, fill='white')
+        y += text_h + 10
+        
+    img.save(img_path)
+    return img_path
 
 def gen_vid(filename, output_path="../vertical_short.mp4"):
     input_folder = '../chat/'
@@ -30,10 +87,19 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
     audio_clips = []
     current_time = 0.0
     image_idx = 1
+    title_hook = ""
     
     with open(filename, encoding="utf8") as f:
         lines = f.read().splitlines()
         
+    for line in lines:
+        if line.startswith("# TITLE:"):
+            title_hook = line.replace("# TITLE:", "").replace("#shorts", "").replace("#discord", "").strip()
+            break
+            
+    # Base scale for chat (make it much larger than before, ~1.4x scale)
+    CHAT_SCALE_WIDTH = int(VIDEO_W * 1.4)
+            
     name_up_next = True
     for line in lines:
         line = line.strip()
@@ -41,28 +107,28 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             name_up_next = True
             continue
             
-        if line.startswith("# TITLE:"):
+        if line.startswith("# TITLE:") or line.startswith("# PREMISE:"):
             continue
             
         if line.startswith("# CLIP:"):
-            # Strip quotes, backticks, and whitespace Gemini sometimes wraps around the name
+            # Strip quotes, backticks, and whitespace
             clip_name = line.split(":", 1)[1].strip().strip("'`\"").strip()
             clip_path = f"../assets/clips/{clip_name}.mp4"
             if os.path.exists(clip_path):
                 vid_clip = VideoFileClip(clip_path)
-                # Play fully (full time clip)
                 vid_duration = vid_clip.duration
                 vid_clip = vid_clip.subclip(0, vid_duration).set_start(current_time)
-                # Resize to fit width
-                vid_clip = vid_clip.resize(width=VIDEO_W).set_position('center')
-                # Extract audio from clip so it isn't overwritten by the final composite audio
+                # Crop center to 9:16
+                vid_w, vid_h = vid_clip.size
+                if vid_w/vid_h > VIDEO_W/VIDEO_H:
+                    new_w = int(vid_h * (VIDEO_W/VIDEO_H))
+                    vid_clip = vid_clip.crop(x_center=vid_w/2, y_center=vid_h/2, width=new_w, height=vid_h)
+                vid_clip = vid_clip.resize(height=VIDEO_H).set_position('center')
+                
                 if vid_clip.audio is not None:
                     audio_clips.append(vid_clip.audio.set_start(current_time))
-                
                 clips.append(vid_clip)
                 current_time += vid_duration
-            else:
-                print(f"  [CLIP SKIP] '{clip_name}.mp4' not found — skipping this CLIP insert.")
             continue
             
         if line.startswith("#"):
@@ -76,16 +142,11 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             img_path = f"{input_folder}{image_idx:03d}.png"
             if os.path.exists(img_path):
                 clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
-                
-                # Crop width to remove excess right grey space (chat is usually on the left)
                 clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
+                clip = clip.resize(width=CHAT_SCALE_WIDTH)
                 
-                # Scale up to width 1080
-                clip = clip.resize(width=VIDEO_W)
-                
-                # Position vertically (centered)
-                clip = clip.set_position(('center', 'center'))
-                
+                # Dynamic positioning: Pin the bottom of the image to the bottom-middle of the screen
+                clip = clip.set_position(lambda t, c=clip: ('center', VIDEO_H * 0.75 - c.h))
                 clips.append(clip)
             image_idx += 1
             
@@ -96,7 +157,6 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
                     snd_path = f"../assets/sounds/mp3/{tag}.mp3"
                     if os.path.exists(snd_path):
                         audio_clips.append(AudioFileClip(snd_path).set_start(current_time))
-            
             current_time += duration
             continue
             
@@ -104,7 +164,6 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             name_up_next = False
             continue
             
-        # Standard message line
         parts = line.split('$^')
         if len(parts) < 2:
             continue
@@ -116,95 +175,58 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
         img_path = f"{input_folder}{image_idx:03d}.png"
         if os.path.exists(img_path):
             clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
-            
-            # Smart Crop: Crop out the empty right space
             clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
+            clip = clip.resize(width=CHAT_SCALE_WIDTH)
             
-            # Scale up to fill the 1080 width
-            clip = clip.resize(width=VIDEO_W)
-            
-            # Animations
             anim_func = None
             anim_type = None
             for tag in tags:
                 tag = tag.strip()
-                if tag.startswith("zoom_") or tag == "tilt":
+                if tag.startswith("zoom_") or tag in ["tilt", "shake_subtle"]:
                     anim_type = tag
                     anim_func = get_animation_func(tag, duration)
                     
             if anim_func and anim_type and anim_type.startswith("zoom"):
                 clip = clip.resize(anim_func)
                 
-            clip = clip.set_position(('center', 'center'))
-            
+            # Dynamic camera: Pin the bottom of the active chat block to lower-center
+            clip = clip.set_position(lambda t, c=clip: ('center', VIDEO_H * 0.75 - c.h))
             clips.append(clip)
+            
         image_idx += 1
         
-        # Audio
         default_snd = '../assets/sounds/mp3/message.mp3'
         if os.path.exists(default_snd):
             audio_clips.append(AudioFileClip(default_snd).set_start(current_time))
             
         for tag in tags:
             tag = tag.strip()
-            if not tag.startswith("zoom_") and tag != "tilt" and tag != "message":
+            if not tag.startswith("zoom_") and tag not in ["tilt", "shake_subtle", "message"]:
                 snd_path = f"../assets/sounds/mp3/{tag}.mp3"
                 if os.path.exists(snd_path):
                     audio_clips.append(AudioFileClip(snd_path).set_start(current_time))
         
         current_time += duration
 
-    # ------------------
-    # Comment Bait Overlays
-    # ------------------
-    # Like popup at 25%
-    overlay_time = current_time * 0.25
-    like_path = "../assets/like.png"
-    if os.path.exists(like_path):
-        like_clip = ImageClip(like_path).set_start(overlay_time).set_duration(2.0)
-        # Position at the top black bar
-        like_clip = like_clip.resize(width=300).set_position(('center', 150))
-        clips.append(like_clip)
-        
-    # Subscribe popup at 60%
-    sub_time = current_time * 0.60
-    sub_path = "../assets/subscribe.png"
-    if os.path.exists(sub_path):
-        sub_clip = ImageClip(sub_path).set_start(sub_time).set_duration(2.0)
-        # Position at the bottom black bar
-        sub_clip = sub_clip.resize(width=400).set_position(('center', VIDEO_H - 300))
-        clips.append(sub_clip)
-        
-    # Subliminal bait flash at 80%
-    bait_time = current_time * 0.80
-    import random
-    import glob
-    
-    # Look for bait_*.png in ../assets/
-    bait_files = glob.glob("../assets/bait_*.png")
-    if bait_files:
-        bait_path = random.choice(bait_files)
-    else:
-        bait_path = "../assets/bait_notabot.png"
-        
-    if os.path.exists(bait_path):
-        bait_clip = ImageClip(bait_path).set_start(bait_time).set_duration(0.25)
-        bait_clip = bait_clip.resize(width=400).set_position(('center', 200))
-        clips.append(bait_clip)
+    # Add persistent Title Hook at the top
+    if title_hook:
+        title_img_path = create_title_image(title_hook)
+        if title_img_path and os.path.exists(title_img_path):
+            title_clip = ImageClip(title_img_path).set_start(0).set_duration(current_time)
+            title_clip = title_clip.set_position(('center', 150))
+            clips.append(title_clip)
 
     if not clips:
         print("Error: No valid clips generated.")
         return
 
-    # Compile main content
-    final_video = CompositeVideoClip(clips, size=(VIDEO_W, VIDEO_H))
+    final_video = CompositeVideoClip(clips, size=(VIDEO_W, VIDEO_H), bg_color=(15, 15, 15))
     
     if audio_clips:
         final_audio = CompositeAudioClip(audio_clips)
         final_audio = final_audio.set_duration(current_time)
         final_video = final_video.set_audio(final_audio)
 
-    # ── Append sad outro ──────────────────────────────────────────────────────
     outro_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'outros', 'sad_outro.mp4')
     if os.path.exists(outro_path):
         try:
@@ -213,11 +235,8 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             print('[compile] OK Sad outro appended.')
         except Exception as e:
             print(f'[compile] WARNING Could not append outro: {e}')
-    else:
-        print(f'[compile] INFO No sad_outro.mp4 found - skipping. Run sad_outro_generator.py first.')
 
-    # Output to specified path
-    final_video.write_videofile(output_path, fps=24, codec="libx264", audio_codec="aac")
+    final_video.write_videofile(output_path, fps=30, codec="libx264", audio_codec="aac")
 
 if __name__ == "__main__":
     gen_vid("../assets/example/generated_script.txt")
