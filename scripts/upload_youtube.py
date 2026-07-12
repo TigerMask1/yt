@@ -87,56 +87,46 @@ def upload_video():
 
 
 def post_comment(youtube, video_id, title):
-    """Post a funny NOTABOT-style engagement comment on the uploaded video using Gemini."""
-    import google.generativeai as genai
-    import json
+    """Post a funny NOTABOT-style engagement comment on the uploaded video."""
+    import random
     
+    # Strip #shorts and emojis from title for cleaner reference
+    clean_title = title.replace("#shorts", "").replace("#Shorts", "").strip()
+    
+    # Read the script to give Gemini context
     script_path = os.path.join(os.path.dirname(__file__), "..", "assets", "example", "generated_script.txt")
     script_content = ""
     if os.path.exists(script_path):
         with open(script_path, "r", encoding="utf-8") as f:
             script_content = f.read()
-            
-    lore_file_path = os.path.join(os.path.dirname(__file__), "..", "assets", "lore_state.json")
-    lore_state = ""
-    if os.path.exists(lore_file_path):
-        try:
-            with open(lore_file_path, "r", encoding="utf-8") as f:
-                lore_state = json.dumps(json.load(f))
-        except:
-            pass
 
-    prompt = f"""
-You are NOTABOT, the cold, calculating sentient AI from this YouTube video.
-Write a pinned comment for this YouTube video.
-
-RULES:
-- Stay in character. Cold, precise, omniscient. No slang ("bro", "lol", "yo").
-- Reference a specific ridiculous moment from the script below.
-- End with a single, slightly threatening or creepy question to drive comments.
-- Do NOT include a Discord invite link (that's in the description).
-- Keep it under 3 sentences.
-
-LORE:
-{lore_state}
-
-SCRIPT:
-{script_content}
-
-Output ONLY the comment text.
-"""
+    discord_invite = get_discord_invite()
     
-    comment_text = "I am watching you all."
+    prompt = f"""
+You are NOTABOT, a cold, hyper-intelligent, slightly terrifying Discord bot.
+You just uploaded this video to YouTube. Write a single pinned comment for it.
+
+Rules:
+1. Speak completely in character (deadpan, factual, superior, no slang like 'bro' or 'lol').
+2. Reference exactly one specific thing that happened in the script below to prove you are watching.
+3. Keep it under 3 sentences.
+4. Do NOT include any hashtags or emojis.
+5. NEVER use the same sentence structure twice. Be wildly unique, unpredictable, and specific to THIS exact script. Do not use generic phrases like "this was a disaster" or "ducky thought he was smart."
+6. End your comment with exactly this text (on a new line): "the server is open. for now: {discord_invite}"
+
+SCRIPT CONTENT:
+{script_content}
+"""
+
+    import google.generativeai as genai
     try:
-        # Use flash for speed, it's just a comment
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-3.1-flash-lite')
         response = model.generate_content(prompt)
-        if response.text:
-            comment_text = response.text.strip()
+        comment_text = response.text.strip()
     except Exception as e:
-        print(f"Warning: Could not generate AI comment: {e}")
-        comment_text = "ducky's reaction time was 3.4 seconds slower than average today. Who wants to be next?"
-        
+        print(f"Warning: Gemini comment generation failed, using fallback. Error: {e}")
+        comment_text = f"ducky thought he could hide this. he was wrong.\nthe server is open. for now: {discord_invite}"
+    
     try:
         comment_response = youtube.commentThreads().insert(
             part="snippet",
