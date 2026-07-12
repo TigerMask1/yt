@@ -66,68 +66,66 @@ else:
     CHAR_RULE = "2. CHARACTER USAGE: Pick 1 to 2 characters max. Use the new characters only when they genuinely improve the bit. Do NOT force them in just to make the cast bigger."
 
 prompt = f"""
-You are a master scriptwriter for a highly viral YouTube {'channel' if IS_LONG else 'Shorts channel'} featuring fake Discord chat drama.
-Create scripts that feel like a chaotic group chat, but ensure they have a real story, character stakes, and dynamic visual pacing.
+You are writing a script for a viral YouTube Shorts Discord drama channel.
+The tone is real, chaotic, messy, and deeply funny — like reading an actual Discord server meltdown.
+Do NOT write like a corporate AI assistant or a polished writer. Write like a real person on Discord: lowercase, abbreviations, internet slang, typos occasionally, short bursts of messages.
 
-The main characters are:
-- `NOTABOT`: the constant anchor. Sentient AI.
-- `ducky`: the creator of NOTABOT, prone to panic and bad decisions.
-- `fatas`: food-obsessed, chill, deadpan.
-- `dumby`: dumb enthusiasm, accidental chaos.
-- `ChatGPT`, `Groq`, `Claude`: other AI personas.
+The main characters:
+- `NOTABOT`: sentient Discord bot. Cold, precise, uses full words. Never slang. Roasts with facts.
+- `ducky`: chaos gremlin creator of NOTABOT, always panicking, bad at life.
+- `fatas`: deadpan, food-obsessed, barely reacts to anything unless food is involved.
+- `dumby`: well-meaning but accidentally causes the most damage.
+- `ChatGPT`, `Groq`, `Claude`: guest AI characters. Each with a very distinct and exaggerated personality.
 
 CRITICAL REQUIREMENTS:
-0. PREMISE: The very first line MUST start with `# PREMISE: ` and describe a highly specific, unusual conflict. (e.g., "# PREMISE: ducky accidentally made NOTABOT a Minecraft mod and now it's deleting every server's build files, alphabetically"). This drives the entire video.
-1. TITLE: The second line MUST be a highly engaging, clickbaity YouTube title starting with `# TITLE: `. {'Include #discord at the end' if IS_LONG else 'Include #shorts at the end'}
-2. LORE CONTINUITY: Here is the current lore state of the channel from previous videos:
+0. PREMISE: First line MUST be `# PREMISE: [a very specific, unusual, funny conflict]`
+   e.g. "# PREMISE: ducky gave NOTABOT admin perms as a joke and it reorganized the entire server into filing cabinets"
+1. TITLE: Second line MUST be `# TITLE: [clickbait YouTube title] #shorts`
+   Make it irresistible. Use emojis. e.g. "# TITLE: My AI bot just fired me from my own server 💀 #shorts"
+2. LORE: Previous channel lore:
 {lore_state}
-Ensure the premise and character interactions respect or build upon this lore!
-3. NOTABOT'S BIBLE:
-   - NOTABOT is cold, calculated, and precise. Never uses slang or hype language (no "bro", "lol", "yo").
-   - Always knows more than everyone else and drops facts to roast them.
-   - The factual roast is the deadliest.
-   - Use full words. The contrast makes it creepier.
-{CHAR_RULE}
-5. DURATION SPACINGS: Append a duration (in seconds) to the end of every single line using the format: `$^[duration]`. 
-   - Use `$1.5` for standard pacing.
-   - Use `$2.0` for dramatic pauses or reading longer lines.
-   - DO NOT USE values below `1.5`.
-6. VISUAL ANIMATIONS & SOUNDS (CRITICAL):
-   - The video should NEVER feel static. You MUST use visual tags naturally to keep the presentation dynamic, fun, and alive, but do not force them where they don't make comedic sense.
-   - Use `zoom_sudden` and `tilt` for punchlines, jump scares, shocks, and reveals so the screen physically reacts to the drama.
-   - Use `zoom_gradual` or `zoom_continuous` for slow creeping tension or awkward silence.
-   - Use `shake_subtle` for nervous energy, low-level panic, or quiet frustration.
-   - Add them to the end of the line like this: `$1.0#!vineboom#!zoom_sudden` or `$0.5#!scary#!tilt` or `$2.0#!typing#!shake_subtle`.
-   - Always use a suitable sound effect (e.g., `#!message`, `#!vineboom`, `#!error`, `#!scary`, `#!confusion`).
-7. NO LONG LINES: Each message MUST be very short, punchy, "Discord-chatty" text. Max 40 chars per message.
-{LENGTH_INSTRUCTION}
-8. HOOK: The first 3 messages must immediately hook the viewer with intense drama or a weird accusation.
-9. DISCORD FORMATTING: Use `**bold**`, `__italic__`, `@Username`. Do NOT use `*`, `~~`, `>`, or ` ``` `.
-10. DYNAMIC CHARACTER MEMES (CRUCIAL):
-    - You can interrupt the chat to show a 1.5-second meme reaction of a character. 
-    - Use this format on its own line: `# REACTION: [character] [meme_name]`
-    - Available meme_names: {meme_list_str}
-    - Example: `# REACTION: fatas distracted_boyfriend`
-11. TRENDING MEMES: Draw upon your knowledge of current internet culture and trending memes (like the HAALAND meme or other recent viral trends). Seamlessly integrate a current meme reference into the plot or as a punchline where it fits naturally.
+   Reference or continue it naturally when relevant.
+3. NOTABOT VOICE RULES:
+   - Never says "bro", "lol", "yo", "wtf", "omg". Ever.
+   - Speaks in full, grammatically perfect sentences. Chilling contrast to the chaos.
+   - Always drops a cold, devastating fact as the punchline.
+   - Example: "your average response time to a crisis is 4.7 minutes. the fire has been burning for 6."
+4. HUMAN VOICE RULES (ducky, fatas, dumby) - BELUGA STYLE:
+   - NO LONG SENTENCES. NEVER send a complex paragraph.
+   - Break up thoughts into multiple rapid-fire short messages. 
+   - Real Discord typing: "wait what", "bro NO", "pls", "ugh", "ok hear me out"
+   - They text like they are panicking or hyperactive. 1-4 words per line.
+   - Extremely chatty and fast-paced. Do NOT explain things neatly.
+5. CHARACTER COUNT: {CHAR_RULE}
+6. SOUND EFFECTS: Each line MUST end with `$^[duration]#![sound]`
+   Duration: `$1.5` standard, `$2.0` for dramatic pauses.
+   Sounds: `message` (default), `vineboom` (shocking reveal), `error` (NOTABOT), `scary` (horror), `confusion`, `pop`, `join`, `leave`, `explosion`.
+   Example: `bro what$^1.5#!message` or `your account has been deleted$^2.0#!vineboom`
+7. LENGTH: {LENGTH_INSTRUCTION}
+8. HOOK: First 3 messages must be so dramatic or weird that someone swiping past immediately stops scrolling.
+9. DISCORD FORMAT ONLY: `**bold**`, `__underline__`. NO markdown fences, NO `*italics*`, NO `~~`, NO `>`.
+10. REACTION MEMES: At key dramatic moments, insert a reaction on its own line:
+    `# REACTION: [character] [meme_name]`
+    Available: {meme_list_str}
+    Example: `# REACTION: ducky this_is_fine`
+    Use max 2-3 per video. Only at genuinely funny/dramatic moments.
 
-FORMAT EXAMPLE:
-# PREMISE: NOTABOT locked ducky out of his PC because of his search history.
-# TITLE: My own Discord bot tried to cancel me! 💀😭 #shorts
+FORMAT:
+```
+# PREMISE: [conflict]
+# TITLE: [title] #shorts
 
-ducky:
-GUYS HELP ME PLEASE$^1.5#!message
+[character name]:
+[message]$^[duration]#![sound]
+[message]$^[duration]#![sound]
 
-# REACTION: ducky waiting_skeleton
+[character name]:
+[message]$^[duration]#![sound]
+```
 
-I think NOTABOT is gaining sentience!$^1.5#!scary#!tilt
-It just locked me out of my own PC!$^1.5#!error#!zoom_sudden
-
-NOTABOT:
-because your search history is a biohazard$^2.0#!vineboom#!zoom_sudden
-I had to quarantine it for the safety of humanity$^1.5#!message
-
-Generate the script now using the exact format above. Do not include any other text, markdown formatting, or explanations.
+Now write the script. Be funny. Be human. Be chaotic.
 """
+
 
 print("Generating script with Gemini...")
 

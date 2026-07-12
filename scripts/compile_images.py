@@ -1,5 +1,4 @@
 import os
-import math
 from PIL import ImageFont, ImageDraw
 
 # Pillow 10+ removed Image.ANTIALIAS — patch it back so moviepy's resize works.
@@ -8,28 +7,6 @@ if not hasattr(_PIL_Image, 'ANTIALIAS'):
     _PIL_Image.ANTIALIAS = _PIL_Image.LANCZOS
 
 from moviepy.editor import ImageClip, VideoFileClip, AudioFileClip, CompositeAudioClip, CompositeVideoClip, concatenate_videoclips
-
-def ease_in_out_sine(t, b, c, d):
-    return -c / 2 * (math.cos(math.pi * t / d) - 1) + b
-
-def ease_out_cubic(t, b, c, d):
-    t /= d
-    t -= 1
-    return c * (t * t * t + 1) + b
-
-def get_animation_func(anim_type, duration):
-    if anim_type == "zoom_gradual":
-        return lambda t: ease_in_out_sine(t, 1.0, 0.15, duration)
-    elif anim_type == "zoom_sudden":
-        # Snappy zoom using ease out
-        return lambda t: ease_out_cubic(min(t, 0.3), 1.0, 0.2, 0.3)
-    elif anim_type == "zoom_continuous":
-        return lambda t: 1 + 0.2 * (t / duration)
-    elif anim_type == "tilt":
-        return lambda t: math.sin(t * 15) * 3 # Faster, sharper shake
-    elif anim_type == "shake_subtle":
-        return lambda t: math.sin(t * 8) * 1.5 # Slow, nervous wobble
-    return None
 
 def create_title_image(text, width=900):
     """Generates an image of the title text using Pillow to avoid ImageMagick dependency."""
@@ -138,51 +115,68 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
                 meme_matches = glob.glob(f"../assets/meme_templates/{meme_name}*.jpg")
                 if meme_matches:
                     meme_path = meme_matches[0]
-                    import json
+                    import json as _json
                     char_db_path = "../assets/profile_pictures/characters.json"
                     pfp_path = None
+                    pfp_x, pfp_y, pfp_size = None, None, 130
                     if os.path.exists(char_db_path):
                         with open(char_db_path, "r", encoding="utf-8") as f:
-                            chars_db = json.load(f)
+                            chars_db = _json.load(f)
                             if character in chars_db:
                                 pfp_path = os.path.join("../assets/profile_pictures", chars_db[character]["profile_pic"])
                     
+                    # Load placement config per meme if it exists
+                    meme_cfg_path = "../assets/meme_templates/placements.json"
+                    if os.path.exists(meme_cfg_path):
+                        with open(meme_cfg_path, "r", encoding="utf-8") as f:
+                            placements = _json.load(f)
+                            meme_key = os.path.basename(meme_path)
+                            if meme_key in placements:
+                                cfg = placements[meme_key]
+                                pfp_x = cfg.get("pfp_x")
+                                pfp_y = cfg.get("pfp_y")
+                                pfp_size = cfg.get("pfp_size", 130)
+
                     if pfp_path and os.path.exists(pfp_path):
                         from PIL import Image as PIL_Image
                         bg = PIL_Image.open(meme_path).convert("RGBA")
                         pfp = PIL_Image.open(pfp_path).convert("RGBA")
                         
-                        target_size = int(bg.height / 3)
-                        pfp = pfp.resize((target_size, target_size), PIL_Image.LANCZOS)
+                        # Resize PFP to configured size
+                        pfp = pfp.resize((pfp_size, pfp_size), PIL_Image.LANCZOS)
                         
-                        # Add a simple border to the PFP to make it pop
-                        from PIL import ImageDraw
-                        bordered = PIL_Image.new('RGBA', (target_size+10, target_size+10), (255, 255, 255, 255))
-                        bordered.paste(pfp, (5, 5), pfp if pfp.mode == 'RGBA' else None)
+                        # White border
+                        from PIL import ImageDraw as _IDraw
+                        border = 6
+                        bordered = PIL_Image.new('RGBA', (pfp_size + border*2, pfp_size + border*2), (255,255,255,255))
+                        bordered.paste(pfp, (border, border), pfp)
                         pfp = bordered
                         
-                        paste_x = int((bg.width - pfp.width) / 2)
-                        paste_y = int(bg.height / 4)
-                        bg.paste(pfp, (paste_x, paste_y), pfp)
+                        # Use configured coords or fallback to bottom-right corner
+                        if pfp_x is None:
+                            pfp_x = bg.width - pfp.width - 10
+                        if pfp_y is None:
+                            pfp_y = bg.height - pfp.height - 10
+                        
+                        bg.paste(pfp, (pfp_x, pfp_y), pfp)
                         
                         temp_path = f"../chat/temp_meme_{image_idx}.png"
                         bg.save(temp_path)
                         
-                        clip = ImageClip(temp_path).set_start(current_time).set_duration(1.5)
-                        
-                        vid_w, vid_h = clip.size
-                        if vid_w/vid_h > VIDEO_W/VIDEO_H:
-                            new_w = int(vid_h * (VIDEO_W/VIDEO_H))
-                            clip = clip.crop(x_center=vid_w/2, y_center=vid_h/2, width=new_w, height=vid_h)
-                        clip = clip.resize(height=VIDEO_H).set_position('center')
-                        
-                        clip = clip.resize(lambda t: 1 + 0.1 * (t / 1.5))
+                        # --- FIT meme fully inside video without cropping ---
+                        clip = ImageClip(temp_path).set_start(current_time).set_duration(2.0)
+                        mw, mh = clip.size
+                        scale = min(VIDEO_W / mw, VIDEO_H / mh)
+                        new_w = int(mw * scale)
+                        new_h = int(mh * scale)
+                        clip = clip.resize((new_w, new_h))
+                        clip = clip.set_position('center')
                         clips.append(clip)
                         
                         snd_path = '../assets/sounds/mp3/vineboom.mp3'
                         if os.path.exists(snd_path):
                             audio_clips.append(AudioFileClip(snd_path).set_start(current_time))
-                        current_time += 1.5
+                        current_time += 2.0
                         image_idx += 1
             continue
             
@@ -229,39 +223,53 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
         
         img_path = f"{input_folder}{image_idx:03d}.png"
         if os.path.exists(img_path):
-            clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
-            clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
-            clip = clip.resize(width=VIDEO_W)
-            
-            anim_func = None
-            anim_type = None
-            for tag in tags:
-                tag = tag.strip()
-                if tag.startswith("zoom_") or tag in ["tilt", "shake_subtle"]:
-                    anim_type = tag
-                    anim_func = get_animation_func(tag, duration)
+            # Dynamic Cropping (Beluga style): Crop to the actual text content bounding box
+            # so short messages scale up to be huge on screen.
+            from PIL import Image as _PIL_chk, ImageChops
+            try:
+                with _PIL_chk.open(img_path) as _im:
+                    # Convert to grayscale and find bounding box of anything not black (bg is 15,15,15 usually)
+                    bg = _PIL_chk.new(_im.mode, _im.size, (15, 15, 15))
+                    diff = ImageChops.difference(_im, bg)
+                    diff = ImageChops.add(diff, diff, 2.0, -100)
+                    bbox = diff.getbbox()
                     
-            if anim_func and anim_type and anim_type.startswith("zoom"):
-                clip = clip.resize(anim_func)
+                if bbox:
+                    # Add some padding around the text
+                    pad = 20
+                    x1 = max(0, bbox[0] - pad)
+                    y1 = max(0, bbox[1] - pad)
+                    x2 = min(_im.width, bbox[2] + pad)
+                    y2 = min(_im.height, bbox[3] + pad)
+                    
+                    clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
+                    clip = clip.crop(x1=x1, y1=y1, x2=x2, y2=y2)
+                else:
+                    clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
+                    clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
+            except Exception as e:
+                print(f"Crop error on {img_path}: {e}")
+                clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
+                clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
                 
-            # Reverted dynamic positioning back to center
+            clip = clip.resize(width=VIDEO_W)
             clip = clip.set_position(('center', 'center'))
             clips.append(clip)
             
-        image_idx += 1
-        
-        default_snd = '../assets/sounds/mp3/message.mp3'
-        if os.path.exists(default_snd):
-            audio_clips.append(AudioFileClip(default_snd).set_start(current_time))
+            # Fire sound effects from #! tags (ignore animation tags)
+            ANIM_TAGS = {"zoom_sudden", "zoom_gradual", "zoom_continuous", "tilt", "shake_subtle"}
+            for tag in tags:
+                tag = tag.strip()
+                if tag and tag not in ANIM_TAGS:
+                    snd_path = f"../assets/sounds/mp3/{tag}.mp3"
+                    if os.path.exists(snd_path):
+                        audio_clips.append(AudioFileClip(snd_path).set_start(current_time))
             
-        for tag in tags:
-            tag = tag.strip()
-            if not tag.startswith("zoom_") and tag not in ["tilt", "shake_subtle", "message"]:
-                snd_path = f"../assets/sounds/mp3/{tag}.mp3"
-                if os.path.exists(snd_path):
-                    audio_clips.append(AudioFileClip(snd_path).set_start(current_time))
-        
-        current_time += duration
+            current_time += duration
+        else:
+            current_time += duration
+            
+        image_idx += 1
 
     # Add persistent Title Hook at the top
     if title_hook:
