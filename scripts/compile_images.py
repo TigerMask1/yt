@@ -97,8 +97,7 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             title_hook = line.replace("# TITLE:", "").replace("#shorts", "").replace("#discord", "").strip()
             break
             
-    # Base scale for chat (make it much larger than before, ~1.4x scale)
-    CHAT_SCALE_WIDTH = int(VIDEO_W * 1.4)
+    # Removed 1.4x scale per user request, defaulting back to VIDEO_W
             
     name_up_next = True
     for line in lines:
@@ -143,10 +142,10 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             if os.path.exists(img_path):
                 clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
                 clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
-                clip = clip.resize(width=CHAT_SCALE_WIDTH)
+                clip = clip.resize(width=VIDEO_W)
                 
-                # Dynamic positioning: Pin the bottom of the image to the bottom-middle of the screen
-                clip = clip.set_position(lambda t, c=clip: ('center', VIDEO_H * 0.75 - c.h))
+                # Reverted dynamic positioning back to center
+                clip = clip.set_position(('center', 'center'))
                 clips.append(clip)
             image_idx += 1
             
@@ -176,7 +175,7 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
         if os.path.exists(img_path):
             clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
             clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
-            clip = clip.resize(width=CHAT_SCALE_WIDTH)
+            clip = clip.resize(width=VIDEO_W)
             
             anim_func = None
             anim_type = None
@@ -189,8 +188,8 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             if anim_func and anim_type and anim_type.startswith("zoom"):
                 clip = clip.resize(anim_func)
                 
-            # Dynamic camera: Pin the bottom of the active chat block to lower-center
-            clip = clip.set_position(lambda t, c=clip: ('center', VIDEO_H * 0.75 - c.h))
+            # Reverted dynamic positioning back to center
+            clip = clip.set_position(('center', 'center'))
             clips.append(clip)
             
         image_idx += 1

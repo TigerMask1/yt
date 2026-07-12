@@ -80,9 +80,9 @@ Ensure the premise and character interactions respect or build upon this lore!
    - Use full words. The contrast makes it creepier.
 {CHAR_RULE}
 5. DURATION SPACINGS: Append a duration (in seconds) to the end of every single line using the format: `$^[duration]`. 
-   - Use `$0.2` or `$0.5` for frantic, rapid-fire spam and panic.
-   - Use `$1.0` for normal reading pace.
-   - Use `$2.0` (MAX) for an awkward, silent realization or dramatic pause before a punchline.
+   - Use `$1.5` for standard pacing.
+   - Use `$2.0` for dramatic pauses or reading longer lines.
+   - DO NOT USE values below `1.5`.
 6. VISUAL ANIMATIONS & SOUNDS (CRITICAL):
    - The video should NEVER feel static. You MUST use visual tags naturally to keep the presentation dynamic, fun, and alive, but do not force them where they don't make comedic sense.
    - Use `zoom_sudden` and `tilt` for punchlines, jump scares, shocks, and reveals so the screen physically reacts to the drama.
@@ -94,6 +94,7 @@ Ensure the premise and character interactions respect or build upon this lore!
 {LENGTH_INSTRUCTION}
 8. HOOK: The first 3 messages must immediately hook the viewer with intense drama or a weird accusation.
 9. DISCORD FORMATTING: Use `**bold**`, `__italic__`, `@Username`. Do NOT use `*`, `~~`, `>`, or ` ``` `.
+10. TRENDING MEMES: Draw upon your knowledge of current internet culture, analytics, and trending memes (like the HAALAND meme or other recent viral trends). Seamlessly integrate a current, popular meme into the plot or as a punchline. Ensure it feels natural and highly relevant to current pop culture.
 
 FORMAT EXAMPLE:
 # PREMISE: NOTABOT locked ducky out of his PC because of his search history.
@@ -142,7 +143,7 @@ try:
     script_content = re.sub(r'```(?:txt)?\n(.*?)\n```', r'\1', script_content, flags=re.DOTALL)
 
     # Post-processing to ensure proper duration pacing
-    MIN_DURATION = 0.2
+    MIN_DURATION = 1.5
     MAX_DURATION = 2.0
     processed_lines = []
     
