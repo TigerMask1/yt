@@ -130,6 +130,78 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
                 current_time += vid_duration
             continue
             
+        if line.startswith("# NOTABOT_REACTION:"):
+            emotion = line.replace("# NOTABOT_REACTION:", "").strip().lower()
+            import glob
+            matches = glob.glob(f"../assets/notabot_reactions/notabot_{emotion}*.png")
+            if matches:
+                clip = ImageClip(matches[0]).set_start(current_time).set_duration(1.5)
+                clip = clip.resize(height=VIDEO_H).set_position('center')
+                # Zoom in slightly over the duration for dynamic feel
+                clip = clip.resize(lambda t: 1 + 0.1 * (t / 1.5))
+                clips.append(clip)
+                snd_path = '../assets/sounds/mp3/vineboom.mp3'
+                if os.path.exists(snd_path):
+                    audio_clips.append(AudioFileClip(snd_path).set_start(current_time))
+                current_time += 1.5
+            continue
+
+        if line.startswith("# REACTION:"):
+            parts = line.replace("# REACTION:", "").strip().split(" ", 1)
+            if len(parts) == 2:
+                character, meme_name = parts
+                import glob
+                meme_matches = glob.glob(f"../assets/meme_templates/{meme_name}*.jpg")
+                if meme_matches:
+                    meme_path = meme_matches[0]
+                    import json
+                    char_db_path = "../assets/profile_pictures/characters.json"
+                    pfp_path = None
+                    if os.path.exists(char_db_path):
+                        with open(char_db_path, "r", encoding="utf-8") as f:
+                            chars_db = json.load(f)
+                            if character in chars_db:
+                                pfp_path = os.path.join("../assets/profile_pictures", chars_db[character]["profile_pic"])
+                    
+                    if pfp_path and os.path.exists(pfp_path):
+                        from PIL import Image as PIL_Image
+                        bg = PIL_Image.open(meme_path).convert("RGBA")
+                        pfp = PIL_Image.open(pfp_path).convert("RGBA")
+                        
+                        target_size = int(bg.height / 3)
+                        pfp = pfp.resize((target_size, target_size), PIL_Image.LANCZOS)
+                        
+                        # Add a simple border to the PFP to make it pop
+                        from PIL import ImageDraw
+                        bordered = PIL_Image.new('RGBA', (target_size+10, target_size+10), (255, 255, 255, 255))
+                        bordered.paste(pfp, (5, 5), pfp if pfp.mode == 'RGBA' else None)
+                        pfp = bordered
+                        
+                        paste_x = int((bg.width - pfp.width) / 2)
+                        paste_y = int(bg.height / 4)
+                        bg.paste(pfp, (paste_x, paste_y), pfp)
+                        
+                        temp_path = f"../chat/temp_meme_{image_idx}.png"
+                        bg.save(temp_path)
+                        
+                        clip = ImageClip(temp_path).set_start(current_time).set_duration(1.5)
+                        
+                        vid_w, vid_h = clip.size
+                        if vid_w/vid_h > VIDEO_W/VIDEO_H:
+                            new_w = int(vid_h * (VIDEO_W/VIDEO_H))
+                            clip = clip.crop(x_center=vid_w/2, y_center=vid_h/2, width=new_w, height=vid_h)
+                        clip = clip.resize(height=VIDEO_H).set_position('center')
+                        
+                        clip = clip.resize(lambda t: 1 + 0.1 * (t / 1.5))
+                        clips.append(clip)
+                        
+                        snd_path = '../assets/sounds/mp3/vineboom.mp3'
+                        if os.path.exists(snd_path):
+                            audio_clips.append(AudioFileClip(snd_path).set_start(current_time))
+                        current_time += 1.5
+                        image_idx += 1
+            continue
+            
         if line.startswith("#"):
             continue
             

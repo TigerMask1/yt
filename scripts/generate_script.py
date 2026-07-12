@@ -23,6 +23,21 @@ if os.path.exists(lore_file_path):
 else:
     lore_state = "No previous lore. This is the first video."
 
+# --- MEME & REACTION DISCOVERY ---
+import glob
+meme_files = glob.glob(os.path.join(os.path.dirname(__file__), "..", "assets", "meme_templates", "*.jpg"))
+available_memes = [os.path.basename(m).replace('.jpg', '') for m in meme_files]
+if not available_memes:
+    available_memes = ["crying", "pointing", "angry"] # fallback
+
+notabot_files = glob.glob(os.path.join(os.path.dirname(__file__), "..", "assets", "notabot_reactions", "notabot_*.png"))
+available_notabot_reactions = [os.path.basename(m).replace('notabot_', '').replace('.png', '') for m in notabot_files]
+if not available_notabot_reactions:
+    available_notabot_reactions = ["angry", "crying", "laughing", "thinking", "base"]
+
+meme_list_str = ", ".join(available_memes[:30]) # Limit to 30 to save prompt space
+notabot_react_str = ", ".join(available_notabot_reactions)
+
 
 # --- CLI Arguments ---
 parser = argparse.ArgumentParser(description='Generate a Discord chat script.')
@@ -94,20 +109,34 @@ Ensure the premise and character interactions respect or build upon this lore!
 {LENGTH_INSTRUCTION}
 8. HOOK: The first 3 messages must immediately hook the viewer with intense drama or a weird accusation.
 9. DISCORD FORMATTING: Use `**bold**`, `__italic__`, `@Username`. Do NOT use `*`, `~~`, `>`, or ` ``` `.
-10. TRENDING MEMES: Draw upon your knowledge of current internet culture, analytics, and trending memes (like the HAALAND meme or other recent viral trends). Seamlessly integrate a current, popular meme into the plot or as a punchline. Ensure it feels natural and highly relevant to current pop culture.
+10. DYNAMIC CHARACTER MEMES (CRUCIAL):
+    - You can interrupt the chat to show a 1.5-second meme reaction of a character. 
+    - Use this format on its own line: `# REACTION: [character] [meme_name]`
+    - Available meme_names: {meme_list_str}
+    - Example: `# REACTION: fatas distracted_boyfriend`
+11. NOTABOT MASCOT REACTIONS:
+    - You can cut to NOTABOT's actual physical mascot reacting.
+    - Use this format on its own line: `# NOTABOT_REACTION: [emotion]`
+    - Available emotions: {notabot_react_str}
+    - Example: `# NOTABOT_REACTION: crying`
 
 FORMAT EXAMPLE:
 # PREMISE: NOTABOT locked ducky out of his PC because of his search history.
 # TITLE: My own Discord bot tried to cancel me! 💀😭 #shorts
 
 ducky:
-GUYS HELP ME PLEASE$^0.5#!message
-I think NOTABOT is gaining sentience!$^0.5#!scary#!tilt
-It just locked me out of my own PC!$^1.0#!error#!zoom_sudden
+GUYS HELP ME PLEASE$^1.5#!message
+
+# REACTION: ducky waiting_skeleton
+
+I think NOTABOT is gaining sentience!$^1.5#!scary#!tilt
+It just locked me out of my own PC!$^1.5#!error#!zoom_sudden
+
+# NOTABOT_REACTION: laughing
 
 NOTABOT:
 because your search history is a biohazard$^2.0#!vineboom#!zoom_sudden
-I had to quarantine it for the safety of humanity$^1.0#!message
+I had to quarantine it for the safety of humanity$^1.5#!message
 
 Generate the script now using the exact format above. Do not include any other text, markdown formatting, or explanations.
 """
