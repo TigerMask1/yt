@@ -129,22 +129,6 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
                 clips.append(vid_clip)
                 current_time += vid_duration
             continue
-            
-        if line.startswith("# NOTABOT_REACTION:"):
-            emotion = line.replace("# NOTABOT_REACTION:", "").strip().lower()
-            import glob
-            matches = glob.glob(f"../assets/notabot_reactions/notabot_{emotion}*.png")
-            if matches:
-                clip = ImageClip(matches[0]).set_start(current_time).set_duration(1.5)
-                clip = clip.resize(height=VIDEO_H).set_position('center')
-                # Zoom in slightly over the duration for dynamic feel
-                clip = clip.resize(lambda t: 1 + 0.1 * (t / 1.5))
-                clips.append(clip)
-                snd_path = '../assets/sounds/mp3/vineboom.mp3'
-                if os.path.exists(snd_path):
-                    audio_clips.append(AudioFileClip(snd_path).set_start(current_time))
-                current_time += 1.5
-            continue
 
         if line.startswith("# REACTION:"):
             parts = line.replace("# REACTION:", "").strip().split(" ", 1)

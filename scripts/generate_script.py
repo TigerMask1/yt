@@ -30,13 +30,7 @@ available_memes = [os.path.basename(m).replace('.jpg', '') for m in meme_files]
 if not available_memes:
     available_memes = ["crying", "pointing", "angry"] # fallback
 
-notabot_files = glob.glob(os.path.join(os.path.dirname(__file__), "..", "assets", "notabot_reactions", "notabot_*.png"))
-available_notabot_reactions = [os.path.basename(m).replace('notabot_', '').replace('.png', '') for m in notabot_files]
-if not available_notabot_reactions:
-    available_notabot_reactions = ["angry", "crying", "laughing", "thinking", "base"]
-
 meme_list_str = ", ".join(available_memes[:30]) # Limit to 30 to save prompt space
-notabot_react_str = ", ".join(available_notabot_reactions)
 
 
 # --- CLI Arguments ---
@@ -114,11 +108,7 @@ Ensure the premise and character interactions respect or build upon this lore!
     - Use this format on its own line: `# REACTION: [character] [meme_name]`
     - Available meme_names: {meme_list_str}
     - Example: `# REACTION: fatas distracted_boyfriend`
-11. NOTABOT MASCOT REACTIONS:
-    - You can cut to NOTABOT's actual physical mascot reacting.
-    - Use this format on its own line: `# NOTABOT_REACTION: [emotion]`
-    - Available emotions: {notabot_react_str}
-    - Example: `# NOTABOT_REACTION: crying`
+11. TRENDING MEMES: Draw upon your knowledge of current internet culture and trending memes (like the HAALAND meme or other recent viral trends). Seamlessly integrate a current meme reference into the plot or as a punchline where it fits naturally.
 
 FORMAT EXAMPLE:
 # PREMISE: NOTABOT locked ducky out of his PC because of his search history.
@@ -131,8 +121,6 @@ GUYS HELP ME PLEASE$^1.5#!message
 
 I think NOTABOT is gaining sentience!$^1.5#!scary#!tilt
 It just locked me out of my own PC!$^1.5#!error#!zoom_sudden
-
-# NOTABOT_REACTION: laughing
 
 NOTABOT:
 because your search history is a biohazard$^2.0#!vineboom#!zoom_sudden
