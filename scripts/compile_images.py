@@ -11,13 +11,14 @@ from moviepy.editor import ImageClip, VideoFileClip, AudioFileClip, CompositeAud
 
 def get_animation_func(anim_type, duration):
     if anim_type == "zoom_gradual":
-        return lambda t: 1 + 0.1 * (t / duration)
+        return lambda t: 1.0 + 0.05 * (t / duration) # Slow creep in
     elif anim_type == "zoom_sudden":
-        return lambda t: 1.2 if t > 0.1 else 1.0
+        # Snap zoom
+        return lambda t: 1.0 if t < 0.05 else 1.15
     elif anim_type == "zoom_continuous":
-        return lambda t: 1 + 0.2 * (t / duration)
+        return lambda t: 1.0 + 0.1 * (t / duration)
     elif anim_type == "tilt":
-        return lambda t: math.sin(t * 10) * 2 # Slight shake/tilt
+        return lambda t: math.sin(t * 15) * 1.5 # Fast subtle shake
     return None
 
 def gen_vid(filename, output_path="../vertical_short.mp4"):
@@ -77,14 +78,20 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             if os.path.exists(img_path):
                 clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
                 
-                # Crop width to remove excess right grey space (chat is usually on the left)
-                clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
+                # Crop tightly to the left side (where the chat and pfps are) to remove dead space
+                clip = clip.crop(x1=0, y1=0, x2=min(850, clip.w), y2=clip.h)
                 
-                # Scale up to width 1080
+                # Scale up to width 1080 (makes text huge and readable)
                 clip = clip.resize(width=VIDEO_W)
                 
-                # Position vertically (centered)
-                clip = clip.set_position(('center', 'center'))
+                # Dynamic vertical positioning: keep newest text in view
+                if clip.h < VIDEO_H - 400:
+                    y_pos = 'center'
+                else:
+                    # Pin the bottom of the chat to the bottom of the screen (with 200px padding)
+                    y_pos = VIDEO_H - 200 - clip.h 
+                    
+                clip = clip.set_position(('center', y_pos))
                 
                 clips.append(clip)
             image_idx += 1
@@ -117,11 +124,18 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
         if os.path.exists(img_path):
             clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
             
-            # Smart Crop: Crop out the empty right space
-            clip = clip.crop(x1=0, y1=0, x2=min(1200, clip.w), y2=clip.h)
+            # Crop tightly to the left side to remove dead space
+            clip = clip.crop(x1=0, y1=0, x2=min(850, clip.w), y2=clip.h)
             
-            # Scale up to fill the 1080 width
+            # Scale up to fill the 1080 width (makes text and pfps huge)
             clip = clip.resize(width=VIDEO_W)
+            
+            # Dynamic vertical positioning: keep newest text in view
+            if clip.h < VIDEO_H - 400:
+                y_pos = 'center'
+            else:
+                # Pin the bottom of the chat to the bottom of the screen
+                y_pos = VIDEO_H - 200 - clip.h 
             
             # Animations
             anim_func = None
@@ -135,7 +149,7 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             if anim_func and anim_type and anim_type.startswith("zoom"):
                 clip = clip.resize(anim_func)
                 
-            clip = clip.set_position(('center', 'center'))
+            clip = clip.set_position(('center', y_pos))
             
             clips.append(clip)
         image_idx += 1
@@ -154,43 +168,7 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
         
         current_time += duration
 
-    # ------------------
-    # Comment Bait Overlays
-    # ------------------
-    # Like popup at 25%
-    overlay_time = current_time * 0.25
-    like_path = "../assets/like.png"
-    if os.path.exists(like_path):
-        like_clip = ImageClip(like_path).set_start(overlay_time).set_duration(2.0)
-        # Position at the top black bar
-        like_clip = like_clip.resize(width=300).set_position(('center', 150))
-        clips.append(like_clip)
-        
-    # Subscribe popup at 60%
-    sub_time = current_time * 0.60
-    sub_path = "../assets/subscribe.png"
-    if os.path.exists(sub_path):
-        sub_clip = ImageClip(sub_path).set_start(sub_time).set_duration(2.0)
-        # Position at the bottom black bar
-        sub_clip = sub_clip.resize(width=400).set_position(('center', VIDEO_H - 300))
-        clips.append(sub_clip)
-        
-    # Subliminal bait flash at 80%
-    bait_time = current_time * 0.80
-    import random
-    import glob
-    
-    # Look for bait_*.png in ../assets/
-    bait_files = glob.glob("../assets/bait_*.png")
-    if bait_files:
-        bait_path = random.choice(bait_files)
-    else:
-        bait_path = "../assets/bait_notabot.png"
-        
-    if os.path.exists(bait_path):
-        bait_clip = ImageClip(bait_path).set_start(bait_time).set_duration(0.25)
-        bait_clip = bait_clip.resize(width=400).set_position(('center', 200))
-        clips.append(bait_clip)
+    # Removed hardcoded comment bait overlays to keep the video clean and focused on the story.
 
     if not clips:
         print("Error: No valid clips generated.")

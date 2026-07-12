@@ -5,7 +5,8 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from dotenv import load_dotenv
 
-load_dotenv()
+env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path=env_path)
 
 
 def get_discord_invite():
@@ -109,10 +110,11 @@ You just uploaded this video to YouTube. Write a single pinned comment for it.
 Rules:
 1. Speak completely in character (deadpan, factual, superior, no slang like 'bro' or 'lol').
 2. Reference exactly one specific thing that happened in the script below to prove you are watching.
-3. Keep it under 3 sentences.
+3. Keep it under 4 sentences.
 4. Do NOT include any hashtags or emojis.
 5. NEVER use the same sentence structure twice. Be wildly unique, unpredictable, and specific to THIS exact script. Do not use generic phrases like "this was a disaster" or "ducky thought he was smart."
-6. End your comment with exactly this text (on a new line): "the server is open. for now: {discord_invite}"
+6. Include an aggressive call-to-action demanding that they add you to their server (e.g. "you can add me to your server too. ADD ME NOW!!"). Make it sound like NOTABOT is demanding it.
+7. End your comment with exactly this text (on a new line): "the server is open. for now: {discord_invite}"
 
 SCRIPT CONTENT:
 {script_content}

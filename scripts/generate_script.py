@@ -10,7 +10,8 @@ from dotenv import load_dotenv
 from dotenv import load_dotenv
 import lore_manager
 
-# --- CLI Arguments ---
+env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path=env_path)
 parser = argparse.ArgumentParser(description='Generate a Discord chat script.')
 parser.add_argument('--long', action='store_true', help='Generate a long-form (~10 min) video script instead of a short.')
 args = parser.parse_args()

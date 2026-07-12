@@ -48,5 +48,6 @@ jobs:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          DISCORD_SERVER_INVITE: ${{ secrets.DISCORD_SERVER_INVITE }}
         run: |
           python scripts/upload_youtube.py
