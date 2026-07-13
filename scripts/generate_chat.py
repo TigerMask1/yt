@@ -112,6 +112,10 @@ def generate_chat(messages, name_time, profpic_file, color):
     
     draw_template.text(NAME_POSITION, name_text, color, font=name_font)
     
+    # Track the rightmost x-coordinate any content reaches, so we know the
+    # real content width without having to guess from pixels later.
+    max_x_reached = NAME_POSITION[0] + name_font.getbbox(name_text)[2]
+    
     # If it's NOTABOT, draw the APP badge
     if name_text == "NOTABOT":
         name_width = name_font.getbbox(name_text)[2]
@@ -137,8 +141,10 @@ def generate_chat(messages, name_time, profpic_file, color):
         
         # Shift the time position further right
         time_position = (badge_box[2] + NAME_TIME_SPACING, time_position[1])
+        max_x_reached = max(max_x_reached, badge_box[2])
 
     draw_template.text(time_position, time_text, TIME_FONT_COLOR, font=time_font)
+    max_x_reached = max(max_x_reached, time_position[0] + time_font.getbbox(time_text)[2])
 
     y_offset = 0
     for i, message in enumerate(messages):
@@ -154,6 +160,8 @@ def generate_chat(messages, name_time, profpic_file, color):
             with Pilmoji(template) as pilmoji:
                 pilmoji.text((current_x, y_pos), message, MESSAGE_FONT_COLOR, font=message_font,
                              emoji_position_offset=(0, 8), emoji_scale_factor=2)
+            emoji_bbox = message_font.getbbox(message)
+            max_x_reached = max(max_x_reached, current_x + (emoji_bbox[2] - emoji_bbox[0]) * 2)
             y_offset += message_font.getbbox(message)[3]
             continue
 
@@ -199,6 +207,7 @@ def generate_chat(messages, name_time, profpic_file, color):
                             draw_template.rounded_rectangle(bg_box, fill=(74, 75, 114), radius=10)
                             pilmoji.text((current_x + padding, y_pos), part, (201, 205, 251), font=font_used)
                             current_x += text_width + 2 * padding
+                            max_x_reached = max(max_x_reached, current_x)
                         else:
                             # Determine proper font for regular text
                             if bold and italic:
@@ -212,7 +221,8 @@ def generate_chat(messages, name_time, profpic_file, color):
                             pilmoji.text((current_x, y_pos), part, MESSAGE_FONT_COLOR, font=font_used,
                                          emoji_position_offset=(0, 8), emoji_scale_factor=1.2)
                             current_x += font_used.getbbox(part)[2] - font_used.getbbox(part)[0]
-    return template
+                            max_x_reached = max(max_x_reached, current_x)
+    return template, max_x_reached
 
 
 def generate_joined_message(name, time, template_str, arrow_x, color=NAME_FONT_COLOR):
@@ -256,7 +266,8 @@ def generate_joined_message(name, time, template_str, arrow_x, color=NAME_FONT_C
         time_y = time_baseline - time_font.getmetrics()[0]
         pilmoji.text((time_x, time_y), time_text, TIME_FONT_COLOR, font=time_font)
     
-    return template_img
+    max_x_reached = time_x + time_font.getbbox(time_text)[2]
+    return template_img, max_x_reached
 
 
 def generate_joined_message_stack(joined_messages, hour):
@@ -266,14 +277,16 @@ def generate_joined_message_stack(joined_messages, hour):
     total_height = WORLD_HEIGHT_JOINED * len(joined_messages)
     template_img = Image.new(mode='RGBA', size=(WORLD_WIDTH, total_height), color=WORLD_COLOR)
     
+    max_x_reached = 0
     for idx, key in enumerate(joined_messages):
         name = key.split(' ')[1].split('$^')[0]
         color = characters_dict[name]["role_color"]
         time_str = f'{hour}:{joined_messages[key][2].minute:02d}'
-        joined_img = generate_joined_message(name, time_str, joined_messages[key][0], joined_messages[key][1], color)
+        joined_img, right_edge = generate_joined_message(name, time_str, joined_messages[key][0], joined_messages[key][1], color)
         template_img.paste(joined_img, (0, idx * WORLD_HEIGHT_JOINED))
+        max_x_reached = max(max_x_reached, right_edge)
     
-    return template_img
+    return template_img, max_x_reached
 
 
 def get_filename():
@@ -297,6 +310,10 @@ def save_images(lines, init_time, dt=30):
     joined_messages = {}
     name_time = []
 
+    # Maps "001" -> rightmost content x-coordinate, so compile_images.py can
+    # crop each frame exactly instead of guessing from pixels afterward.
+    content_widths = {}
+
     for line in lines:
         if line == '':
             name_up_next = True
@@ -312,8 +329,9 @@ def save_images(lines, init_time, dt=30):
         if line.startswith("WELCOME "):
             joined_messages[line] = [random.choice(JOINED_TEXTS), random.randint(50, 80), current_time]
             hour = current_time.hour % 12 or 12
-            image = generate_joined_message_stack(joined_messages, hour)
+            image, right_edge = generate_joined_message_stack(joined_messages, hour)
             image.save(f'../chat/{msg_number:03d}.png')
+            content_widths[f'{msg_number:03d}'] = right_edge
             current_time += datetime.timedelta(seconds=dt)
             msg_number += 1
             continue
@@ -328,15 +346,19 @@ def save_images(lines, init_time, dt=30):
             continue
 
         current_lines.append(line.split('$^')[0])
-        image = generate_chat(
+        image, right_edge = generate_chat(
             messages=current_lines,
             name_time=name_time,
             profpic_file=os.path.join('../assets/profile_pictures', characters_dict[current_name]["profile_pic"]),
             color=characters_dict[current_name]["role_color"]
         )
         image.save(f'../chat/{msg_number:03d}.png')
+        content_widths[f'{msg_number:03d}'] = right_edge
         current_time += datetime.timedelta(seconds=dt)
         msg_number += 1
+
+    with open('../chat/content_widths.json', 'w', encoding='utf8') as f:
+        json.dump(content_widths, f, indent=2)
 
 
 if __name__ == '__main__':

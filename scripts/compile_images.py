@@ -1,5 +1,6 @@
 import os
 import math
+import json
 
 # Pillow 10+ removed Image.ANTIALIAS — patch it back so moviepy's resize works.
 from PIL import Image as _PIL_Image
@@ -7,6 +8,53 @@ if not hasattr(_PIL_Image, 'ANTIALIAS'):
     _PIL_Image.ANTIALIAS = _PIL_Image.LANCZOS
 
 from moviepy.editor import ImageClip, VideoFileClip, AudioFileClip, CompositeAudioClip, CompositeVideoClip, concatenate_videoclips, vfx
+
+
+def get_content_right_edge(img_path, min_x2=850, max_x2=None, padding=10, bg_tolerance=12):
+    """
+    Detect how far right the actual content (chat bubbles, pfps, text) extends
+    in a screenshot, instead of assuming a fixed 850px crop for every image.
+
+    - If the image has an alpha channel, uses non-transparent pixels.
+    - Otherwise, treats the top-left corner pixel as the background color and
+      finds the rightmost pixel that differs from it by more than bg_tolerance.
+
+    Returns an x2 value to use for cropping (never smaller than min_x2, so we
+    never crop tighter than before — only wider when content demands it).
+    """
+    try:
+        with _PIL_Image.open(img_path) as im:
+            w, h = im.size
+            if max_x2 is None:
+                max_x2 = w
+
+            if im.mode in ("RGBA", "LA") or (im.mode == "P" and "transparency" in im.info):
+                im = im.convert("RGBA")
+                alpha = im.split()[-1]
+                bbox = alpha.getbbox()  # (left, upper, right, lower) of non-zero alpha
+            else:
+                im = im.convert("RGB")
+                bg = im.getpixel((0, 0))
+                # Build a mask of pixels that differ from background beyond tolerance
+                import PIL.ImageChops as ImageChops
+                bg_img = _PIL_Image.new("RGB", im.size, bg)
+                diff = ImageChops.difference(im, bg_img)
+                # Convert to grayscale "amount of difference" and threshold
+                diff_gray = diff.convert("L")
+                mask = diff_gray.point(lambda p: 255 if p > bg_tolerance else 0)
+                bbox = mask.getbbox()
+
+            if bbox is None:
+                # Nothing detected (blank image) — fall back to previous fixed value
+                return min(min_x2, w)
+
+            right_edge = bbox[2] + padding
+            right_edge = max(right_edge, min_x2)  # never crop tighter than before
+            right_edge = min(right_edge, max_x2)  # never exceed actual image width
+            return right_edge
+    except Exception as e:
+        print(f"  [CROP WARN] Could not auto-detect content width for {img_path}: {e}")
+        return min_x2
 
 
 def get_animation_func(anim_type, duration):
@@ -26,6 +74,17 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
     
     # 1080x1920 is standard vertical shorts resolution
     VIDEO_W, VIDEO_H = 1080, 1920
+    
+    # generate_chat.py knows exactly where its own content ends (it drew it),
+    # so it writes that out per-image. Prefer that over guessing from pixels.
+    content_widths = {}
+    widths_path = os.path.join(input_folder, 'content_widths.json')
+    if os.path.exists(widths_path):
+        try:
+            with open(widths_path, encoding='utf8') as f:
+                content_widths = json.load(f)
+        except Exception as e:
+            print(f'[compile] WARNING Could not read content_widths.json: {e}')
     
     clips = []
     audio_clips = []
@@ -78,8 +137,15 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             if os.path.exists(img_path):
                 clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
                 
-                # Crop tightly to the left side (where the chat and pfps are) to remove dead space
-                clip = clip.crop(x1=0, y1=0, x2=min(850, clip.w), y2=clip.h)
+                # Crop tightly to the left side (where the chat and pfps are) to remove dead space.
+                # Prefer the exact width recorded by generate_chat.py (it knows exactly where
+                # it drew content); fall back to pixel-based auto-detection if unavailable.
+                img_key = f"{image_idx:03d}"
+                if img_key in content_widths:
+                    crop_x2 = min(max(content_widths[img_key] + 10, 850), clip.w)
+                else:
+                    crop_x2 = get_content_right_edge(img_path, min_x2=850, max_x2=clip.w)
+                clip = clip.crop(x1=0, y1=0, x2=crop_x2, y2=clip.h)
                 
                 # Scale up to width 1080 (makes text huge and readable)
                 clip = clip.resize(width=VIDEO_W)
@@ -124,8 +190,15 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
         if os.path.exists(img_path):
             clip = ImageClip(img_path).set_start(current_time).set_duration(duration)
             
-            # Crop tightly to the left side to remove dead space
-            clip = clip.crop(x1=0, y1=0, x2=min(850, clip.w), y2=clip.h)
+            # Crop tightly to the left side to remove dead space.
+            # Prefer the exact width recorded by generate_chat.py (it knows exactly where
+            # it drew content); fall back to pixel-based auto-detection if unavailable.
+            img_key = f"{image_idx:03d}"
+            if img_key in content_widths:
+                crop_x2 = min(max(content_widths[img_key] + 10, 850), clip.w)
+            else:
+                crop_x2 = get_content_right_edge(img_path, min_x2=850, max_x2=clip.w)
+            clip = clip.crop(x1=0, y1=0, x2=crop_x2, y2=clip.h)
             
             # Scale up to fill the 1080 width (makes text and pfps huge)
             clip = clip.resize(width=VIDEO_W)
