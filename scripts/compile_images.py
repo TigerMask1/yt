@@ -2,6 +2,10 @@ import os
 import math
 import json
 
+# Extra breathing room added past the detected/recorded content edge, so text
+# and mention pills never look like they're touching the crop border.
+EDGE_PADDING = 40
+
 # Pillow 10+ removed Image.ANTIALIAS — patch it back so moviepy's resize works.
 from PIL import Image as _PIL_Image
 if not hasattr(_PIL_Image, 'ANTIALIAS'):
@@ -10,7 +14,7 @@ if not hasattr(_PIL_Image, 'ANTIALIAS'):
 from moviepy.editor import ImageClip, VideoFileClip, AudioFileClip, CompositeAudioClip, CompositeVideoClip, concatenate_videoclips, vfx
 
 
-def get_content_right_edge(img_path, min_x2=850, max_x2=None, padding=10, bg_tolerance=12):
+def get_content_right_edge(img_path, min_x2=850, max_x2=None, padding=EDGE_PADDING, bg_tolerance=12):
     """
     Detect how far right the actual content (chat bubbles, pfps, text) extends
     in a screenshot, instead of assuming a fixed 850px crop for every image.
@@ -142,7 +146,7 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
                 # it drew content); fall back to pixel-based auto-detection if unavailable.
                 img_key = f"{image_idx:03d}"
                 if img_key in content_widths:
-                    crop_x2 = min(max(content_widths[img_key] + 10, 850), clip.w)
+                    crop_x2 = min(max(content_widths[img_key] + EDGE_PADDING, 850), clip.w)
                 else:
                     crop_x2 = get_content_right_edge(img_path, min_x2=850, max_x2=clip.w)
                 clip = clip.crop(x1=0, y1=0, x2=crop_x2, y2=clip.h)
@@ -195,7 +199,7 @@ def gen_vid(filename, output_path="../vertical_short.mp4"):
             # it drew content); fall back to pixel-based auto-detection if unavailable.
             img_key = f"{image_idx:03d}"
             if img_key in content_widths:
-                crop_x2 = min(max(content_widths[img_key] + 10, 850), clip.w)
+                crop_x2 = min(max(content_widths[img_key] + EDGE_PADDING, 850), clip.w)
             else:
                 crop_x2 = get_content_right_edge(img_path, min_x2=850, max_x2=clip.w)
             clip = clip.crop(x1=0, y1=0, x2=crop_x2, y2=clip.h)
