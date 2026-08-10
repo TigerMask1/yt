@@ -7,6 +7,9 @@ import json
 import random
 import regex
 import re
+import hashlib
+import urllib.request
+import urllib.parse
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QFileDialog
@@ -54,20 +57,70 @@ MESSAGE_Y_INIT = 115
 MESSAGE_DY = 70
 MESSAGE_POSITIONS = [(MESSAGE_X, MESSAGE_Y_INIT + i * MESSAGE_DY) for i in range(100)]
 
+ASSET_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets'))
+FONT_ROOT = os.path.join(ASSET_ROOT, 'fonts', 'whitney')
+
 # Load fonts
 font = "whitney" # Change this according to the font you want to use
-name_font = ImageFont.truetype(os.path.join(f'../assets/fonts/{font}', 'semibold.ttf'), NAME_FONT_SIZE)
-time_font = ImageFont.truetype(os.path.join(f'../assets/fonts/{font}', 'semibold.ttf'), TIME_FONT_SIZE)
-message_font = ImageFont.truetype(os.path.join(f'../assets/fonts/{font}', 'medium.ttf'), MESSAGE_FONT_SIZE)
-message_italic_font = ImageFont.truetype(os.path.join(f'../assets/fonts/{font}', 'medium_italic.ttf'), MESSAGE_FONT_SIZE)
-message_bold_font = ImageFont.truetype(os.path.join(f'../assets/fonts/{font}', 'bold.ttf'), MESSAGE_FONT_SIZE)
-message_italic_bold_font = ImageFont.truetype(os.path.join(f'../assets/fonts/{font}', 'bold_italic.ttf'), MESSAGE_FONT_SIZE)
-message_mention_font = ImageFont.truetype(os.path.join(f'../assets/fonts/{font}', 'semibold.ttf'), MESSAGE_FONT_SIZE)
-message_mention_italic_font = ImageFont.truetype(os.path.join(f'../assets/fonts/{font}', 'semibold_italic.ttf'), MESSAGE_FONT_SIZE)
+name_font = ImageFont.truetype(os.path.join(FONT_ROOT, 'semibold.ttf'), NAME_FONT_SIZE)
+time_font = ImageFont.truetype(os.path.join(FONT_ROOT, 'semibold.ttf'), TIME_FONT_SIZE)
+message_font = ImageFont.truetype(os.path.join(FONT_ROOT, 'medium.ttf'), MESSAGE_FONT_SIZE)
+message_italic_font = ImageFont.truetype(os.path.join(FONT_ROOT, 'medium_italic.ttf'), MESSAGE_FONT_SIZE)
+message_bold_font = ImageFont.truetype(os.path.join(FONT_ROOT, 'bold.ttf'), MESSAGE_FONT_SIZE)
+message_italic_bold_font = ImageFont.truetype(os.path.join(FONT_ROOT, 'bold_italic.ttf'), MESSAGE_FONT_SIZE)
+message_mention_font = ImageFont.truetype(os.path.join(FONT_ROOT, 'semibold.ttf'), MESSAGE_FONT_SIZE)
+message_mention_italic_font = ImageFont.truetype(os.path.join(FONT_ROOT, 'semibold_italic.ttf'), MESSAGE_FONT_SIZE)
 
 # Load profile picture dictionary
-with open('../assets/profile_pictures/characters.json', encoding="utf8") as file:
+characters_path = os.path.join(ASSET_ROOT, 'profile_pictures', 'characters.json')
+with open(characters_path, encoding="utf8") as file:
     characters_dict = json.load(file)
+
+PROFILE_PIC_DIR = os.path.join(ASSET_ROOT, 'profile_pictures', 'remote')
+os.makedirs(PROFILE_PIC_DIR, exist_ok=True)
+
+
+def download_remote_file(url, destination_dir, default_name='file'):
+    if not url:
+        return None
+    parsed = urllib.parse.urlparse(url)
+    if not parsed.scheme:
+        return None
+    safe_name = hashlib.sha1(url.encode('utf-8')).hexdigest()[:16]
+    ext = os.path.splitext(parsed.path)[1] or '.png'
+    if not ext.startswith('.'):
+        ext = '.png'
+    dest_path = os.path.join(destination_dir, f"{safe_name}{ext}")
+    if os.path.exists(dest_path):
+        return dest_path
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=10) as response:
+            data = response.read()
+        with open(dest_path, 'wb') as fh:
+            fh.write(data)
+        return dest_path
+    except Exception:
+        return None
+
+
+def ensure_character_avatar(name, avatar_url):
+    if not avatar_url:
+        return None
+    profile_name = re.sub(r'[^a-zA-Z0-9._-]+', '_', name).strip('_') or 'character'
+    cached_path = os.path.join(PROFILE_PIC_DIR, f"{profile_name}.png")
+    if os.path.exists(cached_path):
+        return cached_path
+    downloaded = download_remote_file(avatar_url, PROFILE_PIC_DIR, default_name=f"{profile_name}.png")
+    if downloaded:
+        try:
+            img = Image.open(downloaded)
+            img = img.convert('RGBA')
+            img.save(cached_path)
+            return cached_path
+        except Exception:
+            return downloaded
+    return None
 
 
 def is_emoji_message(message):
@@ -289,6 +342,50 @@ def generate_joined_message_stack(joined_messages, hour):
     return template_img, max_x_reached
 
 
+def generate_media_frame(title, subtitle, media_path=None):
+    """Create a Discord-style media card frame that can be inserted into the video."""
+    template = Image.new(mode='RGBA', size=(WORLD_WIDTH, 900), color=WORLD_COLOR)
+    draw = ImageDraw.Draw(template)
+
+    draw.rounded_rectangle((36, 36, WORLD_WIDTH - 36, 864), fill=(46, 49, 54), radius=28)
+    draw.text((70, 70), title, fill=(255, 255, 255), font=name_font)
+    draw.text((70, 145), subtitle, fill=(148, 155, 164), font=time_font)
+
+    preview_box = (70, 220, WORLD_WIDTH - 70, 740)
+    draw.rounded_rectangle(preview_box, fill=(71, 75, 86), radius=24)
+
+    if media_path and os.path.exists(media_path):
+        try:
+            with Image.open(media_path) as img:
+                img = img.convert('RGBA')
+                img_w, img_h = img.size
+                box_w = preview_box[2] - preview_box[0]
+                box_h = preview_box[3] - preview_box[1]
+                ratio = min(box_w / max(1, img_w), box_h / max(1, img_h))
+                new_w = max(1, int(img_w * ratio))
+                new_h = max(1, int(img_h * ratio))
+                img = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+                x = preview_box[0] + (box_w - new_w) // 2
+                y = preview_box[1] + (box_h - new_h) // 2
+                template.paste(img, (x, y), img)
+        except Exception:
+            draw.text((110, 350), 'media preview unavailable', fill=(220, 222, 225), font=message_font)
+    else:
+        draw.text((110, 350), 'discord media cue', fill=(220, 222, 225), font=message_font)
+
+    return template, WORLD_WIDTH
+
+
+def resolve_media_path(media_ref):
+    if not media_ref:
+        return None
+    if os.path.exists(media_ref):
+        return media_ref
+    if isinstance(media_ref, str) and media_ref.startswith(('http://', 'https://')):
+        return download_remote_file(media_ref, PROFILE_PIC_DIR, default_name='media')
+    return None
+
+
 def get_filename():
     app = QApplication(sys.argv)
     options = QFileDialog.Options()
@@ -314,11 +411,48 @@ def save_images(lines, init_time, dt=30):
     # crop each frame exactly instead of guessing from pixels afterward.
     content_widths = {}
 
+    # Support queue-driven metadata in the same script format.
+    queue_metadata = None
+    if lines and lines[0].startswith('{'):
+        try:
+            queue_metadata = json.loads(lines[0])
+            lines = lines[1:]
+        except Exception:
+            queue_metadata = None
+
     for line in lines:
         if line == '':
             name_up_next = True
             current_lines = []
             name_time = []
+            joined_messages = {}
+            continue
+
+        if line.startswith('# PHOTO:') or line.startswith('# GIF:') or line.startswith('# MEDIA:'):
+            content = line.split(':', 1)[1].strip()
+            if line.startswith('# MEDIA:'):
+                parts = content.split('|', 1)
+                kind = parts[0].strip().lower() if parts else 'media'
+                media_ref = parts[1].strip() if len(parts) > 1 else ''
+                title = f'{kind} cue'
+                subtitle = 'discord-native media frame'
+            elif line.startswith('# PHOTO:'):
+                kind = 'photo'
+                media_ref = content
+                title = 'photo cue'
+                subtitle = content or 'discord screenshot'
+            else:
+                kind = 'gif'
+                media_ref = content
+                title = 'gif cue'
+                subtitle = content or 'reaction gif'
+
+            media_path = resolve_media_path(media_ref)
+            image, right_edge = generate_media_frame(title, subtitle, media_path)
+            image.save(f'../chat/{msg_number:03d}.png')
+            content_widths[f'{msg_number:03d}'] = right_edge
+            current_time += datetime.timedelta(seconds=dt)
+            msg_number += 1
             joined_messages = {}
             continue
 
@@ -346,11 +480,32 @@ def save_images(lines, init_time, dt=30):
             continue
 
         current_lines.append(line.split('$^')[0])
+        avatar_path = None
+        if queue_metadata and current_name in queue_metadata.get('characters', {}):
+            avatar_url = queue_metadata['characters'][current_name].get('avatar_url')
+            avatar_path = ensure_character_avatar(current_name, avatar_url)
+        if not avatar_path:
+            fallback_char = characters_dict.get(current_name)
+            if fallback_char and "profile_pic" in fallback_char:
+                avatar_path = os.path.join('../assets/profile_pictures', fallback_char["profile_pic"])
+            else:
+                # Default generic avatar for unknown users
+                avatar_path = os.path.join('../assets/profile_pictures', 'default.png')
+                
+        # Resolve role color (use metadata first, then characters_dict, then default)
+        role_color = '#ffffff'
+        if queue_metadata and current_name in queue_metadata.get('characters', {}):
+            role_color = queue_metadata['characters'][current_name].get('role_color', '#ffffff')
+        else:
+            fallback_char = characters_dict.get(current_name)
+            if fallback_char and "role_color" in fallback_char:
+                role_color = fallback_char["role_color"]
+
         image, right_edge = generate_chat(
             messages=current_lines,
             name_time=name_time,
-            profpic_file=os.path.join('../assets/profile_pictures', characters_dict[current_name]["profile_pic"]),
-            color=characters_dict[current_name]["role_color"]
+            profpic_file=avatar_path,
+            color=role_color
         )
         image.save(f'../chat/{msg_number:03d}.png')
         content_widths[f'{msg_number:03d}'] = right_edge

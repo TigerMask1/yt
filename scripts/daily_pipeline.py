@@ -77,8 +77,19 @@ def make_shorts():
     for i in range(1, NUM_SHORTS + 1):
         print(f"\n── Short {i}/{NUM_SHORTS} ──────────────────────────────────")
 
-        # 1. Generate script
-        ok = _run_py('generate_script.py')
+        # 1. Try to process a real clip from the queue first
+        print("  Checking youtube_queue for real clips...")
+        cmd = [sys.executable, os.path.join(SCRIPT_DIR, 'process_queue.py')]
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd=SCRIPT_DIR)
+        
+        ok = False
+        if result.returncode == 0 and "SUCCESS" in result.stdout:
+            print("  ✓ Processed real clip from queue.")
+            ok = True
+        else:
+            print("  - Queue empty or failed. Falling back to random script generator.")
+            ok = _run_py('generate_script.py')
+            
         if not ok:
             print(f"  ✗ Skipping short {i} due to script gen failure.")
             continue
