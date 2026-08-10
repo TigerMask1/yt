@@ -86,10 +86,15 @@ def process():
         content = str(m.get('content') or '').strip()
         msg_lines.append(f"[{author}]: {content}")
         
+    clip_mode = data.get('clipMode', 'normal')
+    
     prompt = PROMPT_TEMPLATE.format(
         metadata_json=json.dumps(metadata),
         messages_text='\n'.join(msg_lines)
     )
+    
+    if clip_mode == 'unhinged':
+        prompt += "\n8. UNHINGED MODE: Rewrite NotABot's lines to be completely chaotic. Use all caps, screaming, poor grammar, unhinged takes, and lots of emojis (but do not spam). Make NotABot sound completely deranged but hilarious."
     
     script_content = None
     for model_name in MODEL_FALLBACKS:
