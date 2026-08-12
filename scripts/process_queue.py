@@ -2,7 +2,7 @@ import os
 import json
 import sys
 import re
-from firebase_config import get_db
+from supabase_config import get_db
 from dotenv import load_dotenv
 import google.generativeai as genai
 
@@ -56,46 +56,49 @@ def build_metadata(messages):
 def process():
     db = get_db()
     if not db:
-        print("Failed to connect to Firestore.")
+        print("Failed to connect to Supabase.")
         sys.exit(1)
 
     # Find the oldest unprocessed queue item
-    queue_ref = db.collection('youtube_queue')
-    query = queue_ref.where('processed', '==', False).order_by('timestamp').limit(1)
-    
-    docs = list(query.stream())
-    
-    if not docs:
+    response = db.from_('youtube_queue') \
+        .select('*') \
+        .eq('status', 'pending') \
+        .order('queued_at', desc=False) \
+        .limit(1) \
+        .execute()
+
+    rows = response.data or []
+    if not rows:
         print("QUEUE_EMPTY")
         sys.exit(0)
-        
-    doc = docs[0]
-    data = doc.to_dict()
-    messages = data.get('messages', [])
-    
+
+    row = rows[0]
+    row_id = row['id']
+    messages = row.get('messages', [])
+
     if not messages:
-        doc.reference.update({'processed': True})
+        db.from_('youtube_queue').update({'status': 'processed'}).eq('id', row_id).execute()
         print("QUEUE_EMPTY")
         sys.exit(0)
-        
+
     metadata = build_metadata(messages)
-    
+
     msg_lines = []
     for m in messages:
         author = str(m.get('author') or 'unknown').strip()
         content = str(m.get('content') or '').strip()
         msg_lines.append(f"[{author}]: {content}")
-        
-    clip_mode = data.get('clipMode', 'normal')
-    
+
+    clip_mode = row.get('clip_mode', 'normal')
+
     prompt = PROMPT_TEMPLATE.format(
         metadata_json=json.dumps(metadata),
         messages_text='\n'.join(msg_lines)
     )
-    
+
     if clip_mode == 'unhinged':
         prompt += "\n8. UNHINGED MODE: Rewrite NotABot's lines to be completely chaotic. Use all caps, screaming, poor grammar, unhinged takes, and lots of emojis (but do not spam). Make NotABot sound completely deranged but hilarious."
-    
+
     script_content = None
     for model_name in MODEL_FALLBACKS:
         try:
@@ -105,24 +108,24 @@ def process():
             break
         except Exception as e:
             print(f"Failed with {model_name}: {e}")
-            
+
     if not script_content:
         print("Failed to generate script with all models.")
         sys.exit(1)
-        
+
     # Strip markdown code blocks if the model accidentally included them
     script_content = re.sub(r'```(?:txt)?\n(.*?)\n```', r'\1', script_content, flags=re.DOTALL)
-        
+
     # Write to file
     out_dir = os.path.join(os.path.dirname(__file__), '..', 'assets', 'example')
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, 'generated_script.txt')
-    
+
     with open(out_path, 'w', encoding='utf-8') as f:
         f.write(script_content)
-        
-    # Mark as processed
-    doc.reference.update({'processed': True})
+
+    # Mark as processed in Supabase
+    db.from_('youtube_queue').update({'status': 'processed'}).eq('id', row_id).execute()
     print("SUCCESS")
 
 if __name__ == "__main__":

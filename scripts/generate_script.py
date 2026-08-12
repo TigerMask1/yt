@@ -12,12 +12,9 @@ from dotenv import load_dotenv
 import lore_manager
 
 try:
-    import firebase_admin
-    from firebase_admin import credentials, firestore
+    from supabase_config import get_db as _get_supabase_db
 except Exception:
-    firebase_admin = None
-    credentials = None
-    firestore = None
+    _get_supabase_db = None
 
 env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
 load_dotenv(dotenv_path=env_path)
@@ -180,57 +177,47 @@ def build_script_from_queue_item(payload):
     return '\n'.join(lines)
 
 
-def get_firestore_client():
-    if firebase_admin is None or firestore is None:
+def load_queue_payload():
+    if _get_supabase_db is None:
         return None
 
-    if not firebase_admin._apps:
-        project_id = os.environ.get('FIREBASE_PROJECT_ID')
-        client_email = os.environ.get('FIREBASE_CLIENT_EMAIL')
-        private_key = os.environ.get('FIREBASE_PRIVATE_KEY')
-        if project_id and client_email and private_key:
-            firebase_admin.initialize_app(
-                credentials.Certificate({
-                    'type': 'service_account',
-                    'project_id': project_id,
-                    'client_email': client_email,
-                    'private_key': private_key.replace('\\n', '\n'),
-                })
-            )
-        else:
-            return None
-
-    return firestore.client()
-
-
-def load_queue_payload():
-    db = get_firestore_client()
+    db = _get_supabase_db()
     if db is None:
         return None
 
     try:
-        query = db.collection('youtube_queue').where('status', '==', 'pending')
-        if hasattr(firestore, 'Query') and hasattr(firestore.Query, 'DESCENDING'):
-            query = query.order_by('queuedAt', direction=firestore.Query.DESCENDING)
-        else:
-            query = query.order_by('queuedAt')
-        docs = query.limit(1).stream()
+        response = db.from_('youtube_queue') \
+            .select('*') \
+            .eq('status', 'pending') \
+            .order('queued_at', desc=False) \
+            .limit(1) \
+            .execute()
+        rows = response.data or []
     except Exception as exc:
-        print(f'Unable to query Firestore queue: {exc}')
+        print(f'Unable to query Supabase queue: {exc}')
         return None
 
-    for doc in docs:
-        payload = doc.to_dict() or {}
-        payload['__doc_id__'] = doc.id
-        if isinstance(payload.get('messages'), list):
-            payload['messages'] = payload['messages']
-        try:
-            doc.reference.update({'status': 'processing'})
-        except Exception as exc:
-            print(f'Failed to mark queue item as processing: {exc}')
-        return payload
+    if not rows:
+        return None
 
-    return None
+    row = rows[0]
+    row_id = row.get('id')
+    # Normalize keys to match expected payload format
+    payload = {
+        '__doc_id__': str(row_id),
+        'messages': row.get('messages', []),
+        'clip_mode': row.get('clip_mode', 'normal'),
+        'guild_id': row.get('guild_id'),
+        'guild_name': row.get('guild_name'),
+        'channel_id': row.get('channel_id'),
+        'channel_name': row.get('channel_name'),
+        'media_summary': row.get('media_summary', []),
+    }
+    try:
+        db.from_('youtube_queue').update({'status': 'processing'}).eq('id', row_id).execute()
+    except Exception as exc:
+        print(f'Failed to mark queue item as processing: {exc}')
+    return payload
 
 
 prompt = f"""
