@@ -27,12 +27,11 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Generate Script from Firestore queue or Gemini fallback
+      - name: Generate Script from Supabase queue or Gemini fallback
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
-          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
+          NOTABOT_SUPABASE_URL: ${{ secrets.NOTABOT_SUPABASE_URL }}
+          NOTABOT_SUPABASE_SERVICE_KEY: ${{ secrets.NOTABOT_SUPABASE_SERVICE_KEY }}
         run: |
           python scripts/generate_script.py
 
