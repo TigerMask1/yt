@@ -1,0 +1,16 @@
+[
+  {"pattern": "generic_insult", "description": "Lines like 'you're so dumb' with no specific detail", "detector": "reverse_test: could any character say this in any script?"},
+  {"pattern": "panic_expose_beg", "description": "character panics → NOTABOT exposes → they beg → NOTABOT delivers punchline. Same 4-step arc every time.", "detector": "structure_check: does the arc match this 4-step template exactly?"},
+  {"pattern": "wrap_up_ending", "description": "Last line is a summary or moral ('well that was a disaster')", "detector": "ending_check: does the last line summarise what happened?"},
+  {"pattern": "uniform_rhythm", "description": "Every line is 5-10 words lowercase. No variation in length or energy.", "detector": "code: standard deviation of word-count-per-line < 2.5"},
+  {"pattern": "pile_on", "description": "More than 2 characters roasting the same target in the same 5-line block", "detector": "code: 3+ different speakers targeting same character consecutively"},
+  {"pattern": "self_explaining_joke", "description": "A character explains why their own line is funny", "detector": "voice_critic: flag any line that explains the previous line"},
+  {"pattern": "filler_phrases", "description": "bro what / wait what / oh no / that's crazy / no way / lmaooo used as a full message", "detector": "code: banned_phrase_list match", "banned_phrases": ["bro what", "wait what", "oh no", "that's crazy", "no way", "lmaooo", "ngl", "istg", "lowkey"]},
+  {"pattern": "emoji_spam", "description": "More than 3 emojis in a single message, or the same emoji 3+ times in a row", "detector": "code: emoji count per line and consecutive repeat check"},
+  {"pattern": "missing_escalation", "description": "Conflict energy is flat across the whole script", "detector": "structure_critic: check that beat 3 tension score > beat 1"},
+  {"pattern": "missing_callback", "description": "A detail is planted but never paid off", "detector": "structure_critic: every plant in the beat sheet must resolve"},
+  {"pattern": "dated_premise", "description": "Any reference to a real event, game, movie, song, or person by name", "detector": "safety_critic + code: banned_reference_list match"},
+  {"pattern": "uniform_notabot", "description": "NOTABOT has the same role in 3 consecutive episodes", "detector": "ledger: check notabot_role for last 3 entries"},
+  {"pattern": "every_line_a_quip", "description": "Every message is a tidy complete quip. No burst typing, no fragments, no ignored messages.", "detector": "chat_realism_critic: flag if no burst pattern detected in script"},
+  {"pattern": "all_caps_default", "description": "Characters use ALL CAPS panic as the default register, not earned emphasis", "detector": "code: capitalisation_ratio > 0.4"}
+]

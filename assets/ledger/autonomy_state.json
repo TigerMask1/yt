@@ -1,0 +1,11 @@
+{
+  "current_level": 0,
+  "episodes_at_level": 0,
+  "total_episodes": 0,
+  "safety_flags_last_30": 0,
+  "override_rate_last_30": 0.0,
+  "canary_healthy": true,
+  "last_promotion_check": null,
+  "promotion_history": [],
+  "demotion_history": []
+}

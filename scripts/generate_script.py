@@ -358,8 +358,24 @@ def main(argv=None):
     if queue_payload is not None:
         script_content = build_script_from_queue_item(queue_payload)
     else:
-        print("Generating script with Gemini...")
+        # ── NOTABOT Script Engine ─────────────────────────────────────────────
+        # Route through the multi-agent supervisor instead of a bare Gemini call.
+        print("[generate_script] Routing to NOTABOT Script Engine (supervisor)...")
+        try:
+            from supervisor import run_episode
+            ep_result = run_episode(is_long=IS_LONG)
+            if ep_result.gate_verdict == "PASS":
+                print(f"[generate_script] Script Engine PASS — episode {ep_result.episode_id}")
+                print(f"[generate_script] Script saved to: {ep_result.script_path}")
+                return 0  # script already saved by supervisor/assembler
+            else:
+                print(f"[generate_script] Script Engine returned {ep_result.gate_verdict}. "
+                      "Falling back to legacy Gemini generation...")
+                # fall through to legacy path below
+        except Exception as _sup_err:
+            print(f"[generate_script] Supervisor error: {_sup_err}. Falling back to legacy path.")
 
+        # ── Legacy fallback (single-shot Gemini) ─────────────────────────────
         script_content = None
         last_error = None
         for model_name in MODEL_FALLBACKS:

@@ -1,0 +1,51 @@
+{
+  "contrast_pairs": [
+    {
+      "id": "burst_vs_wall",
+      "behavior": "burst_typing",
+      "good": [
+        {"speaker": "ducky", "line": "NOTABOT"},
+        {"speaker": "ducky", "line": "NOTABOT"},
+        {"speaker": "ducky", "line": "it took admin"},
+        {"speaker": "ducky", "line": "guys"},
+        {"speaker": "ducky", "line": "GUYS"}
+      ],
+      "bad": [
+        {"speaker": "ducky", "line": "NOTABOT just took admin from me and locked me out of the server and now its posting random stuff in every channel and I cant stop it what do I do"}
+      ],
+      "annotation": "The burst version gives each line a beat. The wall version kills the pacing and makes it sound written."
+    },
+    {
+      "id": "ignored_message",
+      "behavior": "ignored_message_callback",
+      "good": [
+        {"speaker": "fatas", "line": "can we eat"},
+        {"speaker": "ducky", "line": "NOTABOT STOP"},
+        {"speaker": "NOTABOT", "line": "denied."},
+        {"speaker": "ducky", "line": "WHY"},
+        {"speaker": "NOTABOT", "line": "case #0044: reasons."},
+        {"speaker": "fatas", "line": "so that's a no"}
+      ],
+      "bad": [
+        {"speaker": "fatas", "line": "can we eat"},
+        {"speaker": "NOTABOT", "line": "no fatas we are in a crisis"},
+        {"speaker": "fatas", "line": "ok but after?"}
+      ],
+      "annotation": "The good version uses the ignored message delay as a deadpan punchline. The bad version addresses it immediately and kills the joke."
+    },
+    {
+      "id": "typed_vs_written",
+      "behavior": "typed_reaction",
+      "good": [
+        {"speaker": "ducky", "line": "i literally made you"},
+        {"speaker": "ducky", "line": "i made you dude"},
+        {"speaker": "ducky", "line": "hello??"}
+      ],
+      "bad": [
+        {"speaker": "ducky", "line": "I cannot believe that NOTABOT would do something like this to me, his creator."}
+      ],
+      "annotation": "The good version sounds like someone actually typing in real time. The bad version sounds like a stage direction."
+    }
+  ],
+  "note": "Extend this bank to 15-25 pairs using real chat exports from your server (names removed). The system sees 2-3 exemplars per episode, matched to the drawn mechanism, in rotation."
+}

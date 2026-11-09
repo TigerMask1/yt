@@ -82,7 +82,31 @@ def upload_video():
 
     video_id = response.get('id')
     print(f"Upload Complete! Video ID: {video_id}")
-    
+
+    # ── Link video_id to ledger for analytics harvesting ─────────────────────
+    try:
+        import os as _os
+        import sys as _sys
+        _scripts_dir = _os.path.dirname(_os.path.abspath(__file__))
+        if _scripts_dir not in _sys.path:
+            _sys.path.insert(0, _scripts_dir)
+        import ledger as _ledger
+        _ep_id_path = _os.path.join(_scripts_dir, '..', 'assets', 'ledger', 'last_episode_id.txt')
+        _ep_id_path = _os.path.normpath(_ep_id_path)
+        if _os.path.exists(_ep_id_path):
+            with open(_ep_id_path, 'r', encoding='utf-8') as _f:
+                _ep_id = _f.read().strip()
+            if _ep_id:
+                _ledger.update_video_id(_ep_id, video_id)
+                print(f"[upload] Linked video {video_id} to episode {_ep_id} in ledger.")
+            else:
+                print("[upload] last_episode_id.txt is empty — skipping ledger link.")
+        else:
+            print("[upload] No last_episode_id.txt found — skipping ledger link.")
+    except Exception as _link_err:
+        print(f"[upload] Warning: Could not update ledger with video ID: {_link_err}")
+    # ─────────────────────────────────────────────────────────────────────────
+
     # Post a pinned NOTABOT-style comment
     post_comment(youtube, video_id, title)
 

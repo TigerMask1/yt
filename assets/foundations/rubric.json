@@ -1,0 +1,88 @@
+{
+  "pass_threshold": 32,
+  "max_score": 50,
+  "min_per_dimension": 2,
+  "originality_minimum": 3,
+  "dimensions": {
+    "hook": {
+      "weight": 1,
+      "anchors": {
+        "1": "Opening line could start any script. No tension.",
+        "3": "Opening creates curiosity but doesn't demand attention.",
+        "5": "Opening line makes a stranger stop scrolling."
+      }
+    },
+    "cold_clarity": {
+      "weight": 1,
+      "anchors": {
+        "1": "A new viewer cannot tell what is happening.",
+        "3": "A new viewer understands after 3-4 messages.",
+        "5": "A new viewer knows exactly what is happening from the first message."
+      }
+    },
+    "specificity": {
+      "weight": 1,
+      "anchors": {
+        "1": "Generic lines. Any character could say any line.",
+        "3": "Some specific details but falls back to generic roasts.",
+        "5": "Every line has a specific detail that makes it feel like a real event."
+      }
+    },
+    "escalation": {
+      "weight": 1,
+      "anchors": {
+        "1": "Conflict stays flat. Same energy start to finish.",
+        "3": "Conflict grows but inconsistently.",
+        "5": "Each beat raises the stakes measurably. No regression."
+      }
+    },
+    "surprise": {
+      "weight": 1,
+      "anchors": {
+        "1": "Ending can be guessed from the hook.",
+        "3": "Ending is moderately surprising.",
+        "5": "Ending could not have been predicted. The final line changes how you read the whole thing."
+      }
+    },
+    "character_voice": {
+      "weight": 1,
+      "anchors": {
+        "1": "Lines are interchangeable between characters.",
+        "3": "Characters sound mostly distinct but share phrases.",
+        "5": "Each character's lines could be attributed correctly with names removed."
+      }
+    },
+    "notabot_fit": {
+      "weight": 1,
+      "anchors": {
+        "1": "NOTABOT could be replaced by any sarcastic character.",
+        "3": "NOTABOT uses some of its mechanisms but feels generic.",
+        "5": "NOTABOT's role, voice, and mechanism are all correct for this episode's designated role."
+      }
+    },
+    "economy": {
+      "weight": 1,
+      "anchors": {
+        "1": "Multiple lines add nothing. Filler present.",
+        "3": "1-2 lines could be cut without losing anything.",
+        "5": "Zero filler. Removing any line loses a beat or a setup."
+      }
+    },
+    "ending": {
+      "weight": 1,
+      "anchors": {
+        "1": "Script trails off or ends mid-conflict.",
+        "3": "Ending is conclusive but expected.",
+        "5": "Ending is a button — the last line is the best line and recontextualises the whole script."
+      }
+    },
+    "originality": {
+      "weight": 1,
+      "anchors": {
+        "1": "Premise, hook, and shape all appear in the ledger.",
+        "3": "Premise is fresh but shape and ending type repeat.",
+        "5": "Premise, mechanism, and ending type have not appeared in the last 20 scripts."
+      }
+    }
+  }
+}

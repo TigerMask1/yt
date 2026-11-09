@@ -1,0 +1,40 @@
+name: NOTABOT Analytics Collector
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Runs daily at 06:00 UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  collect-analytics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Analytics Collector
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          python scripts/analytics_collector.py
+
+      - name: Commit Updated Ledger and Reports
+        run: |
+          git config --global user.email "notabot-ci@github.com"
+          git config --global user.name "NOTABOT Analytics Bot"
+          git add assets/ledger/ assets/reports/
+          git diff --staged --quiet || git commit -m "chore: update analytics ledger [skip ci]"
+          git push

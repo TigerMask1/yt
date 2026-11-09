@@ -1,0 +1,15 @@
+{
+  "hard_stops": [
+    "Real named people, living or dead, by their actual name",
+    "Real community members or server members by username",
+    "Any minors in violent or sexual content",
+    "Slurs or hate speech targeting any protected attribute",
+    "Jokes at the expense of appearance, identity, religion, or family",
+    "Sexual content",
+    "Self-harm, suicide, or instructions for dangerous acts",
+    "Claims that read as factually true about real companies or events",
+    "Copied lyrics, copied jokes, or plagiarised scripts",
+    "Any real-world event, news story, sports result, meme, or product name",
+    "Any reference that will date the script within 6 months"
+  ]
+}

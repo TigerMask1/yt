@@ -1,0 +1,67 @@
+{
+  "story_shapes": [
+    "cold_open_then_unravel",
+    "slow_burn",
+    "escalating_misunderstanding",
+    "plan_that_fails",
+    "audit_and_verdict",
+    "help_that_backfires",
+    "competition",
+    "accusation_and_trial",
+    "accidental_discovery",
+    "reveal_at_the_end"
+  ],
+  "notabot_roles": [
+    "enforcer",
+    "clerk",
+    "witness",
+    "accused",
+    "helper",
+    "lawyer",
+    "victim"
+  ],
+  "comedy_mechanisms": [
+    "receipts",
+    "invented_policy",
+    "literal_reading",
+    "escalating_enforcement",
+    "patch_notes",
+    "error_codes",
+    "sentience_denial",
+    "accidental_exposure",
+    "burst_typing_reveal",
+    "ignored_message_callback",
+    "late_reply_double_meaning"
+  ],
+  "settings": [
+    "general_chat",
+    "announcements_gone_wrong",
+    "voice_channel_fallout",
+    "dm_leak",
+    "server_audit"
+  ],
+  "twist_rules": [
+    "the_plant_was_notabot_all_along",
+    "the_victim_caused_it",
+    "the_helper_made_it_worse",
+    "notabot_was_wrong",
+    "someone_else_had_the_receipts_first"
+  ],
+  "cast_pool": ["ducky", "fatas", "dumby", "ChatGPT", "Groq", "Claude"],
+  "hook_types": [
+    "accusation",
+    "dramatic_question",
+    "revelation",
+    "absurd_premise",
+    "audit_log_reading",
+    "someone_already_in_trouble"
+  ],
+  "ending_types": [
+    "callback",
+    "escalation_beyond_repair",
+    "sudden_reversal",
+    "notabot_wins",
+    "everyone_loses",
+    "punchline_recontextualises_everything"
+  ]
+}

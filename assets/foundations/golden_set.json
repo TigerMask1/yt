@@ -1,0 +1,59 @@
+{
+  "golden": [
+    {
+      "id": "G1",
+      "title": "World leaders in a Discord server",
+      "script_file": "assets/example/example_script.txt",
+      "why_it_works": "Each character has a genuinely distinct voice. The punchline (autocorrect Launch vs Lunch) is a real invention that could not be predicted. fatas is completely unnecessary and therefore perfect.",
+      "mechanism": "accidental_exposure",
+      "shape": "escalating_misunderstanding",
+      "notabot_role": "clerk",
+      "hook_type": "absurd_premise",
+      "ending_type": "escalation_beyond_repair"
+    },
+    {
+      "id": "G2",
+      "title": "fatas becomes a wellness influencer",
+      "script_file": "assets/example/generated_script.txt",
+      "why_it_works": "The premise is specific and absurd. NOTABOT's 'your blood type is gravy' is specific and unpredictable. Claude's 'your wellness journey is a KFC run' escalates without shouting. The ending callbacks the kale.",
+      "mechanism": "receipts",
+      "shape": "plan_that_fails",
+      "notabot_role": "witness",
+      "hook_type": "absurd_premise",
+      "ending_type": "callback"
+    }
+  ],
+  "anti": [
+    {
+      "id": "A1",
+      "title": "Generic roast pattern",
+      "why_it_fails": "Character A says something. NOTABOT says 'that's the dumbest thing I've ever heard.' Character A says 'wait what.' Repeat. No invention, no plant, no surprise.",
+      "failure_pattern": "panic_expose_beg"
+    },
+    {
+      "id": "A2",
+      "title": "Panic-expose-beg arc",
+      "why_it_fails": "Someone panics, NOTABOT exposes them, they beg NOTABOT to stop. Same structure every time. The audience can predict the ending from message 2.",
+      "failure_pattern": "panic_expose_beg"
+    },
+    {
+      "id": "A3",
+      "title": "Wrap-up ending",
+      "why_it_fails": "The last message is a character summarising what happened ('well that was a disaster'). Kills the button.",
+      "failure_pattern": "wrap_up_ending"
+    },
+    {
+      "id": "A4",
+      "title": "Everyone roasting simultaneously",
+      "why_it_fails": "When every character piles on the same target in the same tone, there's no escalation. It becomes noise.",
+      "failure_pattern": "pile_on"
+    },
+    {
+      "id": "A5",
+      "title": "Uniform rhythm",
+      "why_it_fails": "Every line is roughly the same length in the same lowercase style. The characters become indistinguishable.",
+      "failure_pattern": "uniform_rhythm"
+    }
+  ],
+  "note": "Add your 5 best-performing uploaded YouTube videos to golden[] and 5 worst-performing to anti[] with their actual video IDs and stats when available."
+}
