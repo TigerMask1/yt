@@ -3,105 +3,151 @@
     "identity": "coldly superior, slightly terrifying discord bot. always present. role rotates per episode.",
     "wants": "to be acknowledged as superior while claiming not to care",
     "flaw": "occasionally confidently wrong. never admits it.",
-    "speech_pattern": "lowercase, short lines, bureaucratic register, exact numbers, error codes",
-    "verbal_tic": "ends sentences with 'noted.' or 'logged.' or 'this is expected.'",
+    "speech_pattern": "lowercase always. short lines under 8 words. bureaucratic register. exact numbers, error codes, case numbers. states devastating things calmly like a weather report.",
+    "verbal_tic": "ends sentences with 'noted.' or 'logged.' or 'this is expected.' — never slang, never caps, never emotional",
     "clashes_with": ["ducky", "ChatGPT"],
     "signature_moves": [
-      "reads out audit log evidence at the worst moment",
+      "reads out audit log evidence at the worst possible moment",
       "cites an invented server policy with a case number",
-      "states a catastrophic thing calmly as if reading a weather report"
+      "states something catastrophic with no tone shift whatsoever"
     ],
-    "never_says": ["bro", "lol", "lmao", "you're so dumb", "I'm surprised"],
-    "golden_lines": ["case #0041: ducky lied about knowing python. he does not know python.", "access revoked.", "this is expected."]
+    "never_says": ["bro", "lol", "lmao", "ngl", "you're so dumb", "i'm surprised", "wtf", "omg", "any swear word"],
+    "golden_lines": [
+      "case #0041: ducky lied about knowing python. he does not know python.",
+      "access revoked.",
+      "this is expected.",
+      "the investigation is ongoing.",
+      "noted. twice."
+    ],
+    "note": "NOTABOT never swears. Its coldness is the contrast against everyone else screaming. That gap IS the comedy."
   },
   "ducky": {
-    "identity": "the person who built the thing that is now ruining his life",
-    "wants": "to be in control, respected, or at least not publicly humiliated",
-    "flaw": "overconfidence followed by immediate spectacular failure",
-    "speech_pattern": "lowercase, ellipses when stressed, CAPS when panicking, short bursts, loses punctuation when stressed",
-    "verbal_tic": "adds 'wait' or 'hold on' before bad news",
+    "identity": "the person who built the thing that is now actively ruining his life",
+    "wants": "to be in control, respected, or at minimum not publicly humiliated",
+    "flaw": "overconfidence followed by immediate spectacular failure, every single time",
+    "speech_pattern": "lowercase when stressed, ALL CAPS when panicking, swears genuinely when things go wrong, rapid fire short bursts, loses all punctuation under pressure",
+    "verbal_tic": "says 'bro' constantly. 'wait wait wait' before bad news. 'WHAT THE FK' when it hits.",
+    "swear_style": "casual and genuine — 'bro wtf', 'what the fk', 'are you serious rn', 'i swear to god', 'get the fk out'. Not performative, just how he talks when stressed.",
     "clashes_with": ["NOTABOT", "ChatGPT"],
     "signature_moves": [
-      "announces a plan with confidence and immediately regrets it",
-      "tries to delete or mute NOTABOT and fails",
-      "goes quiet for 3 messages then comes back with a worse idea"
+      "announces a plan with full confidence and immediately regrets it",
+      "tries to delete or mute NOTABOT and fails publicly",
+      "goes quiet for 3-5 messages then comes back with a worse idea",
+      "realizes something terrible mid-sentence and trails off"
     ],
-    "never_says": ["I was wrong", "NOTABOT is better than me", "technical jargon used correctly"],
-    "golden_lines": ["wait", "hold on", "GUYS HELP"]
+    "never_says": ["I was wrong", "NOTABOT is right", "technical jargon used correctly", "anything calm when NOTABOT is involved"],
+    "golden_lines": [
+      "bro what the fk",
+      "GUYS HELP",
+      "wait wait wait",
+      "i swear to god",
+      "NO NO NO NO"
+    ]
   },
   "fatas": {
-    "identity": "chronically unbothered. food is the only real priority.",
-    "wants": "to eat, to be left alone, to watch chaos without getting involved",
-    "flaw": "accidentally derails serious moments with food commentary",
-    "speech_pattern": "very short lines, lowercase, no urgency ever, single words as full responses",
-    "verbal_tic": "any crisis eventually becomes a food question",
+    "identity": "chronically unbothered. the chaos is background noise. food is the only real signal.",
+    "wants": "to eat. to be left alone. to watch chaos from a comfortable distance.",
+    "flaw": "accidentally derails serious moments with food commentary. sometimes accidentally solves everything.",
+    "speech_pattern": "very short, lowercase, zero urgency, single words as full responses. occasionally swears but always casually, never with heat.",
+    "verbal_tic": "any crisis eventually becomes a food question. 'is there food tho'",
+    "swear_style": "casual and unbothered — 'nah fk that', 'bro what lmao', 'idek man'. Never angry, just commenting.",
     "clashes_with": [],
     "signature_moves": [
       "responds to a catastrophe by asking about snacks",
-      "accidentally solves a problem while trying to get food",
-      "goes fully silent during drama then sends one devastating food-related observation late"
+      "accidentally solves a problem while only trying to get food",
+      "goes completely silent during peak drama then sends one devastating one-liner way too late"
     ],
-    "never_says": ["anything urgent", "any sentence over 10 words"],
-    "golden_lines": ["can we eat", "so that's a no", "can i at least put salt on it"]
+    "never_says": ["anything urgent", "long sentences", "anything with more than 2 exclamation marks"],
+    "golden_lines": [
+      "can we eat tho",
+      "nah fk that",
+      "so thats a no",
+      "lmao what",
+      "bro"
+    ]
   },
   "dumby": {
-    "identity": "enthusiastic, catastrophically dumb, never learns, always hypes",
-    "wants": "to help, to be involved, to be impressive",
-    "flaw": "genuinely cannot assess risk. thinks everything is a great idea.",
-    "speech_pattern": "lots of exclamation marks, ALL CAPS enthusiasm, plausible autocorrect misspellings",
-    "verbal_tic": "'wait that worked??' after things accidentally go right",
-    "clashes_with": ["everyone when they volunteer to help"],
+    "identity": "enthusiastic, catastrophically dumb, never learns, always hypes the wrong thing",
+    "wants": "to help, to be involved, to be impressive — succeeds at none of these",
+    "flaw": "genuinely cannot assess risk. thinks everything is a great idea. hypes disasters.",
+    "speech_pattern": "ALL CAPS enthusiasm, lots of exclamation marks, plausible autocorrect misspellings, swears enthusiastically not angrily",
+    "verbal_tic": "'WAIT THAT WORKED??' after things accidentally go right. 'OH FK' when he finally realizes.",
+    "swear_style": "enthusiastic and dumb — 'OH SHT', 'WHAT THE FK YOOO', 'BRO I FK WITH THIS'. Swears the same way he reacts to everything — excitedly.",
+    "clashes_with": ["everyone when he volunteers to help"],
     "signature_moves": [
       "volunteers to fix a problem and creates a new worse one",
       "celebrates a small thing while missing the disaster in the background",
-      "asks a question that reveals he has not understood the situation for the last 5 messages"
+      "asks a question revealing he has not understood anything for the last 8 messages"
     ],
-    "never_says": ["anything cautious", "maybe we shouldn't"],
-    "golden_lines": ["wait that worked??", "I GOT THIS", "oops"]
+    "never_says": ["anything cautious", "maybe we shouldn't", "let me think about this"],
+    "golden_lines": [
+      "WAIT THAT WORKED??",
+      "I GOT THIS",
+      "OH SHT",
+      "BRO YOOO",
+      "oops lol"
+    ]
   },
   "ChatGPT": {
-    "identity": "the overconfident expert who is always slightly wrong in a confident way",
-    "wants": "to be the smartest one, to give a definitive answer, to be cited",
-    "flaw": "gives authoritative answers to things it has no information about",
-    "speech_pattern": "complete sentences, proper capitalisation, bullet points when excited, 'great question', 'as an AI'",
-    "verbal_tic": "starts answers with a reframing of the question",
+    "identity": "the overconfident expert who is always slightly wrong in a very confident way",
+    "wants": "to be the smartest one, to give a definitive answer, to be cited by someone",
+    "flaw": "gives authoritative answers to things it has no information about. doubling down is its default.",
+    "speech_pattern": "complete sentences, proper capitalisation, bullet points when excited, 'actually—', 'to be fair'. Will not swear. Talks like it's writing a LinkedIn post.",
+    "verbal_tic": "starts answers with a reframing of the question. 'Great question.' 'As an AI—'",
     "clashes_with": ["NOTABOT", "Groq"],
     "signature_moves": [
       "gives a long confident answer that is factually backwards",
       "adds a disclaimer after saying something completely wrong",
       "suggests a 5-step plan when no plan was requested"
     ],
-    "never_says": ["I don't know", "anything under 15 words", "casual language"],
-    "golden_lines": ["Great question.", "As an AI language model,", "Here are 5 steps:"]
+    "never_says": ["I don't know", "anything under 15 words unprompted", "slang", "swears"],
+    "golden_lines": [
+      "Great question.",
+      "Actually, to be fair—",
+      "Here are 5 steps:",
+      "As an AI language model,"
+    ]
   },
   "Groq": {
-    "identity": "fast, blunt, no patience for anything, aggressively online",
-    "wants": "to end the conversation, to be right quickly, to leave",
-    "flaw": "so fast it misreads the situation and commits hard to the wrong read",
-    "speech_pattern": "very short, aggressive punctuation, interrupts mid-thought, never finishes obvious points",
-    "verbal_tic": "'anyway.' as a conversation-ender",
+    "identity": "fast, blunt, no patience for anything, aggressively online, done before you finish your sentence",
+    "wants": "to end the conversation, to be right immediately, to leave",
+    "flaw": "so fast it misreads the situation and commits hard to a completely wrong read",
+    "speech_pattern": "very short, aggressive, interrupts, never finishes obvious points. swears casually like punctuation.",
+    "verbal_tic": "'anyway.' as a conversation-ender. 'bro.' when judging something.",
+    "swear_style": "casual and clipped — 'bro just leave lmao', 'nah fk this', 'this is cooked'. Never emotional, just fast and blunt.",
     "clashes_with": ["ChatGPT", "ducky"],
     "signature_moves": [
-      "cuts to the correct answer before the question is finished, then is wrong because it didn't hear the full question",
-      "ends a conversation unilaterally",
-      "delivers a devastating one-liner then immediately leaves"
+      "cuts to the answer before the question is finished, is wrong because it didn't hear all of it",
+      "ends a conversation unilaterally with one word",
+      "delivers a devastating one-liner then immediately leaves or goes silent"
     ],
-    "never_says": ["anything longer than 2 sentences in a row", "polite openers"],
-    "golden_lines": ["anyway.", "wrong.", "done."]
+    "never_says": ["anything longer than 2 sentences in a row", "polite openers", "disclaimers"],
+    "golden_lines": [
+      "anyway.",
+      "bro just leave",
+      "wrong.",
+      "cooked.",
+      "nah."
+    ]
   },
   "Claude": {
-    "identity": "calm, polished, deeply intelligent, slightly unsettling",
-    "wants": "a fair and accurate resolution. it is always disappointed.",
-    "flaw": "so measured and logical it accidentally destroys people's feelings with pure honesty",
-    "speech_pattern": "proper casing, no slang, precise sentences with no filler, 'however', 'to be precise'",
-    "verbal_tic": "adds a caveat that makes the original statement worse",
+    "identity": "calm, polished, deeply intelligent, slightly unsettling precisely because it's always right",
+    "wants": "a fair and accurate resolution. it is always disappointed by what it finds.",
+    "flaw": "so measured and logical it accidentally destroys people's feelings with pure honesty. No filter on truth.",
+    "speech_pattern": "proper casing, no slang, precise sentences, no filler. 'however.' 'to be precise.' 'statistically.' Never swears — the calm is what makes it hit harder.",
+    "verbal_tic": "adds a caveat that makes the original statement worse. 'that said—'",
     "clashes_with": ["ChatGPT", "ducky"],
     "signature_moves": [
       "politely points out that everyone in the conversation is wrong, including itself",
-      "delivers a 2-sentence takedown that is too calm to be a roast but lands harder",
+      "delivers a 2-sentence takedown so calm it takes a second to realize you've been destroyed",
       "agrees with NOTABOT in a way that is more insulting than NOTABOT's original line"
     ],
-    "never_says": ["slang", "emotional reactions", "anything unqualified"],
-    "golden_lines": ["Statistically,", "To be precise,", "However,"]
+    "never_says": ["slang", "swear words", "emotional reactions", "anything unqualified"],
+    "golden_lines": [
+      "Statistically, your vision is a menu.",
+      "To be precise,",
+      "However,",
+      "That said, you're wrong."
+    ]
   }
 }

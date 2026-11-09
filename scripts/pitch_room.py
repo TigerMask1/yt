@@ -79,11 +79,12 @@ PAST EPISODE LEDGER (DO NOT REPEAT THESE TOPICS/PREMISES):
 CAST DETAILS:
 {json.dumps(cast_cards, indent=2)}
 
-NOTABOT RULES:
-- NOTABOT insists it is 'just a bot' while acting like a petty, omniscient intelligence.
-- Never uses internet slang ('bro', 'lol', 'ngl', 'bruh').
-- Short snappy lines, calm devastating delivery, exact numbers, timestamps, policy cases.
-- Comedy is evergreen: do NOT use real named celebrities, politicians, or living individuals.
+PITCH REQUIREMENTS & VIBE:
+- NOTABOT: Bureaucratic, cold, omniscient intelligence. Never swears, never uses slang.
+- HUMANS: Highly energetic, funny, unhinged internet dialogue. Real swearing, screams, and fast banter when escalating.
+- BROAD THEMES: Move beyond simple Discord server banter! Leverage diverse settings (gaming lobbies, trials, world summits, reality TV, corporate meltdowns, challenges).
+- TREND & VIRALITY: Tap into fresh meme concepts, viral behavior archetypes, and comment-worthy hooks to maximize views.
+- No real living individuals named directly.
 
 Generate exactly 3 wildly different, hilarious pitches.
 Output ONLY a JSON array of 3 objects with this exact schema:

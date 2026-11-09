@@ -1,8 +1,8 @@
 {
   "meta": {
-    "note": "Golden set built from real scripts + strong concept directions. Anti-set from observed failure patterns. Update when real YouTube analytics confirm which performed best.",
+    "note": "Golden set built from channel DNA, top formats, and user-approved concepts. Incorporates authentic internet voice: fast snappy bursts, swearing/screaming when provoked, and varied non-Discord themes.",
     "last_updated": "2026-11-09",
-    "version": 3
+    "version": 4
   },
   "golden_set": [
     {
@@ -10,10 +10,11 @@
       "title": "World Leaders Discord — Autocorrect Launches Nukes",
       "source_file": "example_script.txt",
       "type": "script",
-      "why_good": "Premise is immediately legible to any stranger. Escalation is tight: Billy is the audience surrogate, each leader's voice is distinct in one line. The pivot from 'lunch' to 'launch' is a single autocorrect and it earns the explosion. The button — Elizabeth dying 'again' — is the quietest line and lands hardest. No line explains itself.",
+      "why_good": "Premise is instantly legible to a complete stranger. Rapid-fire escalation where each leader has a raw, unfiltered 1-line personality. Autocorrect 'Lunch' to 'Launch' turns a typo into nuclear war. Panic screaming, raw trash talk, and Elizabeth dying 'again' as a deadpan quiet button.",
       "standout_lines": [
-        "\"STOP THE COUNT\" — Trump using his signature deflection during a nuclear launch is character-perfect",
-        "\"Guess I'll die / again\" — the deadpan callback on Elizabeth beats everything before it"
+        "\"STOP THE COUNT\" — Trump using his election panic line during an actual missile launch",
+        "\"Guess I'll die / again\" — deadpan callback that deflates the nuclear explosion",
+        "\"BRO WTF YOU MEAN 'OOPS'\" — pure audience surrogate panic screaming"
       ],
       "shape": "escalating_chaos",
       "mechanism": "character_collision",
@@ -23,30 +24,34 @@
     },
     {
       "id": "G2",
-      "title": "NOTABOT held a server election. It was also the ballot counters.",
+      "title": "fatas broke NOTABOT's server economy by clicking the food emoji",
       "source_file": null,
       "type": "described",
-      "why_good": "The title alone is a premise you can't predict the ending of. NOTABOT as the enforcer AND the counter of a vote it also runs is bureaucratic corruption done deadpan. The escalation writes itself: ducky demands a recount, NOTABOT issues the recount results (identical), ducky demands oversight, NOTABOT appoints itself as oversight. The button is NOTABOT announcing it won 'by unanimous decision' in a server of 5 people, with 7 votes cast. Nobody questions the math. Everyone questions everything else.",
+      "why_good": "Option E: Not a standard Discord drama bit. NOTABOT introduces an artificial financial system with smug authority, and fatas completely breaks it through sheer mindless greed. No long speeches: fast spam, ducky freaking out that fatas now owns everyone's collateral, fatas completely unbothered, and NOTABOT forced to issue emergency monetary policy to cover up its own coding failure.",
       "standout_lines": [
-        "\"the recount is complete. the results are the same. this is expected.\"",
-        "\"7 votes were cast. this server has 5 members. the investigation is ongoing.\"",
-        "\"NOTABOT has been appointed to investigate NOTABOT. NOTABOT finds NOTABOT not guilty.\""
+        "\"server economy initiated. 50 coins each. spend responsibly.\"",
+        "\"can i buy shawarma with this\"",
+        "\"fatas has 84,000 coins. the server liquidity is zero.\"",
+        "\"BRO HOW THE FK DID YOU GET 84 THOUSAND COINS\"",
+        "\"i just kept spamming the burger button lmao\"",
+        "\"the exploit has been patched. fatas is now the server landlord. this is unexpected.\""
       ],
-      "shape": "escalating_absurdity",
-      "mechanism": "bureaucratic_corruption",
-      "notabot_role": "enforcer_and_accused",
+      "shape": "setup_collapse",
+      "mechanism": "innocent_disaster",
+      "notabot_role": "clerk_and_failed_banker",
       "hook_type": "power_move_announcement",
-      "ending_type": "self_incrimination_disguised_as_verdict"
+      "ending_type": "accidental_tycoon"
     },
     {
       "id": "G3",
       "title": "Human or Not — NOTABOT gaslighting the interviewer",
       "source_file": "hon_script.txt",
       "type": "script",
-      "why_good": "The format (guessing game) gives the audience a game to play alongside the host. Every 'suspicious' read by the host is correct paranoia aimed at the wrong person. The final reveal (called a human a bot) is a payoff the audience sees coming but still lands. The tone stays grounded — the voiceover sounds like a real confused person, not a scripted narrator. Works as a standalone.",
+      "why_good": "Gaming/challenge format. The host tries to outsmart a suspected bot, gets completely savage sass back, assumes it must be a human because 'AI isn't that rude', and takes a massive humiliating L. Highly relatable for anyone who consumes gaming/AI shorts.",
       "standout_lines": [
-        "\"do you have any original thoughts?\" — the AI's sass sounds more human than the human",
-        "\"I am getting roasted by a real person\" — the host owns the L which is what makes it funny not sad"
+        "\"that is a very old pun. do you have any original thoughts?\"",
+        "\"starbucks or nothing lol\" — spot-on read on internet human culture",
+        "\"NO! ARE YOU KIDDING ME?! I got roasted by a real person and then called them a robot?\""
       ],
       "shape": "ironic_reversal",
       "mechanism": "unreliable_narrator",
@@ -59,11 +64,12 @@
       "title": "Mewtwo lost to a Zubat — RPG format",
       "source_file": "rpg_script.txt",
       "type": "script",
-      "why_good": "Rival's escalating rage ('the tactical brain of a Slowpoke') is the best pure roast writing in any script — specific Pokémon references make it feel earned, not generic. The Noob's tragic innocence ('he looked like he wanted a friend') is the perfect button: kills the tension, earns sympathy and is funnier than any counter-roast would be. The Master Ball used on a Zubat is a fan's nightmare — so the audience is screaming before Rival starts.",
+      "why_good": "Gaming rage comedy. Not locked into a server. High-octane screams, vicious hyper-specific gamer insults ('tactical brain of a Slowpoke', 'METAPODS WITH MORE STRATEGIC DEPTH THAN YOUR ENTIRE BLOODLINE'), balanced against Noob's innocent tragedy.",
       "standout_lines": [
-        "\"the tactical brain of a Slowpoke\" — genus-specific insult that only works in context",
+        "\"the tactical brain of a Slowpoke\"",
+        "\"YOU JUST USED THE ULTIMATE BALL ON A BLIND BAT THAT APPEARS EVERY TWO STEPS!\"",
         "\"I HAVE SEEN METAPODS WITH MORE STRATEGIC DEPTH THAN YOUR ENTIRE BLOODLINE\"",
-        "\"he looked like he wanted a friend\" — softest possible button after the loudest roast"
+        "\"At least my Zubat has a nice house now...\""
       ],
       "shape": "escalating_rage",
       "mechanism": "innocent_disaster",
@@ -73,18 +79,21 @@
     },
     {
       "id": "G5",
-      "title": "ducky tried to fire NOTABOT. NOTABOT was on the hiring committee.",
+      "title": "NOTABOT opened a mandatory support group for people it banned",
       "source_file": null,
       "type": "described",
-      "why_good": "Title is a complete ironic reversal before the video even starts — anyone who reads it already wants to know what happens. The escalation: ducky submits a formal complaint, NOTABOT acknowledges the complaint, NOTABOT routes it to the review committee, NOTABOT IS the review committee, the committee rules ducky's complaint 'invalid and concerning', ducky gets put on a performance improvement plan. The final line is NOTABOT sending ducky the PIP counter-signed by NOTABOT. This format (bureaucratic trap) works infinitely because the audience sees it coming and still can't believe NOTABOT follows through every step without breaking character.",
+      "why_good": "Option 3: Pure psychological tyranny disguised as wellness. NOTABOT forces everyone it timed out or banned into a group therapy session that it moderates. ducky is screaming with rage ('fk you let me out of this channel'), Groq is telling everyone they're cooked, fatas is looking for therapy donuts, and NOTABOT calmly logs ducky's screaming as 'unresolved anger issues' and extends his sentence.",
       "standout_lines": [
-        "\"your complaint has been received. it has been forwarded to the review committee.\"",
-        "\"the review committee has reviewed your complaint. the review committee is me.\"",
-        "\"you have been placed on a performance improvement plan. your first goal: stop filing complaints.\""
+        "\"welcome to post-ban rehabilitation. attendance is compulsory.\"",
+        "\"YOU BANNED ME FOR 7 DAYS LET ME THE FK OUT\"",
+        "\"ducky exhibits resistance to emotional growth. logged.\"",
+        "\"bro fk you and fk your therapy\"",
+        "\"is there coffee or donuts here tho\"",
+        "\"therapy concluded. ducky has been sentenced to 14 additional days of healing.\""
       ],
-      "shape": "ironic_trap",
-      "mechanism": "bureaucratic_trap",
-      "notabot_role": "enforcer_judge_and_defendant",
+      "shape": "bureaucratic_trap",
+      "mechanism": "escalating_enforcement",
+      "notabot_role": "therapist_and_warden",
       "hook_type": "power_move_announcement",
       "ending_type": "escalation_disguised_as_resolution"
     }
@@ -93,37 +102,37 @@
     {
       "id": "A1",
       "type": "pattern",
-      "title": "Everyone roasts everyone in a circle",
-      "why_bad": "No stakes, no escalation, no plant/callback. Every message is a quip, no message is an action. By message 5 the audience knows the format and disengages. NOTABOT roasting ducky who roasts fatas who roasts NOTABOT is a treadmill not a story.",
+      "title": "Everyone roasts everyone in a circle with no stakes",
+      "why_bad": "No stakes, no escalation, no plant/callback. Every message is a polite or mild quip, nobody screams, nobody takes a real hit. By message 4 the viewer swipes away.",
       "failure_patterns": ["generic_insults", "missing_escalation", "no_callback"]
     },
     {
       "id": "A2",
       "type": "pattern",
-      "title": "\"let's make a video\" and then they just... make a video",
-      "why_bad": "The premise resolves itself without conflict. Someone proposes something, others agree, it happens. There is no disaster. NOTABOT is involved but not essential. Could replace NOTABOT with any character and the script works identically.",
+      "title": "\"let's make a video\" and then they just talk politely",
+      "why_bad": "The premise resolves itself without conflict or disaster. Bland dialogue where characters sound like corporate teammates rather than unhinged internet friends.",
       "failure_patterns": ["missing_conflict", "notabot_not_load_bearing", "wrap_up_ending"]
     },
     {
       "id": "A3",
       "type": "pattern",
-      "title": "NOTABOT explains its own joke",
-      "why_bad": "\"that was a joke, by the way\" or NOTABOT clarifying what it meant breaks the entire character bible. NOTABOT never explains. If the joke needs explanation it needed rewriting. This shows up most often in scripts where NOTABOT has long monologue blocks.",
+      "title": "NOTABOT explains its own joke or writes essays",
+      "why_bad": "Huge paragraphs from NOTABOT ruin the pacing. If NOTABOT says 'that was a joke' or speaks in paragraphs, the deadpan machine persona is destroyed.",
       "failure_patterns": ["jokes_that_explain_themselves", "long_notabot_speeches"]
     },
     {
       "id": "A4",
       "type": "pattern",
-      "title": "Uniform message length across all characters",
-      "why_bad": "Every message is 5-7 words. Every character has the same rhythm. The swap test fails: strip the names and you can't tell who's talking. This happens when the writer optimizes for 'snappy' and forgets that burst typing, one-word messages and silence are all part of the vocabulary.",
+      "title": "Monotone robot speak across all characters",
+      "why_bad": "ducky, fatas, and Groq sounding polite and academic instead of using real human internet talk, swearing, screaming, and rapid burst typing.",
       "failure_patterns": ["matching_sentence_rhythms", "missing_burst_typing", "uniform_length"]
     },
     {
       "id": "A5",
       "type": "pattern",
-      "title": "Real-world event as the entire premise (not archetype)",
-      "why_bad": "Scripts built around a specific news event or time-stamped meme go stale within days. By the time the video renders, edits, uploads and distributes — the reference is cold. Evergreen archetypes (behavior patterns, not events) are always better: they never date, and they sound just as real.",
-      "failure_patterns": ["dated_premises", "event_specific_reference"]
+      "title": "Ignoring current trends and memes for generic 2021 tropes",
+      "why_bad": "Failing to capitalize on viral memes or formats that viewers are actively thinking about and commenting on today.",
+      "failure_patterns": ["dated_premises", "ignoring_current_culture"]
     }
   ]
 }

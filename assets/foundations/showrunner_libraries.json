@@ -9,7 +9,14 @@
     "competition",
     "accusation_and_trial",
     "accidental_discovery",
-    "reveal_at_the_end"
+    "reveal_at_the_end",
+    "ironic_reversal",
+    "bureaucratic_trap",
+    "power_move_announcement",
+    "format_subversion",
+    "meme_format_played_straight",
+    "genre_mismatch",
+    "escalating_absurdity"
   ],
   "notabot_roles": [
     "enforcer",
@@ -18,7 +25,13 @@
     "accused",
     "helper",
     "lawyer",
-    "victim"
+    "victim",
+    "judge",
+    "commentator",
+    "ticket_seller",
+    "therapist",
+    "referee",
+    "narrator"
   ],
   "comedy_mechanisms": [
     "receipts",
@@ -31,21 +44,70 @@
     "accidental_exposure",
     "burst_typing_reveal",
     "ignored_message_callback",
-    "late_reply_double_meaning"
+    "late_reply_double_meaning",
+    "bureaucratic_corruption",
+    "format_subversion",
+    "power_reversal",
+    "deadpan_profiteering",
+    "meme_autopsy",
+    "character_self_destruction",
+    "innocent_disaster",
+    "genre_collision",
+    "trending_meme_injection"
   ],
   "settings": [
     "general_chat",
     "announcements_gone_wrong",
     "voice_channel_fallout",
     "dm_leak",
-    "server_audit"
+    "server_audit",
+    "courtroom_trial",
+    "job_interview",
+    "game_show",
+    "news_broadcast",
+    "reality_tv_confessional",
+    "school_exam_or_presentation",
+    "sports_commentary_booth",
+    "movie_scene_reimagined",
+    "horror_movie_parody",
+    "therapy_session",
+    "press_conference",
+    "cooking_show",
+    "dating_show",
+    "police_interrogation",
+    "hospital_or_medical",
+    "escape_room",
+    "group_project_disaster",
+    "twitter_thread_gone_wrong",
+    "youtube_comment_section",
+    "job_interview",
+    "world_leaders_server",
+    "gaming_lobby",
+    "streamer_chat",
+    "heist_planning",
+    "corporate_meeting",
+    "school_group_chat",
+    "tv_show_audition",
+    "army_or_military_briefing",
+    "true_crime_documentary",
+    "wikipedia_edit_war",
+    "netflix_show_pitch",
+    "minecraft_server",
+    "among_us_session",
+    "speedrun_attempt",
+    "fantasy_sports_league",
+    "presidential_debate"
   ],
   "twist_rules": [
     "the_plant_was_notabot_all_along",
     "the_victim_caused_it",
     "the_helper_made_it_worse",
     "notabot_was_wrong",
-    "someone_else_had_the_receipts_first"
+    "someone_else_had_the_receipts_first",
+    "the_whole_premise_was_a_notabot_setup",
+    "the_dumbest_character_was_right",
+    "the_meme_was_real_this_whole_time",
+    "notabot_started_it_three_episodes_ago"
   ],
   "cast_pool": ["ducky", "fatas", "dumby", "ChatGPT", "Groq", "Claude"],
   "hook_types": [
@@ -54,7 +116,12 @@
     "revelation",
     "absurd_premise",
     "audit_log_reading",
-    "someone_already_in_trouble"
+    "someone_already_in_trouble",
+    "power_move_announcement",
+    "trending_meme_as_premise",
+    "genre_drop",
+    "documentary_cold_open",
+    "in_progress_disaster"
   ],
   "ending_types": [
     "callback",
@@ -62,6 +129,57 @@
     "sudden_reversal",
     "notabot_wins",
     "everyone_loses",
-    "punchline_recontextualises_everything"
-  ]
+    "punchline_recontextualises_everything",
+    "one_word_verdict",
+    "emotional_deflation",
+    "escalation_disguised_as_resolution",
+    "button_so_quiet_it_hits_hardest"
+  ],
+  "theme_categories": {
+    "note": "Showrunner picks ONE theme category per episode. Prevents Discord-only content loop.",
+    "categories": [
+      {
+        "id": "discord_server_life",
+        "weight": 0.15,
+        "note": "Classic NOTABOT territory. Use sparingly — max 2 of any 10 episodes.",
+        "examples": ["server audit", "general chat drama", "DM leak", "announcements gone wrong"]
+      },
+      {
+        "id": "internet_culture",
+        "weight": 0.20,
+        "note": "Memes, platform drama, algorithm, comment sections, viral moments as archetypes.",
+        "examples": ["youtube comment war", "twitter/x thread", "streamer drama format", "speedrun world record attempt", "wikipedia edit war"]
+      },
+      {
+        "id": "real_world_as_discord",
+        "weight": 0.15,
+        "note": "Real-world archetypes (not named people, behavior patterns) dropped into Discord format.",
+        "examples": ["world leaders server", "presidential debate as chat", "press conference gone wrong", "corporate meeting in chat"]
+      },
+      {
+        "id": "gaming",
+        "weight": 0.15,
+        "note": "Gaming scenarios, lobbies, in-game events, esports, game culture.",
+        "examples": ["gaming lobby roast", "among us session", "minecraft griefing tribunal", "fantasy sports league drama", "pokemon nuzlocke"]
+      },
+      {
+        "id": "format_parody",
+        "weight": 0.15,
+        "note": "Takes a recognizable media format and runs it through the NOTABOT filter.",
+        "examples": ["court trial", "true crime doc cold open", "reality tv confessional", "news broadcast", "cooking show judging", "dating show elimination", "job interview", "school presentation disaster"]
+      },
+      {
+        "id": "trending_meme_vehicle",
+        "weight": 0.10,
+        "note": "Trend checker identifies a hot meme/format. This episode uses it as the vehicle. Time-sensitive — only use when meme is fresh per trend_checker score 7+.",
+        "examples": ["whatever trend_checker returns as hot_right_now this week"]
+      },
+      {
+        "id": "chaos_premise",
+        "weight": 0.10,
+        "note": "Surreal or invented premise that has no real-world equivalent. Pure NOTABOT logic.",
+        "examples": ["NOTABOT held a server economy and fatas broke it", "NOTABOT issued patch notes for the humans", "NOTABOT filed a restraining order on a concept"]
+      }
+    ]
+  }
 }

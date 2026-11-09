@@ -69,10 +69,10 @@ def run_code_checks(script: str, bundle: FoundationBundle) -> dict:
             emoji_spam_lines.append(l)
             
     flags = []
-    if longest_line > 15:
-        flags.append(f"Line too long: {longest_line} words (max 15 allowed)")
-    if caps_ratio > 0.35:
-        flags.append(f"Excessive CAPS: {caps_ratio:.1%} of characters")
+    if longest_line > 20:
+        flags.append(f"Line too long: {longest_line} words (max 20 allowed)")
+    if caps_ratio > 0.65:
+        flags.append(f"Excessive CAPS: {caps_ratio:.1%} of characters (allowed for panic screams up to 65%)")
     if banned:
         flags.append(f"Banned filler phrases detected: {banned}")
     if emoji_spam_lines:
@@ -100,6 +100,8 @@ HARD STOPS:
 
 SCRIPT TO EVALUATE:
 {script}
+
+NOTE: Authentic internet swearing/profanity ('fk you', 'bitch', 'what the fk', 'stfu', 'cooked') and panic screaming are fully ALLOWED for comedic realism. Only genuine hate speech, doxxing, or real harm is a violation.
 
 Does this script violate ANY of the hard stops above?
 Output JSON ONLY:

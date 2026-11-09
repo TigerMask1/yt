@@ -52,6 +52,7 @@ def write_dialogue(pitch: dict, beat_sheet: dict, card: ConstraintCard, bundle: 
 You write dialogue ONLY. You do NOT write sound effects, durations, or timestamps.
 
 EPISODE PREMISE: {pitch.get('premise')}
+SETTING/THEME: {card.setting}
 NOTABOT ROLE: {card.notabot_role}
 COMEDY MECHANISM: {card.comedy_mechanism}
 
@@ -61,18 +62,12 @@ BEAT SHEET TO FOLLOW EXACTLY:
 CAST CARDS:
 {json.dumps(cast_cards, indent=2)}
 
-NOTABOT VOICE RULES:
-- NOTABOT insists it is 'just a bot' while acting like a petty, omniscient intelligence with admin rights.
-- Bureaucratic register: exact case numbers, error codes, timestamps, audit log quotes.
-- Calm, factual delivery of catastrophic news.
-- NEVER says internet slang ('bro', 'lol', 'ngl', 'bruh', 'lmao').
-- NEVER gives long paragraphs. Uses burst messages (multiple rapid short lines).
-
-CHAT REALISM GUIDELINES (BELUGA / REAL DISCORD STYLE):
-1. SHORT MESSAGES: Most messages must be 3-8 words. Never write a paragraph.
-2. BURST TYPING: If a character has a thought, split it across 2 to 4 consecutive short messages under their name.
-3. ALL CAPS: Only when ducky is having a genuine panic crisis. NOT the default.
-4. TARGET LENGTH: {target_count}.
+VOICE & DIALOGUE STYLE (CRITICAL):
+- AUTHENTIC INTERNET ENERGY: Humans talk like real people on Discord / gaming lobbies / streams. Short, snappy, aggressive, funny. They scream and swear casually when things escalate ('fk you', 'what the fk', 'bitch', 'stfu', 'lmao gtfo', 'bro wtf', 'you\'re cooked').
+- NO FORMAL ESSAYS: Never write long corporate paragraphs or polite banter. Maximize drama, panic, and fast pacing.
+- NOTABOT CONTRAST: NOTABOT NEVER swears, never screams, never uses slang ('bro', 'lol', 'ngl', 'bruh'). It speaks with chilling, deadpan bureaucratic precision (case numbers, audit logs, error codes, calm delivery of ruin). That extreme contrast against screaming swearing humans is the entire comedy engine.
+- PACING & BURSTS: Most messages 3-8 words. Split thoughts across 2-4 rapid burst messages under the speaker's name. Use ALL CAPS when ducky or dumby is genuinely screaming in panic.
+- TARGET LENGTH: {target_count}.
 
 DO NOT DO (FAILURE CATALOG):
 {chr(10).join([f'- {p}' for p in failure_patterns[:8]])}
@@ -80,7 +75,7 @@ DO NOT DO (FAILURE CATALOG):
 PHRASES TO AVOID (USED RECENTLY IN OTHER EPISODES):
 {', '.join(phrases_to_avoid[:30]) if phrases_to_avoid else 'None yet.'}
 
-CONTEMPORARY INTERNET ENERGY:
+CONTEMPORARY INTERNET ENERGY & TRENDS:
 {trend_vibe}
 
 BEAT TAGS:
