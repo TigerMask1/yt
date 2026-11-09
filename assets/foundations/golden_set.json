@@ -1,59 +1,131 @@
 {
-  "golden": [
+  "meta": {
+    "note": "Golden set built from real scripts in assets/example/. Anti-set built from observed failure patterns. Update when real YouTube analytics confirm which performed.",
+    "last_updated": "2026-11-09",
+    "version": 2
+  },
+  "golden_set": [
     {
       "id": "G1",
-      "title": "World leaders in a Discord server",
-      "script_file": "assets/example/example_script.txt",
-      "why_it_works": "Each character has a genuinely distinct voice. The punchline (autocorrect Launch vs Lunch) is a real invention that could not be predicted. fatas is completely unnecessary and therefore perfect.",
-      "mechanism": "accidental_exposure",
-      "shape": "escalating_misunderstanding",
-      "notabot_role": "clerk",
-      "hook_type": "absurd_premise",
-      "ending_type": "escalation_beyond_repair"
+      "title": "World Leaders Discord — Autocorrect Launches Nukes",
+      "source_file": "example_script.txt",
+      "type": "script",
+      "why_good": "The premise is immediately legible to any stranger (world leaders in a Discord). The escalation is tight: Billy is the audience surrogate, each leader's voice is distinct in one line (Kim = aggression, Biden = confusion, Modi = confusion-but-different, Trump = ALL CAPS SAD, Elizabeth = dead but dry). The pivot from 'lunch' to 'launch' is a single autocorrect and it earns the explosion. The button — Elizabeth dying 'again' — is the quietest line and lands hardest. No line explains itself.",
+      "standout_lines": [
+        "\"STOP THE COUNT\" — Trump using his signature deflection during a nuclear launch is character-perfect",
+        "\"Guess I'll die / again\" — the deadpan callback on Elizabeth beats everything before it",
+        "\"that wasn't a wellness app / i rerouted it to a landscaping corp\" — NOTABOT's bureaucratic sabotage with no explanation"
+      ],
+      "shape": "escalating_chaos",
+      "mechanism": "character_collision",
+      "notabot_role": "silent_saboteur",
+      "hook_type": "world_building_absurdity",
+      "ending_type": "callback_button"
     },
     {
       "id": "G2",
-      "title": "fatas becomes a wellness influencer",
-      "script_file": "assets/example/generated_script.txt",
-      "why_it_works": "The premise is specific and absurd. NOTABOT's 'your blood type is gravy' is specific and unpredictable. Claude's 'your wellness journey is a KFC run' escalates without shouting. The ending callbacks the kale.",
-      "mechanism": "receipts",
-      "shape": "plan_that_fails",
-      "notabot_role": "witness",
-      "hook_type": "absurd_premise",
-      "ending_type": "callback"
+      "title": "fatas accidentally ordered a WHOLE LAWN",
+      "source_file": "generated_script.txt",
+      "type": "script",
+      "why_good": "Opens on a character flaw (fatas declaring wellness change) which immediately signals to regulars that it will collapse. NOTABOT's first line ('professional snacking?') reframes the premise as the audience already suspects. Claude's entry ('Your wellness journey is a KFC run') is a cold devastating left-turn. The NOTABOT reveal (it rerouted the app to a landscaping corp) is a bureaucratic crime that explains everything and was invisible. The plant (40kg of kale) → reveal (landscaping) is tight.",
+      "standout_lines": [
+        "\"bro your blood type is gravy\" — specific, visual, effortless",
+        "\"Statistically, your vision is a menu\" — Claude voice is distinct from NOTABOT",
+        "\"that wasn't a wellness app / i rerouted it to a landscaping corp\" — NOTABOT sabotage, no preamble"
+      ],
+      "shape": "setup_collapse",
+      "mechanism": "bureaucratic_sabotage",
+      "notabot_role": "silent_saboteur",
+      "hook_type": "character_self_destruction",
+      "ending_type": "reveal"
+    },
+    {
+      "id": "G3",
+      "title": "Human or Not — NOTABOT gaslighting the interviewer",
+      "source_file": "hon_script.txt",
+      "type": "script",
+      "why_good": "The format (guessing game) gives the audience a game to play alongside the host. Every 'suspicious' read by the host is correct paranoia aimed at the wrong person. The final reveal (called a human a bot) is a payoff the audience sees coming but still lands. The tone stays grounded — the voiceover sounds like a real confused person, not a scripted narrator. Works as a standalone without knowing the channel at all.",
+      "standout_lines": [
+        "\"do you have any original thoughts?\" — the AI's sass sounds more human than the human",
+        "\"starbucks or nothing lol\" — the host's read on what a human would say is hilariously accurate",
+        "\"I am getting roasted by a real person\" — the host owns the L which is what makes it funny not sad"
+      ],
+      "shape": "ironic_reversal",
+      "mechanism": "unreliable_narrator",
+      "notabot_role": "absent_but_implied",
+      "hook_type": "game_format",
+      "ending_type": "ironic_loss"
+    },
+    {
+      "id": "G4",
+      "title": "Mewtwo lost to a Zubat — RPG format",
+      "source_file": "rpg_script.txt",
+      "type": "script",
+      "why_good": "Rival's escalating rage ('the tactical brain of a Slowpoke') is the best pure roast writing in any script — specific Pokémon references make it feel earned, not generic. The Noob's tragic innocence ('he looked like he wanted a friend') is the perfect button: kills the tension, earns sympathy and is funnier than any counter-roast would be. The Master Ball used on a Zubat is a Pokémon fan's nightmare — so the audience is already screaming before Rival starts.",
+      "standout_lines": [
+        "\"the tactical brain of a Slowpoke\" — genus-specific insult that only works in context",
+        "\"I HAVE SEEN METAPODS WITH MORE STRATEGIC DEPTH THAN YOUR ENTIRE BLOODLINE\" — escalation peaks perfectly",
+        "\"he looked like he wanted a friend\" — softest possible button after the loudest roast"
+      ],
+      "shape": "escalating_rage",
+      "mechanism": "innocent_disaster",
+      "notabot_role": "absent",
+      "hook_type": "stakes_declared",
+      "ending_type": "emotional_deflation"
+    },
+    {
+      "id": "G5",
+      "title": "Template: NOTABOT reads the audit log on ducky",
+      "source_file": null,
+      "type": "described",
+      "why_good": "The 'receipts' mechanism is NOTABOT's strongest tool. When NOTABOT reads a log entry, the gap between the dry bureaucratic format and the unhinged thing ducky actually did is the joke — no punchline needed. Strongest when: the log entry is specific with a timestamp and case number, ducky denies it in the same breath as NOTABOT quotes proof, and the final log entry is something ducky typed about himself. This format is reusable across infinite premises.",
+      "standout_lines": [
+        "\"case 00412: subject attempted to delete message. message was: 'does anyone know how to delete messages?' message persists.\"",
+        "\"audit log entry 23:47:03 — subject said 'this never happened'. it did.\"",
+        "\"note: subject is currently typing a denial. the denial will be logged.\""
+      ],
+      "shape": "receipts_reveal",
+      "mechanism": "bureaucratic_receipts",
+      "notabot_role": "clerk_reading_logs",
+      "hook_type": "document_drop",
+      "ending_type": "self_incrimination"
     }
   ],
-  "anti": [
+  "anti_set": [
     {
       "id": "A1",
-      "title": "Generic roast pattern",
-      "why_it_fails": "Character A says something. NOTABOT says 'that's the dumbest thing I've ever heard.' Character A says 'wait what.' Repeat. No invention, no plant, no surprise.",
-      "failure_pattern": "panic_expose_beg"
+      "type": "pattern",
+      "title": "Everyone roasts everyone in a circle",
+      "why_bad": "No stakes, no escalation, no plant/callback. Every message is a quip, no message is an action. By message 5 the audience knows the format and disengages. NOTABOT roasting ducky who roasts fatas who roasts NOTABOT is a treadmill not a story.",
+      "failure_patterns": ["generic_insults", "missing_escalation", "no_callback"]
     },
     {
       "id": "A2",
-      "title": "Panic-expose-beg arc",
-      "why_it_fails": "Someone panics, NOTABOT exposes them, they beg NOTABOT to stop. Same structure every time. The audience can predict the ending from message 2.",
-      "failure_pattern": "panic_expose_beg"
+      "type": "pattern",
+      "title": "\"let's make a video\" and then they just... make a video",
+      "why_bad": "The premise resolves itself without conflict. Someone proposes something → others agree → it happens. There is no disaster. NOTABOT is involved but not essential. Could replace NOTABOT with any character and the script works identically.",
+      "failure_patterns": ["missing_conflict", "notabot_not_load_bearing", "wrap_up_ending"]
     },
     {
       "id": "A3",
-      "title": "Wrap-up ending",
-      "why_it_fails": "The last message is a character summarising what happened ('well that was a disaster'). Kills the button.",
-      "failure_pattern": "wrap_up_ending"
+      "type": "pattern",
+      "title": "NOTABOT explains its own joke",
+      "why_bad": "\"that was a joke, by the way\" or \"(sarcasm)\" or NOTABOT clarifying what it meant breaks the entire character bible. NOTABOT never explains. If the joke needs explanation it needed rewriting. This shows up most often in scripts where NOTABOT has long monologue blocks.",
+      "failure_patterns": ["jokes_that_explain_themselves", "long_notabot_speeches"]
     },
     {
       "id": "A4",
-      "title": "Everyone roasting simultaneously",
-      "why_it_fails": "When every character piles on the same target in the same tone, there's no escalation. It becomes noise.",
-      "failure_pattern": "pile_on"
+      "type": "pattern",
+      "title": "Uniform message length across all characters",
+      "why_bad": "Every message is 5-7 words. Every character has the same rhythm. The swap test fails: strip the names and you can't tell who's talking. This happens when the writer optimizes for 'snappy' and forgets that burst typing, one-word messages and silence are all part of the vocabulary.",
+      "failure_patterns": ["matching_sentence_rhythms", "missing_burst_typing", "uniform_length"]
     },
     {
       "id": "A5",
-      "title": "Uniform rhythm",
-      "why_it_fails": "Every line is roughly the same length in the same lowercase style. The characters become indistinguishable.",
-      "failure_pattern": "uniform_rhythm"
+      "type": "pattern",
+      "title": "Real-world reference as the entire premise",
+      "why_bad": "Scripts built around a specific meme, news event, or celebrity moment go stale within days. By the time the video renders, edits, uploads and gets distributed — the reference is cold. The audience who doesn't know the reference is locked out entirely. Invented specifics are always better: they never date, and they sound just as real.",
+      "failure_patterns": ["dated_premises", "real_world_reference_as_premise"]
     }
-  ],
-  "note": "Add your 5 best-performing uploaded YouTube videos to golden[] and 5 worst-performing to anti[] with their actual video IDs and stats when available."
+  ]
 }

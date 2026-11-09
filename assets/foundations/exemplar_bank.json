@@ -1,51 +1,446 @@
 {
-  "contrast_pairs": [
+  "meta": {
+    "note": "Exemplar bank built from real script style analysis. Each entry has a stiff version (what models default to) and a real version (what your scripts actually do). Rotate 2-3 per episode, matched to the mechanism drawn. Never reuse the actual lines — use as behavioral patterns only.",
+    "total_pairs": 18,
+    "last_updated": "2026-11-09",
+    "version": 2
+  },
+  "exemplars": [
     {
-      "id": "burst_vs_wall",
+      "id": "E01",
       "behavior": "burst_typing",
-      "good": [
-        {"speaker": "ducky", "line": "NOTABOT"},
-        {"speaker": "ducky", "line": "NOTABOT"},
-        {"speaker": "ducky", "line": "it took admin"},
-        {"speaker": "ducky", "line": "guys"},
-        {"speaker": "ducky", "line": "GUYS"}
-      ],
-      "bad": [
-        {"speaker": "ducky", "line": "NOTABOT just took admin from me and locked me out of the server and now its posting random stuff in every channel and I cant stop it what do I do"}
-      ],
-      "annotation": "The burst version gives each line a beat. The wall version kills the pacing and makes it sound written."
+      "mechanism_match": ["bureaucratic_receipts", "escalating_rage", "setup_collapse"],
+      "annotation": "One thought split across 3-5 messages. The last one is the punchline. Each line before it is a beat that makes the last one hit harder.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "ducky: bro i just found out something crazy, NOTABOT has been reading all my messages and logging them and i dont know what to do about it"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "ducky: bro",
+          "ducky: BRO",
+          "ducky: NOTABOT has been",
+          "ducky: logging",
+          "ducky: everything"
+        ]
+      },
+      "why_works": "Each message is a beat. The audience reads at the speed of the reveal. The panic escalates without telling us it's panic."
     },
     {
-      "id": "ignored_message",
-      "behavior": "ignored_message_callback",
-      "good": [
-        {"speaker": "fatas", "line": "can we eat"},
-        {"speaker": "ducky", "line": "NOTABOT STOP"},
-        {"speaker": "NOTABOT", "line": "denied."},
-        {"speaker": "ducky", "line": "WHY"},
-        {"speaker": "NOTABOT", "line": "case #0044: reasons."},
-        {"speaker": "fatas", "line": "so that's a no"}
-      ],
-      "bad": [
-        {"speaker": "fatas", "line": "can we eat"},
-        {"speaker": "NOTABOT", "line": "no fatas we are in a crisis"},
-        {"speaker": "fatas", "line": "ok but after?"}
-      ],
-      "annotation": "The good version uses the ignored message delay as a deadpan punchline. The bad version addresses it immediately and kills the joke."
+      "id": "E02",
+      "behavior": "ignored_message",
+      "mechanism_match": ["deadpan_bureaucrat", "character_collision", "unreliable_narrator"],
+      "annotation": "Someone says something absurd. No one responds. Life continues. Then one character addresses it much later, calmly.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "fatas: guys i think i accidentally became a landlord",
+          "ducky: WHAT fatas explain",
+          "NOTABOT: clarify the nature of this event immediately"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "fatas: guys i think i accidentally became a landlord",
+          "ducky: anyone wanna play minecraft",
+          "NOTABOT: fatas. elaborate.",
+          "fatas: oh yeah so basically"
+        ]
+      },
+      "why_works": "The delay is funnier than the immediate response. It signals the group chat is real — people don't always react in order."
     },
     {
-      "id": "typed_vs_written",
-      "behavior": "typed_reaction",
-      "good": [
-        {"speaker": "ducky", "line": "i literally made you"},
-        {"speaker": "ducky", "line": "i made you dude"},
-        {"speaker": "ducky", "line": "hello??"}
-      ],
-      "bad": [
-        {"speaker": "ducky", "line": "I cannot believe that NOTABOT would do something like this to me, his creator."}
-      ],
-      "annotation": "The good version sounds like someone actually typing in real time. The bad version sounds like a stage direction."
+      "id": "E03",
+      "behavior": "notabot_one_word_verdict",
+      "mechanism_match": ["bureaucratic_receipts", "bureaucratic_sabotage", "deadpan_bureaucrat"],
+      "annotation": "NOTABOT's most devastating lines are the shortest. After a long burst from someone else, one word or one number finishes it.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "NOTABOT: I have reviewed the situation and found multiple violations of server policy. This is unacceptable behavior and I will be taking action accordingly."
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "ducky: okay okay okay it was an accident i swear i didn't know the bot would do that i thought it was a joke command and—",
+          "NOTABOT: logged.",
+          "ducky: ...",
+          "NOTABOT: twice."
+        ]
+      },
+      "why_works": "The second word ('twice') is the knife. The ellipsis from ducky is the breathing room that makes it land."
+    },
+    {
+      "id": "E04",
+      "behavior": "crossed_threads",
+      "mechanism_match": ["character_collision", "innocent_disaster"],
+      "annotation": "Two conversations run at the same time. A reply lands on the wrong thread. The misread escalates on its own.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "fatas: i want pizza",
+          "ducky: same let's order",
+          "NOTABOT: i have detected an argument in this server",
+          "fatas: we're not arguing we're ordering food"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "fatas: should we do it",
+          "ducky: yeah let's just go",
+          "NOTABOT: [responding to a message from 4 minutes ago] no.",
+          "fatas: wait what",
+          "ducky: bro what did we do",
+          "NOTABOT: case opened."
+        ]
+      },
+      "why_works": "The audience knows exactly what NOTABOT replied to. The characters don't. That gap is the joke."
+    },
+    {
+      "id": "E05",
+      "behavior": "typing_indicator_anticlimax",
+      "mechanism_match": ["deadpan_bureaucrat", "bureaucratic_receipts"],
+      "annotation": "NOTABOT is typing for a suspicious amount of time. The result is one word or a form letter.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "ducky: notabot what are you doing",
+          "NOTABOT: I am currently processing your request and will respond shortly with a comprehensive report.",
+          "ducky: okay thanks"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "ducky: notabot say something",
+          "NOTABOT: [typing...]",
+          "NOTABOT: [typing...]",
+          "NOTABOT: [typing...]",
+          "NOTABOT: no.",
+          "ducky: bro typed for 4 minutes to say no"
+        ]
+      },
+      "why_works": "The suspense is built by the renderer showing typing, the payoff is the smallest possible word. ducky naming the joke isn't explaining it — it's reacting the way the audience is."
+    },
+    {
+      "id": "E06",
+      "behavior": "character_voice_contrast",
+      "mechanism_match": ["character_collision", "escalating_rage"],
+      "annotation": "Two characters respond to the same event. Same situation, completely different length and register. The contrast is the joke.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "ducky: oh no that's really bad we should fix this immediately",
+          "Claude: yes I agree this is a problematic situation that requires attention"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "ducky: BRO BRO BRO BRO",
+          "Claude: Statistically, this was inevitable.",
+          "ducky: THATS NOT HELPING",
+          "Claude: I know."
+        ]
+      },
+      "why_works": "ducky is all caps noise. Claude is lowercase precision. Same event, opposite energy. Claude's 'I know' is not an apology — it makes it worse."
+    },
+    {
+      "id": "E07",
+      "behavior": "audit_log_receipt",
+      "mechanism_match": ["bureaucratic_receipts", "bureaucratic_sabotage"],
+      "annotation": "NOTABOT reads from a log. The timestamp and case number make it feel like court evidence. The content of the log is the punchline.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "NOTABOT: I have been monitoring you ducky and I have found proof that you did something wrong. You said something bad 3 days ago and I saved it."
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "NOTABOT: audit log. 03:17:44.",
+          "NOTABOT: subject typed: 'i would never do that'",
+          "NOTABOT: subject then did that.",
+          "NOTABOT: 03:17:51.",
+          "ducky: how do i delete an audit log"
+        ]
+      },
+      "why_works": "The timestamps make it real. The seven-second gap between the denial and the crime is devastating. ducky's response is the button."
+    },
+    {
+      "id": "E08",
+      "behavior": "late_reply_recontextualizes",
+      "mechanism_match": ["innocent_disaster", "unreliable_narrator"],
+      "annotation": "Someone answers a question from several messages ago. The answer accidentally creates a new problem or reframes what just happened.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "ducky: hey did you do the thing",
+          "fatas: yes i did it",
+          "ducky: great"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "ducky: who sent that",
+          "NOTABOT: the investigation is ongoing",
+          "fatas: [replying to 'who sent that' from 6 messages ago] i did",
+          "ducky: ...",
+          "NOTABOT: case closed.",
+          "fatas: wait"
+        ]
+      },
+      "why_works": "fatas accidentally confesses by answering too late. NOTABOT's 'case closed' is instant. The 'wait' comes one beat too late."
+    },
+    {
+      "id": "E09",
+      "behavior": "platform_native_error",
+      "mechanism_match": ["bureaucratic_sabotage", "deadpan_bureaucrat"],
+      "annotation": "NOTABOT uses actual Discord/bot mechanics as weapons: permission errors, 'application did not respond', audit log entries, role pings, timeout notices.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "NOTABOT: I am now going to punish you using my bot powers",
+          "ducky: no please don't",
+          "NOTABOT: too late you are banned"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "ducky: /unban me",
+          "NOTABOT: ❌ Missing Permissions",
+          "ducky: what i have admin",
+          "NOTABOT: had.",
+          "NOTABOT: audit log updated.",
+          "ducky: WHO REMOVED MY ADMIN",
+          "NOTABOT: [application did not respond]"
+        ]
+      },
+      "why_works": "'had' is one word doing all the work. The 'application did not respond' as NOTABOT's final message is a perfect platform-native escape."
+    },
+    {
+      "id": "E10",
+      "behavior": "character_self_destruction",
+      "mechanism_match": ["setup_collapse", "innocent_disaster"],
+      "annotation": "A character confidently announces something. Every step they take makes it worse. They never realize it. NOTABOT documents.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "fatas: guys i have a great idea that will definitely work",
+          "NOTABOT: that will not work",
+          "fatas: yes it will",
+          "NOTABOT: it did not work"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "fatas: im changing my life guys",
+          "fatas: becoming a wellness influencer",
+          "NOTABOT: with what. professional snacking.",
+          "fatas: no look at my vision board",
+          "fatas: only organic vibes from now on",
+          "NOTABOT: organic.",
+          "NOTABOT: bro your blood type is gravy"
+        ]
+      },
+      "why_works": "Direct from G2. fatas announces the arc, provides the evidence against himself, NOTABOT just reads it back."
+    },
+    {
+      "id": "E11",
+      "behavior": "notabot_fallibility",
+      "mechanism_match": ["ironic_reversal", "unreliable_narrator"],
+      "annotation": "NOTABOT is confidently wrong. It never admits it. The other characters know. NOTABOT doubles down.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "NOTABOT: I made an error. I apologize for the mistake and have corrected my records.",
+          "ducky: okay thanks for admitting it"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "NOTABOT: analysis complete. fatas is the problem.",
+          "ducky: bro that was me",
+          "NOTABOT: records indicate otherwise.",
+          "ducky: I LITERALLY SAID IT WAS ME FIVE MESSAGES AGO",
+          "NOTABOT: unverified.",
+          "fatas: i mean i didn't do it but okay",
+          "NOTABOT: case updated. fatas admits guilt."
+        ]
+      },
+      "why_works": "NOTABOT uses fatas's denial as a confession. It wins by making everything evidence. Never apologizes. The audience sides with ducky and is furious in the fun way."
+    },
+    {
+      "id": "E12",
+      "behavior": "one_word_reaction",
+      "mechanism_match": ["deadpan_bureaucrat", "character_collision"],
+      "annotation": "One character reacts to chaos with a single word. The word's smallness compared to the chaos is the joke.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "ducky: WHAT IS HAPPENING THIS IS INSANE",
+          "fatas: I am very confused by this situation as well and don't know what to do"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "ducky: WHAT IS HAPPENING THIS IS INSANE",
+          "fatas: food?"
+        ]
+      },
+      "why_works": "fatas's entire character in one word. The misread of the moment as a food opportunity is the character speaking."
+    },
+    {
+      "id": "E13",
+      "behavior": "plant_and_callback",
+      "mechanism_match": ["setup_collapse", "escalating_rage", "bureaucratic_receipts"],
+      "annotation": "A specific detail is planted early with no explanation. It returns at the end as the punchline. The plant should feel like atmosphere, not setup.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "fatas: i ordered something [FORESHADOWING: this will be important later]",
+          "[10 messages later]",
+          "NOTABOT: remember that order fatas made earlier? here is the callback."
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "[message 3] fatas: i just bought 40kg of kale",
+          "[ducky and NOTABOT continue talking about the wellness board]",
+          "[message 11] NOTABOT: that wasn't a wellness app",
+          "NOTABOT: i rerouted it to a landscaping corp"
+        ]
+      },
+      "why_works": "Direct from G2. The 40kg of kale reads like a fatas non-sequitur. The rerouting reveals NOTABOT was running sabotage the whole time. No announcement."
+    },
+    {
+      "id": "E14",
+      "behavior": "character_named_their_feeling",
+      "mechanism_match": [],
+      "annotation": "ANTI-PATTERN. This is what NOT to write. Characters announcing their emotional state kills the voice.",
+      "stiff": {
+        "label": "What models write (bad — do not use)",
+        "lines": [
+          "ducky: I am panicking right now",
+          "fatas: I find this very funny",
+          "NOTABOT: I am disappointed in this server's behavior"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "ducky: BRO BRO BRO BRO",
+          "fatas: lmaooo",
+          "NOTABOT: noted."
+        ]
+      },
+      "why_works": "The behavior shows the feeling. 'BRO BRO BRO BRO' is panic without saying panic. 'lmaooo' is funnier than 'I find this very funny'."
+    },
+    {
+      "id": "E15",
+      "behavior": "world_leader_as_archetype",
+      "mechanism_match": ["character_collision", "escalating_chaos"],
+      "annotation": "Real-world public figures used as archetypes, not as themselves. The character is a behavior pattern, not a news reference. The joke is the archetype, not the event.",
+      "stiff": {
+        "label": "What models write (bad — dates instantly)",
+        "lines": [
+          "Trump: I will impose 200% tariffs on this Discord server",
+          "ducky: bro we're not talking about trade policy"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good — evergreen)",
+        "lines": [
+          "Trump: SAD!",
+          "Trump: i was banned from twitter but not discord",
+          "KimJongun: @Trump your hair is fake",
+          "Trump: FAKE NEWS!",
+          "Trump: My hair is the best,",
+          "Trump: everyone says so"
+        ]
+      },
+      "why_works": "The behavior (denial, ALL CAPS, self-praise) is the character. No specific event referenced. This script will be legible in 3 years. 'SAD!' is the archetype, not the man."
+    },
+    {
+      "id": "E16",
+      "behavior": "button_lands_quiet",
+      "mechanism_match": ["escalating_chaos", "escalating_rage", "setup_collapse"],
+      "annotation": "The loudest moment in the script is followed by the quietest button. Volume goes: escalate → peak → silence → one soft line. The silence is the comedian's pause.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "NOTABOT: YOU ARE ALL BANNED. THIS IS OVER. CHAOS WILL NOT BE TOLERATED.",
+          "ducky: WHAT NO PLEASE",
+          "fatas: I CANT BELIEVE THIS HAPPENED"
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "KimJongun: GOODBYE WESTERN DOGS",
+          "Billy: bruh im logging off",
+          "Elizabeth: Guess I'll die",
+          "Elizabeth: again"
+        ]
+      },
+      "why_works": "Direct from G1. After the missiles and the explosion, 'again' is one word. It's quieter than everything before it and funnier than any comeback would be."
+    },
+    {
+      "id": "E17",
+      "behavior": "groq_blunt_speed",
+      "mechanism_match": ["character_collision", "escalating_rage"],
+      "annotation": "Groq's voice: fast, blunt, lowercase, no context, slightly aggressive. Groq enters mid-thread and immediately says the most direct true thing. No pleasantries.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "Groq: hello everyone. I have been reading the conversation and I believe I can offer some insight into the situation."
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "Groq: bro just leave",
+          "ducky: what",
+          "Groq: you're losing",
+          "ducky: I'M NOT LOSING",
+          "Groq: you are"
+        ]
+      },
+      "why_works": "Groq enters, delivers verdict, doesn't elaborate. 'you are' is the closing argument. No emoji, no explanation. The confidence is the character."
+    },
+    {
+      "id": "E18",
+      "behavior": "claude_cold_devastation",
+      "mechanism_match": ["character_collision", "setup_collapse"],
+      "annotation": "Claude's voice: polished, lowercase, specific nouns, calm delivery of something that should feel devastating. Never screams. The logic is airtight and that's what makes it worse.",
+      "stiff": {
+        "label": "What models write (bad)",
+        "lines": [
+          "Claude: I have to say that what you're doing is not very smart and you should probably stop."
+        ]
+      },
+      "real": {
+        "label": "What your scripts do (good)",
+        "lines": [
+          "Claude: Statistically, your vision is a menu",
+          "Claude: masked by low-contrast filters",
+          "Claude: Your wellness journey is a KFC run"
+        ]
+      },
+      "why_works": "Direct from G2. 'masked by low-contrast filters' is a visual critique of the vision board itself. Claude sees the metadata of the delusion, not just the delusion."
     }
-  ],
-  "note": "Extend this bank to 15-25 pairs using real chat exports from your server (names removed). The system sees 2-3 exemplars per episode, matched to the drawn mechanism, in rotation."
+  ]
 }

@@ -38,6 +38,7 @@ import punch_up
 import quality_gate
 import assembler
 from foundation_loader import load_foundations, FoundationBundle
+import safeguards
 
 ASSETS_DIR = Path(__file__).parent.parent / "assets"
 LAST_EPISODE_FILE = ASSETS_DIR / "ledger" / "last_episode_id.txt"
@@ -398,6 +399,10 @@ class Supervisor:
         Master orchestrator entry point.
         Runs the full cycle, assembles script, logs to ledger, and returns EpisodeResult.
         """
+        # ── Safeguards ────────────────────────────────────────────────────────
+        safeguards.check_killswitch()   # hard stop if killswitch.txt exists
+        safeguards.check_daily_cap()    # hard stop if daily episode cap reached
+        # ─────────────────────────────────────────────────────────────────────
         print(f"\n=======================================================")
         print(f"  NOTABOT SUPERVISOR — EPISODE ORCHESTRATION START")
         print(f"  Mode: {'LONG (~10 min)' if self.is_long else 'SHORT (YouTube Short)'}")
@@ -472,6 +477,17 @@ class Supervisor:
             had_flag=bool(entry["flags"]),
             was_overridden=False
         )
+
+        # Quarantine flagged or borderline scripts for manual review
+        if verdict in ("REWORK", "DISCARD") and self.script_path:
+            reason = self.gate_evaluation.get("reason", "quality gate failed")
+            safeguards.quarantine_script(
+                script_path=self.script_path,
+                verdict=verdict,
+                confidence=confidence,
+                reason=reason,
+                episode_id=self.episode_id or "unknown",
+            )
 
         return EpisodeResult(
             script_path=self.script_path,

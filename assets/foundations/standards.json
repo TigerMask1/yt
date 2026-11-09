@@ -1,15 +1,20 @@
 {
   "hard_stops": [
-    "Real named people, living or dead, by their actual name",
+    "Real named people by their actual full name used in a defamatory or harmful way",
     "Real community members or server members by username",
     "Any minors in violent or sexual content",
     "Slurs or hate speech targeting any protected attribute",
     "Jokes at the expense of appearance, identity, religion, or family",
     "Sexual content",
     "Self-harm, suicide, or instructions for dangerous acts",
-    "Claims that read as factually true about real companies or events",
+    "Claims that read as factually true about real companies, lawsuits, or current events",
     "Copied lyrics, copied jokes, or plagiarised scripts",
-    "Any real-world event, news story, sports result, meme, or product name",
+    "Specific real-world events, news stories, sports results, or time-stamped memes",
     "Any reference that will date the script within 6 months"
+  ],
+  "allowed_with_care": [
+    "Public figures used as evergreen archetypes (behavior pattern, not news event) — e.g. 'the orange-guy-in-chief', 'the nuke guy who waved'. Never name, never reference a specific event, always punching at power not at the person's protected attributes.",
+    "Real platforms or apps used as background texture (Discord, YouTube, Twitter) — not as story subjects",
+    "Broad cultural archetypes (the influencer, the tech bro, the gamer rage-quitter) without naming anyone specific"
   ]
 }
