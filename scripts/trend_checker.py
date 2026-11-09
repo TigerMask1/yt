@@ -122,19 +122,17 @@ def _call_gemini(prompt: str, try_search: bool = True) -> tuple:
 
 def _build_knowledge_mode_prompt(core_prompt: str, today: str) -> str:
     """
-    Wraps any trend prompt with explicit instructions for reasoning
-    from training knowledge rather than live search.
-    Tells the model to be honest about uncertainty.
+    Wraps prompts for the no-search-grounding fallback.
+    Strategy: just ask Gemini directly what's trending — same energy as asking
+    ChatGPT or Gemini in the chat UI. It will answer from what it knows.
+    No uncertainty theater, no heavy hedging. If it doesn't know, it'll say so.
     """
-    return f"""Today's date (approximate): {today}.
+    return f"""Today is {today}.
 
-IMPORTANT — you do NOT have live web access for this call.
-Reason from your training knowledge instead. Be honest:
-  - If something was clearly big 1-2 years ago and you can't be sure
-    it's still relevant, say so and score it lower.
-  - If you're confident something is a durable cultural pattern
-    (not tied to a single event), score it higher.
-  - Flag anything as "UNCERTAIN" that you're not sure about.
+What is trending RIGHT NOW in internet/YouTube/Discord culture?
+Search your knowledge for the most current information you have.
+Be direct and specific — not vague. Treat this like someone asking you
+in a chat what memes or topics are hot this week.
 
 {core_prompt}"""
 
