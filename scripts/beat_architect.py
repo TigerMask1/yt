@@ -67,6 +67,7 @@ Transform this winning pitch into an airtight beat sheet.
 
 PITCH:
 Premise: {pitch.get('premise')}
+Setting/Situation: {pitch.get('setting', card.setting)}
 Hook: {pitch.get('hook_message')}
 Plant: {pitch.get('planted_detail')}
 Escalation Ladder: {pitch.get('escalation_ladder')}

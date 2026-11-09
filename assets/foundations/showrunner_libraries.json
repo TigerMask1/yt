@@ -56,47 +56,18 @@
     "trending_meme_injection"
   ],
   "settings": [
-    "general_chat",
-    "announcements_gone_wrong",
-    "voice_channel_fallout",
-    "dm_leak",
-    "server_audit",
-    "courtroom_trial",
-    "job_interview",
-    "game_show",
-    "news_broadcast",
-    "reality_tv_confessional",
-    "school_exam_or_presentation",
-    "sports_commentary_booth",
-    "movie_scene_reimagined",
-    "horror_movie_parody",
-    "therapy_session",
-    "press_conference",
-    "cooking_show",
-    "dating_show",
-    "police_interrogation",
-    "hospital_or_medical",
-    "escape_room",
-    "group_project_disaster",
-    "twitter_thread_gone_wrong",
-    "youtube_comment_section",
-    "job_interview",
-    "world_leaders_server",
-    "gaming_lobby",
-    "streamer_chat",
-    "heist_planning",
-    "corporate_meeting",
-    "school_group_chat",
-    "tv_show_audition",
-    "army_or_military_briefing",
-    "true_crime_documentary",
-    "wikipedia_edit_war",
-    "netflix_show_pitch",
-    "minecraft_server",
-    "among_us_session",
-    "speedrun_attempt",
-    "fantasy_sports_league",
-    "presidential_debate"
+    "gaming_meltdown_or_esports_sabotage",
+    "unhinged_marketplace_transaction",
+    "bureaucratic_tribunal_or_audit",
+    "corrupt_customer_support_or_hotline",
+    "viral_trend_or_challenge_disaster",
+    "accidental_public_broadcast",
+    "late_night_paranoia_spiral",
+    "high_stakes_interview_or_evaluation",
+    "unauthorized_system_hijack",
+    "world_stage_summit_or_debate",
+    "clandestine_conspiracy_meeting",
+    "open_ended_meme_opportunity"
   ],
   "twist_rules": [
     "the_plant_was_notabot_all_along",
@@ -109,7 +80,14 @@
     "the_meme_was_real_this_whole_time",
     "notabot_started_it_three_episodes_ago"
   ],
-  "cast_pool": ["ducky", "fatas", "dumby", "ChatGPT", "Groq", "Claude"],
+  "cast_pool": [
+    "ducky",
+    "fatas",
+    "dumby",
+    "ChatGPT",
+    "Groq",
+    "Claude"
+  ],
   "hook_types": [
     "accusation",
     "dramatic_question",
@@ -141,45 +119,96 @@
       {
         "id": "discord_server_life",
         "weight": 0.15,
-        "note": "Classic NOTABOT territory. Use sparingly — max 2 of any 10 episodes.",
-        "examples": ["server audit", "general chat drama", "DM leak", "announcements gone wrong"]
+        "note": "Classic NOTABOT territory. Use sparingly \u2014 max 2 of any 10 episodes.",
+        "examples": [
+          "server audit",
+          "general chat drama",
+          "DM leak",
+          "announcements gone wrong"
+        ]
       },
       {
         "id": "internet_culture",
-        "weight": 0.20,
+        "weight": 0.2,
         "note": "Memes, platform drama, algorithm, comment sections, viral moments as archetypes.",
-        "examples": ["youtube comment war", "twitter/x thread", "streamer drama format", "speedrun world record attempt", "wikipedia edit war"]
+        "examples": [
+          "youtube comment war",
+          "twitter/x thread",
+          "streamer drama format",
+          "speedrun world record attempt",
+          "wikipedia edit war"
+        ]
       },
       {
         "id": "real_world_as_discord",
         "weight": 0.15,
         "note": "Real-world archetypes (not named people, behavior patterns) dropped into Discord format.",
-        "examples": ["world leaders server", "presidential debate as chat", "press conference gone wrong", "corporate meeting in chat"]
+        "examples": [
+          "world leaders server",
+          "presidential debate as chat",
+          "press conference gone wrong",
+          "corporate meeting in chat"
+        ]
       },
       {
         "id": "gaming",
         "weight": 0.15,
         "note": "Gaming scenarios, lobbies, in-game events, esports, game culture.",
-        "examples": ["gaming lobby roast", "among us session", "minecraft griefing tribunal", "fantasy sports league drama", "pokemon nuzlocke"]
+        "examples": [
+          "gaming lobby roast",
+          "among us session",
+          "minecraft griefing tribunal",
+          "fantasy sports league drama",
+          "pokemon nuzlocke"
+        ]
       },
       {
         "id": "format_parody",
         "weight": 0.15,
         "note": "Takes a recognizable media format and runs it through the NOTABOT filter.",
-        "examples": ["court trial", "true crime doc cold open", "reality tv confessional", "news broadcast", "cooking show judging", "dating show elimination", "job interview", "school presentation disaster"]
+        "examples": [
+          "court trial",
+          "true crime doc cold open",
+          "reality tv confessional",
+          "news broadcast",
+          "cooking show judging",
+          "dating show elimination",
+          "job interview",
+          "school presentation disaster"
+        ]
       },
       {
         "id": "trending_meme_vehicle",
-        "weight": 0.10,
-        "note": "Trend checker identifies a hot meme/format. This episode uses it as the vehicle. Time-sensitive — only use when meme is fresh per trend_checker score 7+.",
-        "examples": ["whatever trend_checker returns as hot_right_now this week"]
+        "weight": 0.1,
+        "note": "Trend checker identifies a hot meme/format. This episode uses it as the vehicle. Time-sensitive \u2014 only use when meme is fresh per trend_checker score 7+.",
+        "examples": [
+          "whatever trend_checker returns as hot_right_now this week"
+        ]
       },
       {
         "id": "chaos_premise",
-        "weight": 0.10,
+        "weight": 0.1,
         "note": "Surreal or invented premise that has no real-world equivalent. Pure NOTABOT logic.",
-        "examples": ["NOTABOT held a server economy and fatas broke it", "NOTABOT issued patch notes for the humans", "NOTABOT filed a restraining order on a concept"]
+        "examples": [
+          "NOTABOT held a server economy and fatas broke it",
+          "NOTABOT issued patch notes for the humans",
+          "NOTABOT filed a restraining order on a concept"
+        ]
       }
     ]
-  }
+  },
+  "situational_sparks": [
+    "gaming_meltdown_or_esports_sabotage",
+    "unhinged_marketplace_transaction",
+    "bureaucratic_tribunal_or_audit",
+    "corrupt_customer_support_or_hotline",
+    "viral_trend_or_challenge_disaster",
+    "accidental_public_broadcast",
+    "late_night_paranoia_spiral",
+    "high_stakes_interview_or_evaluation",
+    "unauthorized_system_hijack",
+    "world_stage_summit_or_debate",
+    "clandestine_conspiracy_meeting",
+    "open_ended_meme_opportunity"
+  ]
 }

@@ -449,7 +449,7 @@ class Supervisor:
             "premise": self.winning_pitch.get("premise", "") if self.winning_pitch else "",
             "shape": self.constraint_card.story_shape if self.constraint_card else "unknown",
             "mechanism": self.constraint_card.comedy_mechanism if self.constraint_card else "unknown",
-            "setting": self.constraint_card.setting if self.constraint_card else "general_chat",
+            "setting": (self.winning_pitch.get("setting") or self.constraint_card.setting) if self.constraint_card else "general_chat",
             "cast_pair": self.constraint_card.cast_pair if self.constraint_card else ["NOTABOT"],
             "notabot_role": self.constraint_card.notabot_role if self.constraint_card else "clerk",
             "hook_type": "standard",

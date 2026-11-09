@@ -65,7 +65,8 @@ EPISODE CONSTRAINTS:
 - Story Shape: {card.story_shape}
 - NOTABOT Role: {card.notabot_role}
 - Comedy Mechanism: {card.comedy_mechanism}
-- Setting: {card.setting}
+- Situational Spark (creative inspiration): {card.setting}
+  *NOTE ON SETTING: Do NOT restrict yourself to a single preset location! INVENT whatever specific, wild, trending setting best fits your premise (e.g. 3 AM Minecraft grief tribunal, FBI watchlist groupchat, corporate layoff zoom chat, fast-food headset hijack, ranked valorant lobby, live unban appeal queue).
 - Twist Rule: {card.twist_rule}
 - Cast: {', '.join(card.cast_pair)}
 {f"- Wild Card: {card.wild_card}" if card.wild_card else ""}

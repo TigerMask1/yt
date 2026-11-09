@@ -56,7 +56,8 @@ def draw_constraint_card(bundle: FoundationBundle, is_long: bool = False) -> Con
     story_shape = _pick_without_cooldown(libs["story_shapes"], "shape", cooldown=5)
     notabot_role = _pick_without_cooldown(libs["notabot_roles"], "notabot_role", cooldown=2)
     comedy_mechanism = _pick_without_cooldown(libs["comedy_mechanisms"], "mechanism", cooldown=4)
-    setting = _pick_without_cooldown(libs["settings"], "setting", cooldown=3)
+    sparks = libs.get("situational_sparks", libs.get("settings", ["general_chat"]))
+    setting = _pick_without_cooldown(sparks, "setting", cooldown=3)
     twist_rule = random.choice(libs["twist_rules"])
     
     # Cast pair: NOTABOT + 1-2 from the pool
