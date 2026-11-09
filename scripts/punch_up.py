@@ -21,6 +21,7 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Union
 import google.generativeai as genai
+import model_config
 from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -31,12 +32,8 @@ import ledger
 from foundation_loader import FoundationBundle, load_foundations, get_cast_cards_for
 import critic_panel
 
-MODEL_FALLBACKS = [
-    "gemini-3-flash-preview",
-    "gemini-3.1-flash-lite",
-    "gemini-2.5-flash",
-    "gemini-2.0-flash",
-]
+# Model fallbacks from model_config (single source of truth)
+MODEL_FALLBACKS = model_config.get_model_fallbacks("punch_up_line_judge")
 
 def _call_gemini(prompt: str) -> str:
     """Invokes Gemini with fallback models across quota errors."""

@@ -18,7 +18,7 @@ ASSETS_DIR    = Path(__file__).parent.parent / "assets"
 LEDGER_PATH   = ASSETS_DIR / "ledger" / "ledger.json"
 QUARANTINE_DIR = ASSETS_DIR / "quarantine"
 KILLSWITCH    = ASSETS_DIR / "ledger" / "killswitch.txt"
-DAILY_CAP     = int(os.environ.get("NOTABOT_DAILY_CAP", "3"))   # max episodes per day
+DAILY_CAP     = int(os.environ.get("NOTABOT_DAILY_CAP", "5"))   # max episodes per day
 
 
 # ── 1. Kill switch ────────────────────────────────────────────────────────────

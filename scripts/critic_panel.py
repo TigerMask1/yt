@@ -11,6 +11,7 @@ import re
 import sys
 from pathlib import Path
 import google.generativeai as genai
+import model_config
 from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -20,12 +21,8 @@ genai.configure(api_key=os.environ.get("GEMINI_API_KEY", ""))
 import ledger
 from foundation_loader import FoundationBundle, get_hard_stops
 
-MODEL_FALLBACKS = [
-    "gemini-3-flash-preview",
-    "gemini-3.1-flash-lite",
-    "gemini-2.5-flash",
-    "gemini-2.0-flash",
-]
+# Model fallbacks from model_config (single source of truth)
+MODEL_FALLBACKS = model_config.get_model_fallbacks("critic_hook")
 
 def _call_gemini(prompt: str) -> str:
     for model_name in MODEL_FALLBACKS:

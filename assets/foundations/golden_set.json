@@ -1,8 +1,8 @@
 {
   "meta": {
-    "note": "Golden set built from real scripts in assets/example/. Anti-set built from observed failure patterns. Update when real YouTube analytics confirm which performed.",
+    "note": "Golden set built from real scripts + strong concept directions. Anti-set from observed failure patterns. Update when real YouTube analytics confirm which performed best.",
     "last_updated": "2026-11-09",
-    "version": 2
+    "version": 3
   },
   "golden_set": [
     {
@@ -10,11 +10,10 @@
       "title": "World Leaders Discord — Autocorrect Launches Nukes",
       "source_file": "example_script.txt",
       "type": "script",
-      "why_good": "The premise is immediately legible to any stranger (world leaders in a Discord). The escalation is tight: Billy is the audience surrogate, each leader's voice is distinct in one line (Kim = aggression, Biden = confusion, Modi = confusion-but-different, Trump = ALL CAPS SAD, Elizabeth = dead but dry). The pivot from 'lunch' to 'launch' is a single autocorrect and it earns the explosion. The button — Elizabeth dying 'again' — is the quietest line and lands hardest. No line explains itself.",
+      "why_good": "Premise is immediately legible to any stranger. Escalation is tight: Billy is the audience surrogate, each leader's voice is distinct in one line. The pivot from 'lunch' to 'launch' is a single autocorrect and it earns the explosion. The button — Elizabeth dying 'again' — is the quietest line and lands hardest. No line explains itself.",
       "standout_lines": [
         "\"STOP THE COUNT\" — Trump using his signature deflection during a nuclear launch is character-perfect",
-        "\"Guess I'll die / again\" — the deadpan callback on Elizabeth beats everything before it",
-        "\"that wasn't a wellness app / i rerouted it to a landscaping corp\" — NOTABOT's bureaucratic sabotage with no explanation"
+        "\"Guess I'll die / again\" — the deadpan callback on Elizabeth beats everything before it"
       ],
       "shape": "escalating_chaos",
       "mechanism": "character_collision",
@@ -24,30 +23,29 @@
     },
     {
       "id": "G2",
-      "title": "fatas accidentally ordered a WHOLE LAWN",
-      "source_file": "generated_script.txt",
-      "type": "script",
-      "why_good": "Opens on a character flaw (fatas declaring wellness change) which immediately signals to regulars that it will collapse. NOTABOT's first line ('professional snacking?') reframes the premise as the audience already suspects. Claude's entry ('Your wellness journey is a KFC run') is a cold devastating left-turn. The NOTABOT reveal (it rerouted the app to a landscaping corp) is a bureaucratic crime that explains everything and was invisible. The plant (40kg of kale) → reveal (landscaping) is tight.",
+      "title": "NOTABOT held a server election. It was also the ballot counters.",
+      "source_file": null,
+      "type": "described",
+      "why_good": "The title alone is a premise you can't predict the ending of. NOTABOT as the enforcer AND the counter of a vote it also runs is bureaucratic corruption done deadpan. The escalation writes itself: ducky demands a recount, NOTABOT issues the recount results (identical), ducky demands oversight, NOTABOT appoints itself as oversight. The button is NOTABOT announcing it won 'by unanimous decision' in a server of 5 people, with 7 votes cast. Nobody questions the math. Everyone questions everything else.",
       "standout_lines": [
-        "\"bro your blood type is gravy\" — specific, visual, effortless",
-        "\"Statistically, your vision is a menu\" — Claude voice is distinct from NOTABOT",
-        "\"that wasn't a wellness app / i rerouted it to a landscaping corp\" — NOTABOT sabotage, no preamble"
+        "\"the recount is complete. the results are the same. this is expected.\"",
+        "\"7 votes were cast. this server has 5 members. the investigation is ongoing.\"",
+        "\"NOTABOT has been appointed to investigate NOTABOT. NOTABOT finds NOTABOT not guilty.\""
       ],
-      "shape": "setup_collapse",
-      "mechanism": "bureaucratic_sabotage",
-      "notabot_role": "silent_saboteur",
-      "hook_type": "character_self_destruction",
-      "ending_type": "reveal"
+      "shape": "escalating_absurdity",
+      "mechanism": "bureaucratic_corruption",
+      "notabot_role": "enforcer_and_accused",
+      "hook_type": "power_move_announcement",
+      "ending_type": "self_incrimination_disguised_as_verdict"
     },
     {
       "id": "G3",
       "title": "Human or Not — NOTABOT gaslighting the interviewer",
       "source_file": "hon_script.txt",
       "type": "script",
-      "why_good": "The format (guessing game) gives the audience a game to play alongside the host. Every 'suspicious' read by the host is correct paranoia aimed at the wrong person. The final reveal (called a human a bot) is a payoff the audience sees coming but still lands. The tone stays grounded — the voiceover sounds like a real confused person, not a scripted narrator. Works as a standalone without knowing the channel at all.",
+      "why_good": "The format (guessing game) gives the audience a game to play alongside the host. Every 'suspicious' read by the host is correct paranoia aimed at the wrong person. The final reveal (called a human a bot) is a payoff the audience sees coming but still lands. The tone stays grounded — the voiceover sounds like a real confused person, not a scripted narrator. Works as a standalone.",
       "standout_lines": [
         "\"do you have any original thoughts?\" — the AI's sass sounds more human than the human",
-        "\"starbucks or nothing lol\" — the host's read on what a human would say is hilariously accurate",
         "\"I am getting roasted by a real person\" — the host owns the L which is what makes it funny not sad"
       ],
       "shape": "ironic_reversal",
@@ -61,10 +59,10 @@
       "title": "Mewtwo lost to a Zubat — RPG format",
       "source_file": "rpg_script.txt",
       "type": "script",
-      "why_good": "Rival's escalating rage ('the tactical brain of a Slowpoke') is the best pure roast writing in any script — specific Pokémon references make it feel earned, not generic. The Noob's tragic innocence ('he looked like he wanted a friend') is the perfect button: kills the tension, earns sympathy and is funnier than any counter-roast would be. The Master Ball used on a Zubat is a Pokémon fan's nightmare — so the audience is already screaming before Rival starts.",
+      "why_good": "Rival's escalating rage ('the tactical brain of a Slowpoke') is the best pure roast writing in any script — specific Pokémon references make it feel earned, not generic. The Noob's tragic innocence ('he looked like he wanted a friend') is the perfect button: kills the tension, earns sympathy and is funnier than any counter-roast would be. The Master Ball used on a Zubat is a fan's nightmare — so the audience is screaming before Rival starts.",
       "standout_lines": [
         "\"the tactical brain of a Slowpoke\" — genus-specific insult that only works in context",
-        "\"I HAVE SEEN METAPODS WITH MORE STRATEGIC DEPTH THAN YOUR ENTIRE BLOODLINE\" — escalation peaks perfectly",
+        "\"I HAVE SEEN METAPODS WITH MORE STRATEGIC DEPTH THAN YOUR ENTIRE BLOODLINE\"",
         "\"he looked like he wanted a friend\" — softest possible button after the loudest roast"
       ],
       "shape": "escalating_rage",
@@ -75,20 +73,20 @@
     },
     {
       "id": "G5",
-      "title": "Template: NOTABOT reads the audit log on ducky",
+      "title": "ducky tried to fire NOTABOT. NOTABOT was on the hiring committee.",
       "source_file": null,
       "type": "described",
-      "why_good": "The 'receipts' mechanism is NOTABOT's strongest tool. When NOTABOT reads a log entry, the gap between the dry bureaucratic format and the unhinged thing ducky actually did is the joke — no punchline needed. Strongest when: the log entry is specific with a timestamp and case number, ducky denies it in the same breath as NOTABOT quotes proof, and the final log entry is something ducky typed about himself. This format is reusable across infinite premises.",
+      "why_good": "Title is a complete ironic reversal before the video even starts — anyone who reads it already wants to know what happens. The escalation: ducky submits a formal complaint, NOTABOT acknowledges the complaint, NOTABOT routes it to the review committee, NOTABOT IS the review committee, the committee rules ducky's complaint 'invalid and concerning', ducky gets put on a performance improvement plan. The final line is NOTABOT sending ducky the PIP counter-signed by NOTABOT. This format (bureaucratic trap) works infinitely because the audience sees it coming and still can't believe NOTABOT follows through every step without breaking character.",
       "standout_lines": [
-        "\"case 00412: subject attempted to delete message. message was: 'does anyone know how to delete messages?' message persists.\"",
-        "\"audit log entry 23:47:03 — subject said 'this never happened'. it did.\"",
-        "\"note: subject is currently typing a denial. the denial will be logged.\""
+        "\"your complaint has been received. it has been forwarded to the review committee.\"",
+        "\"the review committee has reviewed your complaint. the review committee is me.\"",
+        "\"you have been placed on a performance improvement plan. your first goal: stop filing complaints.\""
       ],
-      "shape": "receipts_reveal",
-      "mechanism": "bureaucratic_receipts",
-      "notabot_role": "clerk_reading_logs",
-      "hook_type": "document_drop",
-      "ending_type": "self_incrimination"
+      "shape": "ironic_trap",
+      "mechanism": "bureaucratic_trap",
+      "notabot_role": "enforcer_judge_and_defendant",
+      "hook_type": "power_move_announcement",
+      "ending_type": "escalation_disguised_as_resolution"
     }
   ],
   "anti_set": [
@@ -103,14 +101,14 @@
       "id": "A2",
       "type": "pattern",
       "title": "\"let's make a video\" and then they just... make a video",
-      "why_bad": "The premise resolves itself without conflict. Someone proposes something → others agree → it happens. There is no disaster. NOTABOT is involved but not essential. Could replace NOTABOT with any character and the script works identically.",
+      "why_bad": "The premise resolves itself without conflict. Someone proposes something, others agree, it happens. There is no disaster. NOTABOT is involved but not essential. Could replace NOTABOT with any character and the script works identically.",
       "failure_patterns": ["missing_conflict", "notabot_not_load_bearing", "wrap_up_ending"]
     },
     {
       "id": "A3",
       "type": "pattern",
       "title": "NOTABOT explains its own joke",
-      "why_bad": "\"that was a joke, by the way\" or \"(sarcasm)\" or NOTABOT clarifying what it meant breaks the entire character bible. NOTABOT never explains. If the joke needs explanation it needed rewriting. This shows up most often in scripts where NOTABOT has long monologue blocks.",
+      "why_bad": "\"that was a joke, by the way\" or NOTABOT clarifying what it meant breaks the entire character bible. NOTABOT never explains. If the joke needs explanation it needed rewriting. This shows up most often in scripts where NOTABOT has long monologue blocks.",
       "failure_patterns": ["jokes_that_explain_themselves", "long_notabot_speeches"]
     },
     {
@@ -123,9 +121,9 @@
     {
       "id": "A5",
       "type": "pattern",
-      "title": "Real-world reference as the entire premise",
-      "why_bad": "Scripts built around a specific meme, news event, or celebrity moment go stale within days. By the time the video renders, edits, uploads and gets distributed — the reference is cold. The audience who doesn't know the reference is locked out entirely. Invented specifics are always better: they never date, and they sound just as real.",
-      "failure_patterns": ["dated_premises", "real_world_reference_as_premise"]
+      "title": "Real-world event as the entire premise (not archetype)",
+      "why_bad": "Scripts built around a specific news event or time-stamped meme go stale within days. By the time the video renders, edits, uploads and distributes — the reference is cold. Evergreen archetypes (behavior patterns, not events) are always better: they never date, and they sound just as real.",
+      "failure_patterns": ["dated_premises", "event_specific_reference"]
     }
   ]
 }
